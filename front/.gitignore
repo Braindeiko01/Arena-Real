@@ -1,24 +1,15 @@
+# ======================================
+# 🌐 NODE / NEXT.JS / TYPESCRIPT
+# ======================================
+
 # Dependencias
 /node_modules
 
-# Compilación Next.js
+# Compilación de Next.js
 /.next
-
-# Archivos temporales de desarrollo
-/.vscode
-/.idx
-
-# Archivos de configuración sensibles
-.env*
-.firebase*
-.modified
 
 # Archivos de salida de TypeScript
 *.tsbuildinfo
-
-# Archivos de configuración del sistema
-.DS_Store
-Thumbs.db
 
 # Archivos de logs
 npm-debug.log*
@@ -26,90 +17,54 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Firebase hosting
-/firebase.json
-/firebaserc
-/apphosting.yaml
+# Archivos de lock (opcional, según tu gestor)
+/yarn.lock
+/pnpm-lock.yaml
 
-# Build o artefactos generados
-/dist
-/build
+# ======================================
+# ⚙️ CONFIGURACIONES Y TEMPORALES
+# ======================================
 
-# Otros archivos y carpetas comunes a ignorar
-.idea/
-*.swp
-*.swo
-*.bak
-
-# Sistema de control de versiones
-.git
-
-
-
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# Dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# Testing
-/coverage
-
-# Next.js
-/.next/
-/out/
-/build
-
-# Production
-/dist
-
-# Misc
-.DS_Store
-*.pem
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Local Environment Variables
+# Configs del entorno
+.env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env*.local
-
-# IDE files
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.sublime-workspace
+.env.production
+.env.development
 
 # Firebase
-# If you have Firebase config files you don't want to commit, add them here.
-# For example, if you download service account keys:
-# *serviceAccountKey.json
+.firebase*
+firebase.json
+apphosting.yaml
 
-# Genkit
-# Genkit flow state files
-.genkit/state/
-# Genkit log files (if configured to write to local files)
-genkit-debug.log
-genkit-warn.log
-genkit-error.log
+# Archivos modificados por herramientas personalizadas
+.modified
 
-# TypeScript
-*.tsbuildinfo
-tsconfig.tsbuildinfo
+# Configs del editor
+.vscode/
+.idea/
 
-# yarn berry
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# ======================================
+# ❌ DUPLICADOS EN /public QUE NO VAN
+# ======================================
+
+# Archivos erróneos o innecesarios dentro de /public
+/public/package.json
+/public/package-lock.json
+/public/tsconfig.json
+/public/next.config.ts
+/public/app/
+/public/.gitignore
+/public/README.md
+
+# ======================================
+# 📦 DIST / BUILD (opcional)
+# ======================================
+
+# Si generas un build fuera de .next
+/dist
+/build
+/out
