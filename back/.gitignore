@@ -1,0 +1,12 @@
+ codex/crear-.gitignore-y-eliminar-target
+# Ignore Maven build directories
+**/target/
+
+# Ignore IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+

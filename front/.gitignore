@@ -1,0 +1,45 @@
+# Dependencias
+/node_modules
+
+# Compilación Next.js
+/.next
+
+# Archivos temporales de desarrollo
+/.vscode
+/.idx
+
+# Archivos de configuración sensibles
+.env*
+.firebase*
+.modified
+
+# Archivos de salida de TypeScript
+*.tsbuildinfo
+
+# Archivos de configuración del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Firebase hosting
+/firebase.json
+/firebaserc
+/apphosting.yaml
+
+# Build o artefactos generados
+/dist
+/build
+
+# Otros archivos y carpetas comunes a ignorar
+.idea/
+*.swp
+*.swo
+*.bak
+
+# Sistema de control de versiones
+.git
