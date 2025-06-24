@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 92%; /* Light stone gray, slightly cool */
+    --foreground: 225 40% 20%; /* Dark desaturated blue for text */
+
+    --card: 210 20% 98%; /* Lighter card background for contrast */
+    --card-foreground: 225 40% 20%;
+
+    --popover: 210 20% 98%;
+    --popover-foreground: 225 40% 20%;
+
+    --primary: 221 71% 55%; /* Royal Blue */
+    --primary-foreground: 0 0% 100%; /* White */
+    --primary-dark: 221 71% 45%; /* Darker Royal Blue for button 3D effect */
+
+    --secondary: 210 15% 85%; /* Slightly darker stone gray for secondary elements */
+    --secondary-foreground: 225 40% 25%;
+
+    --muted: 210 15% 80%;
+    --muted-foreground: 225 20% 45%;
+
+    --accent: 51 100% 50%; /* Gold */
+    --accent-foreground: 45 100% 15%; /* Dark Brown/Black for text on gold */
+
+    --destructive: 0 70% 45%; /* Darker, less saturated red */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 10% 75%; /* Grayer border */
+    --input: 210 15% 90%; /* Lighter input background */
+    --ring: 221 71% 55%; /* Primary color for rings */
+
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.8rem; /* Slightly larger radius for cartoonish feel */
+
+    /* Sidebar variables (can keep default or adjust if sidebar is used extensively) */
+    --sidebar-background: 210 20% 96%;
+    --sidebar-foreground: 225 40% 20%;
+    --sidebar-primary: 221 71% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 51 100% 50%;
+    --sidebar-accent-foreground: 45 100% 15%;
+    --sidebar-border: 210 10% 80%;
+    --sidebar-ring: 221 71% 55%;
+  }
+
+  .dark {
+    /* Keeping dark mode similar for brevity, can be customized later */
+    --background: 225 20% 10%;
+    --foreground: 210 20% 95%;
+
+    --card: 225 20% 12%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 225 20% 12%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 221 71% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-dark: 221 71% 50%;
+
+    --secondary: 210 15% 20%;
+    --secondary-foreground: 210 20% 95%;
+
+    --muted: 210 15% 25%;
+    --muted-foreground: 210 20% 65%;
+
+    --accent: 51 100% 55%;
+    --accent-foreground: 45 100% 10%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 10% 30%;
+    --input: 210 15% 22%;
+    --ring: 221 71% 60%;
+
+    --sidebar-background: 225 20% 12%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 221 71% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 51 100% 55%;
+    --sidebar-accent-foreground: 45 100% 10%;
+    --sidebar-border: 210 10% 30%;
+    --sidebar-ring: 221 71% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c7c7c7' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); /* Subtle stone-like texture */
+  }
+}
