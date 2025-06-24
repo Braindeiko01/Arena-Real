@@ -17,5 +17,5 @@ spring:
 
 logging:
   level:
-    root: DEBUG
-    DefaultHandlerExceptionResolver: DEBUG
+    root: INFO
+    co.com: DEBUG

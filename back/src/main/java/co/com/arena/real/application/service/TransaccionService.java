@@ -29,6 +29,7 @@ public class TransaccionService {
 
     public TransaccionResponse registrarTransaccion(TransaccionRequest dto) {
         Transaccion transaccion = transaccionMapper.toEntity(dto);
+        transaccion.setJugador(new Jugador(dto.getJugadorId()));
         transaccion.setEstado(EstadoTransaccion.PENDIENTE);
         transaccion.setCreadoEn(LocalDateTime.now());
         Transaccion saved = transaccionRepository.save(transaccion);

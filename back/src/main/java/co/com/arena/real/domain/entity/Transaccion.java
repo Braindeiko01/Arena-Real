@@ -52,3 +52,4 @@ public class Transaccion {
     @Column(name = "creado_en", nullable = false)
     private LocalDateTime creadoEn;
 }
+
