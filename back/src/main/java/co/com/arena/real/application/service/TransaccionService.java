@@ -28,10 +28,14 @@ public class TransaccionService {
     private final ApplicationEventPublisher eventPublisher;
 
     public TransaccionResponse registrarTransaccion(TransaccionRequest dto) {
+        Jugador jugador = jugadorRepository.findById(dto.getJugadorId())
+                .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
+
         Transaccion transaccion = transaccionMapper.toEntity(dto);
-        transaccion.setJugador(new Jugador(dto.getJugadorId()));
+        transaccion.setJugador(jugador);
         transaccion.setEstado(EstadoTransaccion.PENDIENTE);
         transaccion.setCreadoEn(LocalDateTime.now());
+
         Transaccion saved = transaccionRepository.save(transaccion);
         return transaccionMapper.toDto(saved);
     }
