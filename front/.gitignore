@@ -48,10 +48,14 @@ apphosting.yaml
 Thumbs.db
 
 # ======================================
+# 🧪 ENTORNOS LOCALES COMO .idx
+# ======================================
+.idx/
+
+# ======================================
 # ❌ DUPLICADOS EN /public QUE NO VAN
 # ======================================
 
-# Archivos erróneos o innecesarios dentro de /public
 /public/package.json
 /public/package-lock.json
 /public/tsconfig.json
@@ -64,7 +68,6 @@ Thumbs.db
 # 📦 DIST / BUILD (opcional)
 # ======================================
 
-# Si generas un build fuera de .next
 /dist
 /build
 /out
