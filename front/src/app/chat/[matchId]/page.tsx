@@ -14,6 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import useFirestoreChat from '@/hooks/useFirestoreChat';
+import type { ChatMessage } from '@/types';
 
 import { Label } from '@/components/ui/label';
 
@@ -42,6 +43,13 @@ const ChatPageContent = () => {
   const validOpponentTag = opponentTag as string;
   const validOpponentGoogleId = opponentGoogleId as string;
   const { messages, sendMessage } = useFirestoreChat(incompleteData ? undefined : chatId);
+  const sendMessageSafely = (msg: Omit<ChatMessage, 'id'>) => {
+    if (!opponentTag || !opponentGoogleId) {
+      console.error('❌ Datos incompletos para iniciar chat');
+      return;
+    }
+    sendMessage(msg);
+  };
   const [newMessage, setNewMessage] = useState('');
   const [isSubmittingResult, setIsSubmittingResult] = useState(false);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
@@ -58,7 +66,7 @@ const ChatPageContent = () => {
   useEffect(() => {
     if (incompleteData || !user) return; // user.id es googleId
       if (messages.length === 0) {
-        sendMessage({
+        sendMessageSafely({
           matchId: validChatId,
           senderId: 'system',
           text: `Chat iniciado para el duelo (Chat ID: ${validChatId}) con ${validOpponentTag}. ¡Compartan sus links de amigo de Clash Royale para comenzar!`,
@@ -78,7 +86,7 @@ const ChatPageContent = () => {
       text: newMessage,
       timestamp: new Date().toISOString(),
     };
-    sendMessage(message);
+    sendMessageSafely(message);
     setNewMessage('');
   };
   
@@ -102,7 +110,7 @@ const ChatPageContent = () => {
       timestamp: new Date().toISOString(),
       isSystemMessage: true,
     };
-    sendMessage(message);
+    sendMessageSafely(message);
     toast({ title: "Link de Amigo Compartido", description: `Tu link de amigo ${user.friendLink ? '' : '(o un aviso de que no lo tienes) '}ha sido publicado en el chat.` });
   };
 
@@ -136,7 +144,7 @@ const ChatPageContent = () => {
       timestamp: new Date().toISOString(),
       isSystemMessage: true,
     };
-    sendMessage(resultSystemMessage);
+    sendMessageSafely(resultSystemMessage);
   };
 
 
