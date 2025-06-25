@@ -16,27 +16,24 @@ export default function useMatchmakingSse(playerId: string | undefined, onMatch:
   useEffect(() => {
     if (!playerId) return;
 
+    const handler = (event: MessageEvent) => {
+      try {
+        const data: MatchEventData = JSON.parse(event.data);
+        console.log('Match encontrado:', data);
+        onMatch(data);
+        eventSourceRef.current?.close();
+      } catch (err) {
+        console.error('Error al procesar evento SSE de matchmaking:', err);
+      }
+    };
+
     const connect = () => {
       const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
       console.log('Abriendo conexión SSE de matchmaking:', url);
       const es = new EventSource(url);
       eventSourceRef.current = es;
 
-      const handler = (event: MessageEvent) => {
-
-        try {
-          const data: MatchEventData = JSON.parse(event.data);
-          console.log('Match encontrado:', data);
-          onMatch(data);
-          es.close();
-        } catch (err) {
-          console.error('Error al procesar evento SSE de matchmaking:', err);
-        }
-      };
-
-
       es.addEventListener('match-found', handler as EventListener);
-
 
       es.onerror = (err) => {
         console.error('Error en la conexión SSE de matchmaking:', err);
