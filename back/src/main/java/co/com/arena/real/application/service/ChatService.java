@@ -16,12 +16,11 @@ public class ChatService {
 
     public UUID crearChatParaPartida(String jugador1Id, String jugador2Id) {
         Chat chat = Chat.builder()
-                .id(UUID.randomUUID())
                 .jugadores(List.of(jugador1Id, jugador2Id))
                 .build();
 
-        chatRepository.save(chat);
-        return chat.getId();
+        Chat saved = chatRepository.save(chat);
+        return saved.getId();
     }
 
     public UUID crearChat(String jugador1Id, String jugador2Id) {
@@ -37,12 +36,6 @@ public class ChatService {
             chatRepository.save(chat);
         });
 
-    }
-
-    public void cerrarChat(UUID chatId) {
-        if (chatId != null) {
-            chatRepository.deleteById(chatId);
-        }
     }
 }
 
