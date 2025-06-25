@@ -96,7 +96,8 @@ const HomePageContent = () => {
       result.match &&
       result.match.apuestaId &&
       result.match.jugadorOponenteId &&
-      result.match.jugadorOponenteTag
+      result.match.jugadorOponenteTag &&
+      result.match.chatId
     ) {
       handleMatchFound(result.match);
     }
