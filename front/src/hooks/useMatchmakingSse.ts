@@ -23,6 +23,7 @@ export default function useMatchmakingSse(playerId: string | undefined, onMatch:
       eventSourceRef.current = es;
 
       const handler = (event: MessageEvent) => {
+
         try {
           const data: MatchEventData = JSON.parse(event.data);
           console.log('Match encontrado:', data);
@@ -33,7 +34,9 @@ export default function useMatchmakingSse(playerId: string | undefined, onMatch:
         }
       };
 
+
       es.addEventListener('match-found', handler as EventListener);
+
 
       es.onerror = (err) => {
         console.error('Error en la conexión SSE de matchmaking:', err);
@@ -51,6 +54,7 @@ export default function useMatchmakingSse(playerId: string | undefined, onMatch:
         eventSourceRef.current.removeEventListener('match-found', handler as EventListener);
         eventSourceRef.current.close();
       }
+
     };
   }, [playerId, onMatch, toast]);
 }
