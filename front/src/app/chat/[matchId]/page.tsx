@@ -13,8 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import type { ChatMessage } from '@/types';
-import useSocketChat from '@/hooks/useSocketChat';
+import useFirestoreChat from '@/hooks/useFirestoreChat';
 import { Label } from '@/components/ui/label';
 
 
@@ -23,12 +22,12 @@ const ChatPageContent = () => {
   const params = useParams();
   const searchParams = useSearchParams();
 
-  const matchId = params.matchId as string | undefined; // ID de la apuesta (UUID)
+  const chatId = params.matchId as string | undefined; // ID del chat (UUID)
   const opponentTagParam = searchParams.get('opponentTag');
   const opponentGoogleIdParam = searchParams.get('opponentGoogleId'); // googleId del oponente
 
   const hasValidParams =
-    matchId && opponentTagParam && opponentTagParam !== 'null' &&
+    chatId && opponentTagParam && opponentTagParam !== 'null' &&
     opponentGoogleIdParam && opponentGoogleIdParam !== 'null';
 
   const opponentTag = hasValidParams ? opponentTagParam : undefined;
@@ -38,10 +37,10 @@ const ChatPageContent = () => {
 
   const { toast } = useToast();
   const incompleteData = !hasValidParams;
-  const validMatchId = matchId as string;
+  const validChatId = chatId as string;
   const validOpponentTag = opponentTag as string;
   const validOpponentGoogleId = opponentGoogleId as string;
-  const { messages, sendMessage } = useSocketChat(incompleteData ? undefined : matchId);
+  const { messages, sendMessage } = useFirestoreChat(incompleteData ? undefined : chatId);
   const [newMessage, setNewMessage] = useState('');
   const [isSubmittingResult, setIsSubmittingResult] = useState(false);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
@@ -59,22 +58,21 @@ const ChatPageContent = () => {
     if (incompleteData || !user) return; // user.id es googleId
       if (messages.length === 0) {
         sendMessage({
-          matchId: validMatchId,
+          matchId: validChatId,
           senderId: 'system',
-          text: `Chat iniciado para el duelo (Apuesta ID: ${validMatchId}) con ${validOpponentTag}. ¡Compartan sus links de amigo de Clash Royale para comenzar!`,
+          text: `Chat iniciado para el duelo (Chat ID: ${validChatId}) con ${validOpponentTag}. ¡Compartan sus links de amigo de Clash Royale para comenzar!`,
           timestamp: new Date().toISOString(),
           isSystemMessage: true,
         });
       }
-  }, [user, validMatchId, validOpponentTag, validOpponentGoogleId, messages.length, sendMessage, incompleteData]);
+  }, [user, validChatId, validOpponentTag, validOpponentGoogleId, messages.length, sendMessage, incompleteData]);
 
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !user || !user.id) return; // user.id es googleId
 
-    const message: ChatMessage = {
-      id: `${user.id}-${Date.now()}`,
-      matchId: validMatchId, // ID de la apuesta del backend (UUID)
+    const message = {
+      matchId: validChatId, // ID del chat (UUID)
       senderId: user.id, // googleId del remitente
       text: newMessage,
       timestamp: new Date().toISOString(),
@@ -96,9 +94,8 @@ const ChatPageContent = () => {
       friendLinkMessage = `${userDisplayName} intentó compartir su link de amigo, pero no lo tiene configurado en su perfil.`;
     }
     
-    const message: ChatMessage = {
-      id: `sys-link-${user.id}-${Date.now()}`,
-      matchId: validMatchId, // ID de la apuesta del backend (UUID)
+    const message = {
+      matchId: validChatId, // ID del chat (UUID)
       senderId: 'system',
       text: friendLinkMessage,
       timestamp: new Date().toISOString(),
@@ -115,9 +112,9 @@ const ChatPageContent = () => {
     }
     
     // Aquí se llamaría a una acción para enviar el resultado al backend (ej. POST /api/partidas)
-    // Se necesitaría: apuestaId (que es matchId - UUID de la apuesta)
+    // Se necesitaría: apuestaId (identificador de la apuesta)
     // y ganadorId (user.id - googleId, o opponentGoogleId)
-    console.log(`Resultado enviado: Usuario con googleId ${user.id} ${result === 'win' ? 'ganó' : 'perdió'} la apuesta ${validMatchId}. Oponente googleId: ${validOpponentGoogleId}. Adjunto: ${screenshotFile?.name || 'ninguno'}`);
+    console.log(`Resultado enviado: Usuario con googleId ${user.id} ${result === 'win' ? 'ganó' : 'perdió'} la apuesta vinculada al chat ${validChatId}. Oponente googleId: ${validOpponentGoogleId}. Adjunto: ${screenshotFile?.name || 'ninguno'}`);
     
     toast({
       title: "¡Resultado Enviado!",
@@ -131,9 +128,8 @@ const ChatPageContent = () => {
     
      const userDisplayName = user.clashTag || user.username;
      const resultMessageText = `${userDisplayName} envió el resultado del duelo como ${result === 'win' ? 'VICTORIA' : 'DERROTA'}. ${screenshotFile ? 'Captura de pantalla proporcionada.' : 'No se proporcionó captura.'}`;
-    const resultSystemMessage: ChatMessage = {
-      id: `sys-result-${user.id}-${Date.now()}`, // user.id es googleId
-      matchId: validMatchId, // ID de la apuesta del backend (UUID)
+    const resultSystemMessage = {
+      matchId: validChatId, // ID del chat (UUID)
       senderId: 'system',
       text: resultMessageText,
       timestamp: new Date().toISOString(),
