@@ -16,18 +16,25 @@ public class ChatService {
 
     public UUID crearChatParaPartida(String jugador1Id, String jugador2Id) {
         Chat chat = Chat.builder()
-                .id(UUID.randomUUID())
                 .jugadores(List.of(jugador1Id, jugador2Id))
                 .build();
 
-        chatRepository.save(chat);
-        return chat.getId();
+        Chat saved = chatRepository.save(chat);
+        return saved.getId();
     }
 
-    public UUID obtenerOcrear(String jugador1Id, String jugador2Id) {
-        return chatRepository.findBetween(jugador1Id, jugador2Id)
-                .map(Chat::getId)
-                .orElseGet(() -> crearChatParaPartida(jugador1Id, jugador2Id));
+    public UUID crearChat(String jugador1Id, String jugador2Id) {
+        return crearChatParaPartida(jugador1Id, jugador2Id);
+    }
+
+    public void cerrarChat(UUID chatId) {
+        if (chatId == null) {
+            return;
+        }
+        chatRepository.findById(chatId).ifPresent(chat -> {
+            chat.setActivo(false);
+            chatRepository.save(chat);
+        });
     }
 }
 
