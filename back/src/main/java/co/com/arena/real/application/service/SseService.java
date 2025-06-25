@@ -16,6 +16,11 @@ public class SseService {
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     public SseEmitter subscribe(String jugadorId) {
+        SseEmitter existing = emitters.remove(jugadorId);
+        if (existing != null) {
+            existing.complete();
+        }
+
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
         emitter.onCompletion(() -> removeEmitter(jugadorId));

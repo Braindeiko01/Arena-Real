@@ -36,6 +36,7 @@ public class ChatService {
             chat.setActivo(false);
             chatRepository.save(chat);
         });
+
     }
 
     public void cerrarChat(UUID chatId) {
