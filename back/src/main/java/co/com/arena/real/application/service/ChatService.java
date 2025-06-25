@@ -24,10 +24,18 @@ public class ChatService {
         return chat.getId();
     }
 
-    public UUID obtenerOcrear(String jugador1Id, String jugador2Id) {
-        return chatRepository.findBetween(jugador1Id, jugador2Id)
-                .map(Chat::getId)
-                .orElseGet(() -> crearChatParaPartida(jugador1Id, jugador2Id));
+    public UUID crearChat(String jugador1Id, String jugador2Id) {
+        return crearChatParaPartida(jugador1Id, jugador2Id);
+    }
+
+    public void cerrarChat(UUID chatId) {
+        if (chatId == null) {
+            return;
+        }
+        chatRepository.findById(chatId).ifPresent(chat -> {
+            chat.setActivo(false);
+            chatRepository.save(chat);
+        });
     }
 }
 

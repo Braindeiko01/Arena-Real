@@ -11,6 +11,6 @@ import java.util.UUID;
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, UUID> {
 
-    @Query("SELECT c FROM Chat c WHERE :j1 MEMBER OF c.jugadores AND :j2 MEMBER OF c.jugadores")
+    @Query("SELECT c FROM Chat c WHERE c.activo = true AND :j1 MEMBER OF c.jugadores AND :j2 MEMBER OF c.jugadores")
     java.util.Optional<Chat> findBetween(@Param("j1") String jugador1Id, @Param("j2") String jugador2Id);
 }
