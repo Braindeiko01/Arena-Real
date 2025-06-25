@@ -14,6 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import useFirestoreChat from '@/hooks/useFirestoreChat';
+import { BACKEND_URL } from '@/lib/config';
 import type { ChatMessage, User } from '@/types';
 
 import { Label } from '@/components/ui/label';
@@ -24,7 +25,6 @@ const ChatPageContent = () => {
   const params = useParams();
   const searchParams = useSearchParams();
 
-  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
 
   const chatId = params.matchId as string | undefined;
   const opponentTagParam = searchParams.get('opponentTag');

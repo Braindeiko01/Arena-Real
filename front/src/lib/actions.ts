@@ -12,8 +12,7 @@ import type {
   BackendMatchmakingResponseDto,
   RegistrarUsuarioRequest,
 } from '@/types'
-
-const BACKEND_URL = process.env.BACKEND_API_URL || 'http://localhost:8080'
+import { BACKEND_URL } from '@/lib/config'
 
 /* -------------------------
    USUARIO
