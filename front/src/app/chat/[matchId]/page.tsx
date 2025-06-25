@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import useFirestoreChat from '@/hooks/useFirestoreChat';
-import type { ChatMessage } from '@/types';
+import type { ChatMessage, User } from '@/types';
 
 import { Label } from '@/components/ui/label';
 
@@ -23,6 +23,8 @@ const ChatPageContent = () => {
   const { user } = useAuth();
   const params = useParams();
   const searchParams = useSearchParams();
+
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
 
   const chatId = params.matchId as string | undefined;
   const opponentTagParam = searchParams.get('opponentTag');
@@ -58,6 +60,7 @@ const ChatPageContent = () => {
   const validChatId = chatId as string;
   const validOpponentTag = opponentTag as string;
   const validOpponentGoogleId = opponentGoogleId as string;
+  const [opponentProfile, setOpponentProfile] = useState<User | null>(null);
   const sendMessageSafely = (msg: Omit<ChatMessage, 'id'>) => {
     if (!opponentTag || !opponentGoogleId) {
       console.error('❌ Datos incompletos para iniciar chat');
@@ -79,17 +82,63 @@ const ChatPageContent = () => {
   useEffect(scrollToBottom, [messages]);
 
   useEffect(() => {
-    if (incompleteData || !user) return; // user.id es googleId
-      if (messages.length === 0) {
-        sendMessageSafely({
-          matchId: validChatId,
-          senderId: 'system',
-          text: `Chat iniciado para el duelo (Chat ID: ${validChatId}) con ${validOpponentTag}. ¡Compartan sus links de amigo de Clash Royale para comenzar!`,
-          timestamp: new Date().toISOString(),
-          isSystemMessage: true,
-        });
+    const fetchOpponent = async () => {
+      if (!hasValidParams) return;
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/jugadores/${validOpponentGoogleId}`);
+        if (res.ok) {
+          const data = await res.json();
+          const profile: User = {
+            id: data.id,
+            username: data.nombre,
+            email: data.email,
+            phone: data.telefono,
+            clashTag: data.tagClash,
+            nequiAccount: data.telefono,
+            avatarUrl: `https://placehold.co/40x40.png?text=${data.nombre?.[0] ?? 'O'}`,
+            balance: data.saldo ?? 0,
+            friendLink: data.linkAmistad,
+            reputacion: data.reputacion ?? 0,
+          };
+          setOpponentProfile(profile);
+        } else {
+          console.error('Error al obtener datos del oponente');
+        }
+      } catch (err) {
+        console.error('Error al obtener datos del oponente', err);
       }
-  }, [user, validChatId, validOpponentTag, validOpponentGoogleId, messages.length, sendMessage, incompleteData]);
+    };
+    fetchOpponent();
+  }, [hasValidParams, validOpponentGoogleId, BACKEND_URL]);
+
+  useEffect(() => {
+    if (incompleteData || !user || !opponentProfile) return;
+    if (messages.length === 0) {
+      const startMsg = {
+        matchId: validChatId,
+        senderId: 'system',
+        text: `Chat iniciado para el duelo (Chat ID: ${validChatId}) con ${validOpponentTag}.`,
+        timestamp: new Date().toISOString(),
+        isSystemMessage: true,
+      };
+      sendMessageSafely(startMsg);
+
+      const userDisplay = user.clashTag || user.username;
+      const opponentDisplay = opponentProfile.clashTag || opponentProfile.username;
+
+      const userLinkMsg = user.friendLink
+        ? `${userDisplay} compartió su link de amigo: <a href="${user.friendLink}" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">${user.friendLink}</a>`
+        : `${userDisplay} no tiene configurado su link de amigo.`;
+
+      const opponentLinkMsg = opponentProfile.friendLink
+        ? `${opponentDisplay} compartió su link de amigo: <a href="${opponentProfile.friendLink}" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">${opponentProfile.friendLink}</a>`
+        : `${opponentDisplay} no tiene configurado su link de amigo.`;
+
+      const now = new Date().toISOString();
+      sendMessageSafely({ matchId: validChatId, senderId: 'system', text: userLinkMsg, timestamp: now, isSystemMessage: true });
+      sendMessageSafely({ matchId: validChatId, senderId: 'system', text: opponentLinkMsg, timestamp: now, isSystemMessage: true });
+    }
+  }, [user, opponentProfile, validChatId, validOpponentTag, messages.length, incompleteData]);
 
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();
