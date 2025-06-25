@@ -42,7 +42,6 @@ const ChatPageContent = () => {
   const validOpponentTag = opponentTag as string;
   const validOpponentGoogleId = opponentGoogleId as string;
   const { messages, sendMessage } = useFirestoreChat(incompleteData ? undefined : chatId);
-
   const [newMessage, setNewMessage] = useState('');
   const [isSubmittingResult, setIsSubmittingResult] = useState(false);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
