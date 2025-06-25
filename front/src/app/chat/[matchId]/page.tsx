@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import type { ChatMessage } from '@/types';
-import useFirestoreChat from '@/hooks/useFirestoreChat';
+import useSocketChat from '@/hooks/useSocketChat';
 import { Label } from '@/components/ui/label';
 
 
@@ -41,7 +41,7 @@ const ChatPageContent = () => {
   const validMatchId = matchId as string;
   const validOpponentTag = opponentTag as string;
   const validOpponentGoogleId = opponentGoogleId as string;
-  const { messages, sendMessage } = useFirestoreChat(incompleteData ? undefined : matchId);
+  const { messages, sendMessage } = useSocketChat(incompleteData ? undefined : matchId);
   const [newMessage, setNewMessage] = useState('');
   const [isSubmittingResult, setIsSubmittingResult] = useState(false);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
