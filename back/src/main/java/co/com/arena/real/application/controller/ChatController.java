@@ -24,7 +24,7 @@ public class ChatController {
     @GetMapping("/between")
     public ResponseEntity<Map<String, UUID>> getChatId(@RequestParam String jugador1Id,
                                                        @RequestParam String jugador2Id) {
-        UUID id = chatService.obtenerOcrear(jugador1Id, jugador2Id);
+        UUID id = chatService.crearChat(jugador1Id, jugador2Id);
         return ResponseEntity.ok(Map.of("chatId", id));
     }
 
