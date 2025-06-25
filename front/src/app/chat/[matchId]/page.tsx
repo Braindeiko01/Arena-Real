@@ -24,13 +24,20 @@ const ChatPageContent = () => {
   const searchParams = useSearchParams();
 
   const matchId = params.matchId as string | undefined; // ID de la apuesta (UUID)
-  const opponentTag = searchParams.get('opponentTag');
+  const opponentTagParam = searchParams.get('opponentTag');
+  const opponentGoogleIdParam = searchParams.get('opponentGoogleId'); // googleId del oponente
+
+  const hasValidParams =
+    matchId && opponentTagParam && opponentTagParam !== 'null' &&
+    opponentGoogleIdParam && opponentGoogleIdParam !== 'null';
+
+  const opponentTag = hasValidParams ? opponentTagParam : undefined;
+  const opponentGoogleId = hasValidParams ? opponentGoogleIdParam : undefined;
   const opponentAvatar = searchParams.get('opponentAvatar') ||
     (opponentTag ? `https://placehold.co/40x40.png?text=${opponentTag[0]}` : undefined);
-  const opponentGoogleId = searchParams.get('opponentGoogleId'); // googleId del oponente
 
   const { toast } = useToast();
-  const incompleteData = !matchId || !opponentTag || !opponentGoogleId;
+  const incompleteData = !hasValidParams;
   const validMatchId = matchId as string;
   const validOpponentTag = opponentTag as string;
   const validOpponentGoogleId = opponentGoogleId as string;
