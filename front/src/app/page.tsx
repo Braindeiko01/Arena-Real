@@ -39,6 +39,7 @@ const HomePageContent = () => {
   const handleMatchFound = (data: { apuestaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
     console.log('Match encontrado via SSE:', data);
     setIsSearching(false);
+    toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
     router.push(
       `/chat/${data.apuestaId}?opponentTag=${encodeURIComponent(data.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
     );
