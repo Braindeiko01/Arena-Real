@@ -227,7 +227,7 @@ const HomePageContent = () => {
     setIsModeModalOpen(true);
   };
 
-  const handleModeSelect = async (mode: 'CLASICO' | 'TRIPLE_ELECCION  ') => {
+  const handleModeSelect = async (mode: 'CLASICO' | 'TRIPLE_ELECCION') => {
     setIsModeModalOpen(false);
     await handleFindMatch(mode);
   };

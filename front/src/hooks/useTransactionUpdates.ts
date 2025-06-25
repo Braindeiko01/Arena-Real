@@ -34,7 +34,10 @@ export default function useTransactionUpdates() {
       }
     };
 
-    es.addEventListener('transaccion-aprobada', handler as EventListener);
+    es.addEventListener(
+      'transaccion-aprobada',
+      handler as unknown as EventListener
+    );
 
     es.onerror = (err) => {
       console.error('SSE error:', err);
@@ -42,7 +45,10 @@ export default function useTransactionUpdates() {
 
     return () => {
       if (eventSourceRef.current) {
-        eventSourceRef.current.removeEventListener('transaccion-aprobada', handler as EventListener);
+        eventSourceRef.current.removeEventListener(
+          'transaccion-aprobada',
+          handler as unknown as EventListener
+        );
         eventSourceRef.current.close();
       }
     };
