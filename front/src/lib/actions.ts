@@ -36,6 +36,10 @@ export async function registerUserAction(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(backendPayload),
     })
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}))
+      return { user: null, error: err.message || `Error ${response.status}` }
+    }
 
     const registered = await response.json() as BackendUsuarioDto
 
