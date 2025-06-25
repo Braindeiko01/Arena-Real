@@ -17,7 +17,7 @@ export default function useTransactionUpdates() {
   useEffect(() => {
     if (!user?.id) return;
 
-    const url = `${BACKEND_URL}/api/transacciones/stream/${user.id}`;
+    const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
     const es = new EventSource(url);
     eventSourceRef.current = es;
 

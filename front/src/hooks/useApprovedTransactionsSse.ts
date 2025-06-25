@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 export interface ApprovedTransaction {
   id: string;
-  usuarioId: string;
+  jugadorId: string;
   monto: number;
   tipo: 'DEPOSITO' | 'RETIRO' | 'PREMIO';
   estado: 'APROBADA';
