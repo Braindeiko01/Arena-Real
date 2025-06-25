@@ -31,9 +31,13 @@ public class ChatService {
     }
 
     public void cerrarChat(UUID chatId) {
-        if (chatId != null) {
-            chatRepository.deleteById(chatId);
+        if (chatId == null) {
+            return;
         }
+        chatRepository.findById(chatId).ifPresent(chat -> {
+            chat.setActivo(false);
+            chatRepository.save(chat);
+        });
     }
 }
 
