@@ -30,15 +30,14 @@ public class    MatchmakingController {
                             ? partida.getJugador2()
                             : partida.getJugador1();
 
-                    MatchSseDto dto = MatchSseDto.builder()
+                    return MatchSseDto.builder()
                             .apuestaId(partida.getApuesta().getId())
                             .chatId(partida.getChatId())
                             .jugadorOponenteId(oponente.getId())
                             .jugadorOponenteTag(oponente.getTagClash())
                             .build();
-
-                    return ResponseEntity.ok(dto);
                 })
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> {
                     Map<String, Object> resp = new HashMap<>();
                     resp.put("status", "esperando");
