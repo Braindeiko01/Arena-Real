@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { BACKEND_URL } from '@/lib/config';
 
 export interface ApprovedTransaction {
   id: string;
@@ -10,7 +11,6 @@ export interface ApprovedTransaction {
   creadoEn: string;
 }
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
 
 export default function useApprovedTransactionsSse() {
   const [transactions, setTransactions] = useState<ApprovedTransaction[]>([]);

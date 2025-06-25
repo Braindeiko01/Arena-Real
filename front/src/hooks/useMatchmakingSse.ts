@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
+import { BACKEND_URL } from '@/lib/config';
 
 interface MatchEventData {
   apuestaId: string;
