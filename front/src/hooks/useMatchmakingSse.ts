@@ -12,6 +12,7 @@ interface MatchEventData {
 export default function useMatchmakingSse(playerId: string | undefined, onMatch: (data: MatchEventData) => void) {
   const { toast } = useToast();
   const eventSourceRef = useRef<EventSource | null>(null);
+  const handlerRef = useRef<(event: MessageEvent) => void>();
 
   useEffect(() => {
     if (!playerId) return;
@@ -26,6 +27,7 @@ export default function useMatchmakingSse(playerId: string | undefined, onMatch:
         console.error('Error al procesar evento SSE de matchmaking:', err);
       }
     };
+    handlerRef.current = handler;
 
     const connect = () => {
       const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
@@ -33,7 +35,9 @@ export default function useMatchmakingSse(playerId: string | undefined, onMatch:
       const es = new EventSource(url);
       eventSourceRef.current = es;
 
-      es.addEventListener('match-found', handler as EventListener);
+      if (handlerRef.current) {
+        es.addEventListener('match-found', handlerRef.current as EventListener);
+      }
 
       es.onerror = (err) => {
         console.error('Error en la conexión SSE de matchmaking:', err);
@@ -47,8 +51,8 @@ export default function useMatchmakingSse(playerId: string | undefined, onMatch:
 
     return () => {
       console.log('Cerrando conexión SSE de matchmaking');
-      if (eventSourceRef.current) {
-        eventSourceRef.current.removeEventListener('match-found', handler as EventListener);
+      if (eventSourceRef.current && handlerRef.current) {
+        eventSourceRef.current.removeEventListener('match-found', handlerRef.current as EventListener);
         eventSourceRef.current.close();
       }
 
