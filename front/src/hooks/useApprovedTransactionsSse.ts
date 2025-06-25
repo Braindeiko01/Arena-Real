@@ -17,7 +17,7 @@ export default function useApprovedTransactionsSse() {
   useEffect(() => {
     const es = new EventSource(`${BACKEND_URL}/api/sse/transacciones`);
 
-    es.onmessage = (event) => {
+    const handler = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data) as ApprovedTransaction;
         setTransactions(prev => [data, ...prev]);
@@ -26,11 +26,14 @@ export default function useApprovedTransactionsSse() {
       }
     };
 
+    es.addEventListener('transaccion-aprobada', handler as EventListener);
+
     es.onerror = (err) => {
       console.error('SSE error:', err);
     };
 
     return () => {
+      es.removeEventListener('transaccion-aprobada', handler as EventListener);
       es.close();
     };
   }, []);
