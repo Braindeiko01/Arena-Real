@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface ApprovedTransaction {
   id: string;
@@ -13,9 +14,13 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost
 
 export default function useApprovedTransactionsSse() {
   const [transactions, setTransactions] = useState<ApprovedTransaction[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    const es = new EventSource(`${BACKEND_URL}/api/sse/transacciones`);
+    if (!user?.id) return;
+
+    const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
+    const es = new EventSource(url);
 
     const handler = (event: MessageEvent) => {
       try {
@@ -36,7 +41,7 @@ export default function useApprovedTransactionsSse() {
       es.removeEventListener('transaccion-aprobada', handler as EventListener);
       es.close();
     };
-  }, []);
+  }, [user]);
 
   return transactions;
 }
