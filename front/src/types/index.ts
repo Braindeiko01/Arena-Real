@@ -76,6 +76,7 @@ export interface BackendMatchmakingResponseDto {
   apuestaId: string; // UUID de la apuesta resultante
   jugadorOponenteId: string; // googleId del oponente
   jugadorOponenteTag: string;
+  chatId: string;
   jugadorOponenteAvatarUrl?: string;
 }
 
