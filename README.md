@@ -21,3 +21,19 @@ cd back
 mvn spring-boot:run
 ```
 
+Before starting the backend, set the path to your Firebase service account
+credentials using either the custom `FIREBASE_SERVICE_ACCOUNT_FILE` variable or
+the standard `GOOGLE_APPLICATION_CREDENTIALS`:
+
+```bash
+export FIREBASE_SERVICE_ACCOUNT_FILE=/path/to/serviceAccountKey.json
+# or
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/serviceAccountKey.json
+```
+
+Ensure the file path points to an existing JSON file containing your service
+account credentials.
+
+If neither variable is set, the backend won't start because Firebase cannot
+locate credentials.
+
