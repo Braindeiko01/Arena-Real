@@ -32,8 +32,9 @@ public class MatchSseService {
     }
 
     public void notifyMatch(Partida partida) {
-        sendMatch(partida.getJugador1().getId(), partida);
-        sendMatch(partida.getJugador2().getId(), partida);
+        UUID apuestaId = partida.getApuesta().getId();
+        sendEvent(partida.getJugador1().getId(), apuestaId, partida.getJugador2());
+        sendEvent(partida.getJugador2().getId(), apuestaId, partida.getJugador1());
     }
 
     private void sendEvent(String receptorId, UUID apuestaId, Jugador oponente) {
