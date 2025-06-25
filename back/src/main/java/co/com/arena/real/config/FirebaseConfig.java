@@ -24,12 +24,22 @@ public class FirebaseConfig {
         }
 
         GoogleCredentials credentials;
-        if (serviceAccountPath != null) {
+
+        if (serviceAccountPath != null && !serviceAccountPath.isBlank()) {
+
             try (FileInputStream serviceAccount = new FileInputStream(serviceAccountPath)) {
                 credentials = GoogleCredentials.fromStream(serviceAccount);
             }
         } else {
-            credentials = GoogleCredentials.getApplicationDefault();
+
+            try {
+                credentials = GoogleCredentials.getApplicationDefault();
+            } catch (IOException e) {
+                throw new IllegalStateException(
+                        "Firebase credentials not found. Set FIREBASE_SERVICE_ACCOUNT_FILE or GOOGLE_APPLICATION_CREDENTIALS",
+                        e);
+            }
+
         }
 
         FirebaseOptions options = FirebaseOptions.builder()
