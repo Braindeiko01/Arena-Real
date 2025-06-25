@@ -28,8 +28,16 @@ const ChatPageContent = () => {
   const opponentTagParam = searchParams.get('opponentTag');
   const opponentGoogleIdParam = searchParams.get('opponentGoogleId');
 
-  const paramsLoaded = chatId !== undefined && opponentTagParam !== null && opponentGoogleIdParam !== null;
-  const hasValidParams = paramsLoaded && opponentTagParam !== 'null' && opponentGoogleIdParam !== 'null';
+  const paramsLoaded =
+    chatId !== undefined &&
+    opponentTagParam !== null &&
+    opponentGoogleIdParam !== null;
+  const hasValidParams =
+    paramsLoaded &&
+    opponentTagParam !== 'null' &&
+    opponentTagParam !== 'undefined' &&
+    opponentGoogleIdParam !== 'null' &&
+    opponentGoogleIdParam !== 'undefined';
 
   const incompleteData = !hasValidParams;
 
