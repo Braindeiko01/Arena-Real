@@ -31,6 +31,7 @@ export FIREBASE_SERVICE_ACCOUNT_FILE=/path/to/serviceAccountKey.json
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/serviceAccountKey.json
 ```
 
+
 If neither variable is set, the backend won't start because Firebase cannot
 locate credentials.
 
