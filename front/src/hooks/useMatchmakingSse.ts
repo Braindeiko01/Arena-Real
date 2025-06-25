@@ -7,6 +7,7 @@ interface MatchEventData {
   apuestaId: string;
   jugadorOponenteId: string;
   jugadorOponenteTag: string;
+  chatId: string;
 }
 
 export default function useMatchmakingSse(playerId: string | undefined, onMatch: (data: MatchEventData) => void) {

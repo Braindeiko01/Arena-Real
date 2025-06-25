@@ -23,6 +23,12 @@ public class ChatService {
         chatRepository.save(chat);
         return chat.getId();
     }
+
+    public UUID obtenerOcrear(String jugador1Id, String jugador2Id) {
+        return chatRepository.findBetween(jugador1Id, jugador2Id)
+                .map(Chat::getId)
+                .orElseGet(() -> crearChatParaPartida(jugador1Id, jugador2Id));
+    }
 }
 
 

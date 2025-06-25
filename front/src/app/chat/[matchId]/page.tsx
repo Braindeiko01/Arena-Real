@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import type { ChatMessage } from '@/types';
-import useChatSocket from '@/hooks/useChatSocket';
+import useFirestoreChat from '@/hooks/useFirestoreChat';
 import { Label } from '@/components/ui/label';
 
 
@@ -29,17 +29,13 @@ const ChatPageContent = () => {
   const opponentGoogleId = searchParams.get('opponentGoogleId'); // googleId del oponente
 
   const { toast } = useToast();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const { messages, sendMessage } = useFirestoreChat(matchId);
   const [newMessage, setNewMessage] = useState('');
   const [isSubmittingResult, setIsSubmittingResult] = useState(false);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [resultSubmitted, setResultSubmitted] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const sendChatMessage = useChatSocket(matchId, (msg) => {
-    setMessages(prev => [...prev, msg]);
-  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -49,37 +45,29 @@ const ChatPageContent = () => {
 
   useEffect(() => {
     if (!user || !matchId) return; // user.id es googleId
-      const initialMessage: ChatMessage = {
-        id: `sys-${Date.now()}`, 
-        matchId, // ID de la apuesta del backend (UUID)
-        senderId: 'system', 
-        text: `Chat iniciado para el duelo (Apuesta ID: ${matchId}) con ${opponentTag}. ¡Compartan sus links de amigo de Clash Royale para comenzar!`,
-        timestamp: new Date().toISOString(),
-        isSystemMessage: true,
-      };
-      setMessages([initialMessage]);
-  }, [user, matchId, opponentTag]);
-
-  const saveMessages = (updatedMessages: ChatMessage[]) => {
-    // La API actual no tiene endpoints para chat.
-    // console.log("Mensajes (no persistidos):", updatedMessages);
-  }
+      if (messages.length === 0) {
+        sendMessage({
+          matchId,
+          senderId: 'system',
+          text: `Chat iniciado para el duelo (Apuesta ID: ${matchId}) con ${opponentTag}. ¡Compartan sus links de amigo de Clash Royale para comenzar!`,
+          timestamp: new Date().toISOString(),
+          isSystemMessage: true,
+        });
+      }
+  }, [user, matchId, opponentTag, messages.length, sendMessage]);
 
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !user || !user.id) return; // user.id es googleId
 
     const message: ChatMessage = {
-      id: `${user.id}-${Date.now()}`, 
+      id: `${user.id}-${Date.now()}`,
       matchId, // ID de la apuesta del backend (UUID)
       senderId: user.id, // googleId del remitente
       text: newMessage,
       timestamp: new Date().toISOString(),
     };
-    const updatedMessages = [...messages, message];
-    setMessages(updatedMessages);
-    saveMessages(updatedMessages);
-    sendChatMessage(message);
+    sendMessage(message);
     setNewMessage('');
   };
   
@@ -104,10 +92,7 @@ const ChatPageContent = () => {
       timestamp: new Date().toISOString(),
       isSystemMessage: true,
     };
-    const updatedMessages = [...messages, message];
-    setMessages(updatedMessages);
-    saveMessages(updatedMessages);
-    sendChatMessage(message);
+    sendMessage(message);
     toast({ title: "Link de Amigo Compartido", description: `Tu link de amigo ${user.friendLink ? '' : '(o un aviso de que no lo tienes) '}ha sido publicado en el chat.` });
   };
 
@@ -142,10 +127,7 @@ const ChatPageContent = () => {
       timestamp: new Date().toISOString(),
       isSystemMessage: true,
     };
-    const updatedMessages = [...messages, resultSystemMessage];
-    setMessages(updatedMessages);
-    saveMessages(updatedMessages);
-    sendChatMessage(resultSystemMessage);
+    sendMessage(resultSystemMessage);
   };
 
 

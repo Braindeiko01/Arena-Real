@@ -36,12 +36,12 @@ const HomePageContent = () => {
   const [isModeModalOpen, setIsModeModalOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
 
-  const handleMatchFound = (data: { apuestaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
+  const handleMatchFound = (data: { apuestaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; chatId: string; }) => {
     console.log('Match encontrado via SSE:', data);
     setIsSearching(false);
     toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
     router.push(
-      `/chat/${data.apuestaId}?opponentTag=${encodeURIComponent(data.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
+      `/chat/${data.chatId}?opponentTag=${encodeURIComponent(data.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
     );
   };
 
