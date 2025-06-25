@@ -33,4 +33,8 @@ public class Chat {
     @Column(name = "jugador_id")
     private List<String> jugadores;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean activo = true;
+
 }
