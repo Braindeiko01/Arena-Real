@@ -2,6 +2,7 @@ package co.com.arena.real.application.service;
 
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -29,6 +30,17 @@ public class SseService {
 
         emitters.put(jugadorId, emitter);
         return emitter;
+    }
+
+    @Scheduled(fixedRate = 15000)
+    public void sendHeartbeats() {
+        emitters.forEach((id, emitter) -> {
+            try {
+                emitter.send(SseEmitter.event().comment("heartbeat"));
+            } catch (IOException e) {
+                removeEmitter(id);
+            }
+        });
     }
 
     public void notificarTransaccionAprobada(TransaccionResponse dto) {
