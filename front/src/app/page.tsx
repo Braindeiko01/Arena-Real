@@ -77,14 +77,11 @@ const HomePageContent = () => {
       return;
     }
 
-    setIsSearching(true);
-
     console.log('Iniciando matchmaking con', { userId: user.id, mode });
-    const result = await matchmakingAction(user.id, mode, 6000);
+    const result = await matchmakingAction(user.id,  mode, 6000 );
     console.log('Resultado de matchmakingAction:', result);
 
     if (result.error) {
-      setIsSearching(false);
       toast({
         title: "Error de Emparejamiento",
         description: result.error,
@@ -92,6 +89,8 @@ const HomePageContent = () => {
       });
       return;
     }
+
+    setIsSearching(true);
 
     if (
       result.match &&
