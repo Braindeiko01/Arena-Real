@@ -29,6 +29,12 @@ public class ChatService {
                 .map(Chat::getId)
                 .orElseGet(() -> crearChatParaPartida(jugador1Id, jugador2Id));
     }
+
+    public void cerrarChat(UUID chatId) {
+        if (chatId != null) {
+            chatRepository.deleteById(chatId);
+        }
+    }
 }
 
 
