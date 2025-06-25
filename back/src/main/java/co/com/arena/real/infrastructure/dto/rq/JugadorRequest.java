@@ -36,7 +36,7 @@ public class JugadorRequest implements Serializable {
     private String telefono;
 
     @Pattern(
-            regexp = "^(https://link\\.clashroyale\\.com/invite/friend\\?tag=[A-Z0-9]+.*)?$",
+            regexp = "^(https://link\\.clashroyale\\.com/invite/friend(?:/[a-zA-Z]{2})?.*tag=[A-Za-z0-9]+.*)?$",
             message = "Enlace de amistad inválido"
     )
     private String linkAmistad;

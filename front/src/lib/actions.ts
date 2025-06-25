@@ -36,6 +36,10 @@ export async function registerUserAction(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(backendPayload),
     })
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}))
+      return { user: null, error: err.message || `Error ${response.status}` }
+    }
 
     const registered = await response.json() as BackendUsuarioDto
 
@@ -126,7 +130,7 @@ export async function requestTransactionAction(
   type: 'DEPOSITO' | 'RETIRO'
 ): Promise<{ transaction: BackendTransaccionResponseDto | null; error: string | null }> {
   const payload: BackendTransaccionRequestDto = {
-    usuarioId: userGoogleId,
+    jugadorId: userGoogleId,
     monto: amount,
     tipo: type,
   }
@@ -154,7 +158,7 @@ export async function getUserTransactionsAction(
   userGoogleId: string
 ): Promise<{ transactions: BackendTransaccionResponseDto[] | null; error: string | null }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/transacciones/usuario/${userGoogleId}`)
+    const res = await fetch(`${BACKEND_URL}/api/transacciones/jugador/${userGoogleId}`)
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))

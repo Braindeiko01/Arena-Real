@@ -13,7 +13,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import type { ChatMessage } from '@/types'; 
+import type { ChatMessage } from '@/types';
+import useChatSocket from '@/hooks/useChatSocket';
 import { Label } from '@/components/ui/label';
 
 
@@ -32,9 +33,13 @@ const ChatPageContent = () => {
   const [newMessage, setNewMessage] = useState('');
   const [isSubmittingResult, setIsSubmittingResult] = useState(false);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
-  const [resultSubmitted, setResultSubmitted] = useState(false); 
+  const [resultSubmitted, setResultSubmitted] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const sendChatMessage = useChatSocket(matchId, (msg) => {
+    setMessages(prev => [...prev, msg]);
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -73,7 +78,8 @@ const ChatPageContent = () => {
     };
     const updatedMessages = [...messages, message];
     setMessages(updatedMessages);
-    saveMessages(updatedMessages); 
+    saveMessages(updatedMessages);
+    sendChatMessage(message);
     setNewMessage('');
   };
   
@@ -101,6 +107,7 @@ const ChatPageContent = () => {
     const updatedMessages = [...messages, message];
     setMessages(updatedMessages);
     saveMessages(updatedMessages);
+    sendChatMessage(message);
     toast({ title: "Link de Amigo Compartido", description: `Tu link de amigo ${user.friendLink ? '' : '(o un aviso de que no lo tienes) '}ha sido publicado en el chat.` });
   };
 
@@ -127,7 +134,7 @@ const ChatPageContent = () => {
     
      const userDisplayName = user.clashTag || user.username;
      const resultMessageText = `${userDisplayName} envió el resultado del duelo como ${result === 'win' ? 'VICTORIA' : 'DERROTA'}. ${screenshotFile ? 'Captura de pantalla proporcionada.' : 'No se proporcionó captura.'}`;
-     const resultSystemMessage: ChatMessage = {
+    const resultSystemMessage: ChatMessage = {
       id: `sys-result-${user.id}-${Date.now()}`, // user.id es googleId
       matchId, // ID de la apuesta del backend (UUID)
       senderId: 'system',
@@ -138,6 +145,7 @@ const ChatPageContent = () => {
     const updatedMessages = [...messages, resultSystemMessage];
     setMessages(updatedMessages);
     saveMessages(updatedMessages);
+    sendChatMessage(resultSystemMessage);
   };
 
 

@@ -16,30 +16,41 @@ export default function useMatchmakingSse(playerId: string | undefined, onMatch:
   useEffect(() => {
     if (!playerId) return;
 
-    const url = `${BACKEND_URL}/sse/match?jugadorId=${encodeURIComponent(playerId)}`;
-    console.log('Abriendo conexión SSE de matchmaking:', url);
-    const es = new EventSource(url);
-    eventSourceRef.current = es;
+    const connect = () => {
+      const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
+      console.log('Abriendo conexión SSE de matchmaking:', url);
+      const es = new EventSource(url);
+      eventSourceRef.current = es;
 
-    es.onmessage = (event) => {
-      try {
-        const data: MatchEventData = JSON.parse(event.data);
-        console.log('Match encontrado:', data);
-        onMatch(data);
+      const handler = (event: MessageEvent) => {
+        try {
+          const data: MatchEventData = JSON.parse(event.data);
+          console.log('Match encontrado:', data);
+          onMatch(data);
+          es.close();
+        } catch (err) {
+          console.error('Error al procesar evento SSE de matchmaking:', err);
+        }
+      };
+
+      es.addEventListener('match-found', handler as EventListener);
+
+      es.onerror = (err) => {
+        console.error('Error en la conexión SSE de matchmaking:', err);
+        toast({ title: 'Error de Matchmaking', description: 'La conexión se interrumpió. Reintentando...' });
         es.close();
-      } catch (err) {
-        console.error('Error al procesar evento SSE de matchmaking:', err);
-      }
+        setTimeout(connect, 3000);
+      };
     };
 
-    es.onerror = (err) => {
-      console.error('Error en la conexión SSE de matchmaking:', err);
-      toast({ title: 'Error de Matchmaking', description: 'La conexión se interrumpió.' });
-    };
+    connect();
 
     return () => {
       console.log('Cerrando conexión SSE de matchmaking');
-      es.close();
+      if (eventSourceRef.current) {
+        eventSourceRef.current.removeEventListener('match-found', handler as EventListener);
+        eventSourceRef.current.close();
+      }
     };
   }, [playerId, onMatch, toast]);
 }

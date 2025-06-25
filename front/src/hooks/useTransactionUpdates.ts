@@ -17,11 +17,11 @@ export default function useTransactionUpdates() {
   useEffect(() => {
     if (!user?.id) return;
 
-    const url = `${BACKEND_URL}/api/transacciones/stream/${user.id}`;
+    const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
     const es = new EventSource(url);
     eventSourceRef.current = es;
 
-    es.onmessage = async (event) => {
+    const handler = async (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
         toast({
@@ -34,12 +34,17 @@ export default function useTransactionUpdates() {
       }
     };
 
+    es.addEventListener('transaccion-aprobada', handler as EventListener);
+
     es.onerror = (err) => {
       console.error('SSE error:', err);
     };
 
     return () => {
-      es.close();
+      if (eventSourceRef.current) {
+        eventSourceRef.current.removeEventListener('transaccion-aprobada', handler as EventListener);
+        eventSourceRef.current.close();
+      }
     };
   }, [user, refreshUser, toast]);
 }
