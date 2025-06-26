@@ -53,7 +53,9 @@ public class MatchmakingService {
         if (partidaRepository.existsActiveByJugador(
                 jugadorEnEspera.getId(),
                 List.of(EstadoPartida.EN_CURSO, EstadoPartida.POR_APROBAR))) {
+
             throw new IllegalArgumentException("El jugador ya tiene una partida en curso");
+
         }
 
         cancelarSolicitudes(jugadorEnEspera);
