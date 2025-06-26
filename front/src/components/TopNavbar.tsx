@@ -33,12 +33,9 @@ const TopNavbar = () => {
 
       {/* Avatar */}
       <Link href="/profile" className="ml-2 flex items-center">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src={user?.avatarUrl} alt={user?.username} />
-          <AvatarFallback className="bg-white text-[#3973FF] font-bold">
-            {user?.username?.[0]?.toUpperCase() ?? "B"}
-          </AvatarFallback>
-        </Avatar>
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#3973FF] font-bold">
+          {user?.username?.[0]?.toUpperCase() ?? "B"}
+        </div>
       </Link>
     </header>
   );
