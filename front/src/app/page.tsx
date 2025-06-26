@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { SaldoIcon, FindMatchIcon } from '@/components/icons/ClashRoyaleIcons';
 import { useToast } from "@/hooks/use-toast";
 import { Coins, UploadCloud, Swords, Layers, Banknote, Loader2 } from 'lucide-react';
-import { requestTransactionAction, matchmakingAction } from '@/lib/actions';
+import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction } from '@/lib/actions';
 import useTransactionUpdates from '@/hooks/useTransactionUpdates';
 import useMatchmakingSse from '@/hooks/useMatchmakingSse';
 
@@ -229,13 +229,21 @@ const HomePageContent = () => {
     setIsModeModalOpen(true);
   };
 
-  const handleModeSelect = async (mode: 'CLASICO' | 'TRIPLE_ELECCION  ') => {
+  const handleModeSelect = async (mode: 'CLASICO' | 'TRIPLE_ELECCION') => {
     setIsModeModalOpen(false);
     await handleFindMatch(mode);
   };
 
-  const handleCancelSearch = () => {
+  const handleCancelSearch = async () => {
     setIsSearching(false);
+    if (user?.id) {
+      const result = await cancelMatchmakingAction(user.id);
+      if (result.error) {
+        toast({ title: 'Error al cancelar', description: result.error, variant: 'destructive' });
+      } else {
+        toast({ title: 'Búsqueda cancelada', description: 'Se canceló la búsqueda de oponente.' });
+      }
+    }
   };
 
 
