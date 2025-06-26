@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Bell, Gamepad2, User, Menu } from "lucide-react";
+import { Home, Bell, MessageCircle, User, Menu } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 const BottomNav = () => {
@@ -10,7 +11,7 @@ const BottomNav = () => {
   const navItems = [
     { href: "/", label: "Inicio", icon: Home },
     { href: "/notifications", label: "Notificaciones", icon: Bell },
-    { href: "/play", label: "Jugar", icon: Gamepad2 },
+    { href: "/chat", label: "Chat", icon: MessageCircle },
     { href: "/profile", label: "Usuario", icon: User },
     { href: "/menu", label: "Menú", icon: Menu },
   ];
