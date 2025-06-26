@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { SaldoIcon, FindMatchIcon } from '@/components/icons/ClashRoyaleIcons';
 import { useToast } from "@/hooks/use-toast";
 import { Coins, UploadCloud, Swords, Layers, Banknote, Loader2 } from 'lucide-react';
-import { requestTransactionAction, matchmakingAction } from '@/lib/actions';
+import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction } from '@/lib/actions';
 import useTransactionUpdates from '@/hooks/useTransactionUpdates';
 import useMatchmakingSse from '@/hooks/useMatchmakingSse';
 
@@ -36,11 +36,12 @@ const HomePageContent = () => {
   const [isModeModalOpen, setIsModeModalOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
 
-  const handleMatchFound = (data: { apuestaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
+  const handleMatchFound = (data: { apuestaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; chatId: string; }) => {
     console.log('Match encontrado via SSE:', data);
     setIsSearching(false);
+    toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
     router.push(
-      `/chat/${data.apuestaId}?opponentTag=${encodeURIComponent(data.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
+      `/chat/${data.chatId}?opponentTag=${encodeURIComponent(data.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
     );
   };
 
@@ -76,11 +77,14 @@ const HomePageContent = () => {
       return;
     }
 
+    setIsSearching(true);
+
     console.log('Iniciando matchmaking con', { userId: user.id, mode });
-    const result = await matchmakingAction(user.id,  mode, 6000 );
+    const result = await matchmakingAction(user.id, mode, 6000);
     console.log('Resultado de matchmakingAction:', result);
 
     if (result.error) {
+      setIsSearching(false);
       toast({
         title: "Error de Emparejamiento",
         description: result.error,
@@ -89,13 +93,12 @@ const HomePageContent = () => {
       return;
     }
 
-    setIsSearching(true);
-
     if (
       result.match &&
       result.match.apuestaId &&
       result.match.jugadorOponenteId &&
-      result.match.jugadorOponenteTag
+      result.match.jugadorOponenteTag &&
+      result.match.chatId
     ) {
       handleMatchFound(result.match);
     }
@@ -226,13 +229,21 @@ const HomePageContent = () => {
     setIsModeModalOpen(true);
   };
 
-  const handleModeSelect = async (mode: 'CLASICO' | 'TRIPLE_ELECCION  ') => {
+  const handleModeSelect = async (mode: 'CLASICO' | 'TRIPLE_ELECCION') => {
     setIsModeModalOpen(false);
     await handleFindMatch(mode);
   };
 
-  const handleCancelSearch = () => {
+  const handleCancelSearch = async () => {
     setIsSearching(false);
+    if (user?.id) {
+      const result = await cancelMatchmakingAction(user.id);
+      if (result.error) {
+        toast({ title: 'Error al cancelar', description: result.error, variant: 'destructive' });
+      } else {
+        toast({ title: 'Búsqueda cancelada', description: 'Se canceló la búsqueda de oponente.' });
+      }
+    }
   };
 
 

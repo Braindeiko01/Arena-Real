@@ -26,25 +26,29 @@ public class MatchSseService {
         return emitter;
     }
 
-    public void notifyMatch(UUID apuestaId, Jugador jugador1, Jugador jugador2) {
-        sendEvent(jugador1.getId(), apuestaId, jugador2);
-        sendEvent(jugador2.getId(), apuestaId, jugador1);
+    public void notifyMatch(UUID apuestaId, UUID chatId, Jugador jugador1, Jugador jugador2) {
+        sendEvent(jugador1.getId(), apuestaId, chatId, jugador2);
+        sendEvent(jugador2.getId(), apuestaId, chatId, jugador1);
     }
 
     public void notifyMatch(Partida partida) {
-        sendMatch(partida.getJugador1().getId(), partida);
-        sendMatch(partida.getJugador2().getId(), partida);
+        UUID apuestaId = partida.getApuesta().getId();
+        UUID chatId = partida.getChatId();
+        sendEvent(partida.getJugador1().getId(), apuestaId, chatId, partida.getJugador2());
+        sendEvent(partida.getJugador2().getId(), apuestaId, chatId, partida.getJugador1());
     }
 
-    private void sendEvent(String receptorId, UUID apuestaId, Jugador oponente) {
+    private void sendEvent(String receptorId, UUID apuestaId, UUID chatId, Jugador oponente) {
         SseEmitter emitter = emitters.get(receptorId);
         if (emitter == null) {
             return;
         }
+        String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
         MatchSseDto dto = MatchSseDto.builder()
                 .apuestaId(apuestaId)
+                .chatId(chatId)
                 .jugadorOponenteId(oponente.getId())
-                .jugadorOponenteTag(oponente.getTagClash())
+                .jugadorOponenteTag(tag)
                 .build();
         try {
             emitter.send(SseEmitter.event()

@@ -20,14 +20,14 @@ export interface BackendUsuarioDto {
 }
 
 export interface BackendTransaccionRequestDto {
-  usuarioId: string;
+  jugadorId: string;
   monto: number;
   tipo: "DEPOSITO" | "RETIRO" | "PREMIO";
 }
 
 export interface BackendTransaccionResponseDto {
   id: string; // UUID de la transacción (propio del backend)
-  usuarioId: string;
+  jugadorId: string;
   monto: number;
   tipo: "DEPOSITO" | "RETIRO" | "PREMIO";
   estado: "PENDIENTE" | "APROBADA" | "RECHAZADA";
@@ -76,6 +76,7 @@ export interface BackendMatchmakingResponseDto {
   apuestaId: string; // UUID de la apuesta resultante
   jugadorOponenteId: string; // googleId del oponente
   jugadorOponenteTag: string;
+  chatId: string;
   jugadorOponenteAvatarUrl?: string;
 }
 

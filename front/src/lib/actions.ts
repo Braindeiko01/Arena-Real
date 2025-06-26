@@ -12,8 +12,7 @@ import type {
   BackendMatchmakingResponseDto,
   RegistrarUsuarioRequest,
 } from '@/types'
-
-const BACKEND_URL = process.env.BACKEND_API_URL || 'http://localhost:8080'
+import { BACKEND_URL } from '@/lib/config'
 
 /* -------------------------
    USUARIO
@@ -36,6 +35,10 @@ export async function registerUserAction(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(backendPayload),
     })
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}))
+      return { user: null, error: err.message || `Error ${response.status}` }
+    }
 
     const registered = await response.json() as BackendUsuarioDto
 
@@ -126,7 +129,7 @@ export async function requestTransactionAction(
   type: 'DEPOSITO' | 'RETIRO'
 ): Promise<{ transaction: BackendTransaccionResponseDto | null; error: string | null }> {
   const payload: BackendTransaccionRequestDto = {
-    usuarioId: userGoogleId,
+    jugadorId: userGoogleId,
     monto: amount,
     tipo: type,
   }
@@ -154,7 +157,7 @@ export async function getUserTransactionsAction(
   userGoogleId: string
 ): Promise<{ transactions: BackendTransaccionResponseDto[] | null; error: string | null }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/transacciones/usuario/${userGoogleId}`)
+    const res = await fetch(`${BACKEND_URL}/api/transacciones/jugador/${userGoogleId}`)
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
@@ -235,5 +238,26 @@ export async function matchmakingAction(
     return { match: data, error: null }
   } catch (err: any) {
     return { match: null, error: err.message || 'Error de red durante el matchmaking.' }
+  }
+}
+
+export async function cancelMatchmakingAction(
+  userGoogleId: string
+): Promise<{ success: boolean; error: string | null }> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/matchmaking/cancelar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jugadorId: userGoogleId }),
+    })
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      return { success: false, error: err.message || `Error ${res.status}` }
+    }
+
+    return { success: true, error: null }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Error de red.' }
   }
 }

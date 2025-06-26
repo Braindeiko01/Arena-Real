@@ -17,5 +17,5 @@ spring:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
     co.com: DEBUG

@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { BACKEND_URL } from '@/lib/config';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
 
 /**
  * Hook to subscribe to transaction updates via Server-Sent Events (SSE).
@@ -17,11 +17,11 @@ export default function useTransactionUpdates() {
   useEffect(() => {
     if (!user?.id) return;
 
-    const url = `${BACKEND_URL}/api/transacciones/stream/${user.id}`;
+    const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
     const es = new EventSource(url);
     eventSourceRef.current = es;
 
-    es.onmessage = async (event) => {
+    const handler = async (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
         toast({
@@ -34,12 +34,17 @@ export default function useTransactionUpdates() {
       }
     };
 
+    es.addEventListener('transaccion-aprobada', handler as EventListener);
+
     es.onerror = (err) => {
       console.error('SSE error:', err);
     };
 
     return () => {
-      es.close();
+      if (eventSourceRef.current) {
+        eventSourceRef.current.removeEventListener('transaccion-aprobada', handler as EventListener);
+        eventSourceRef.current.close();
+      }
     };
   }, [user, refreshUser, toast]);
 }

@@ -13,7 +13,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import type { ChatMessage } from '@/types'; 
+import useFirestoreChat from '@/hooks/useFirestoreChat';
+import { BACKEND_URL } from '@/lib/config';
+import type { ChatMessage, User } from '@/types';
+
 import { Label } from '@/components/ui/label';
 
 
@@ -22,17 +25,53 @@ const ChatPageContent = () => {
   const params = useParams();
   const searchParams = useSearchParams();
 
-  const matchId = params.matchId as string; // Este es el ID de la apuesta del backend (UUID)
-  const opponentTag = searchParams.get('opponentTag') || 'Oponente';
-  const opponentAvatar = searchParams.get('opponentAvatar') || `https://placehold.co/40x40.png?text=${opponentTag[0] || 'O'}`;
-  const opponentGoogleId = searchParams.get('opponentGoogleId'); // googleId del oponente
+
+  const chatId = params.matchId as string | undefined;
+  const opponentTagParam = searchParams.get('opponentTag');
+  const opponentGoogleIdParam = searchParams.get('opponentGoogleId');
+
+  const paramsLoaded =
+    chatId !== undefined &&
+    opponentTagParam !== null &&
+    opponentGoogleIdParam !== null;
+  const hasValidParams =
+    paramsLoaded &&
+    opponentTagParam !== 'null' &&
+    opponentTagParam !== 'undefined' &&
+    opponentGoogleIdParam !== 'null' &&
+    opponentGoogleIdParam !== 'undefined';
+
+  const incompleteData = !hasValidParams;
+
+  useEffect(() => {
+    console.log('router.query', { chatId, opponentTag: opponentTagParam, opponentGoogleId: opponentGoogleIdParam });
+    if (!paramsLoaded) {
+      console.warn('Faltan parámetros para cargar el chat', { chatId, opponentTag: opponentTagParam, opponentGoogleId: opponentGoogleIdParam });
+    } else if (!hasValidParams) {
+      console.warn('Parámetros inválidos', { chatId, opponentTag: opponentTagParam, opponentGoogleId: opponentGoogleIdParam });
+    }
+  }, [chatId, opponentTagParam, opponentGoogleIdParam, paramsLoaded, hasValidParams]);
 
   const { toast } = useToast();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const { messages, sendMessage } = useFirestoreChat(hasValidParams ? chatId : undefined);
+  const opponentTag = hasValidParams ? opponentTagParam! : undefined;
+  const opponentGoogleId = hasValidParams ? opponentGoogleIdParam! : undefined;
+  const opponentAvatar = hasValidParams ? (searchParams.get('opponentAvatar') || `https://placehold.co/40x40.png?text=${opponentTag![0]}`) : undefined;
+  const validChatId = chatId as string;
+  const validOpponentTag = opponentTag as string;
+  const validOpponentGoogleId = opponentGoogleId as string;
+  const [opponentProfile, setOpponentProfile] = useState<User | null>(null);
+  const sendMessageSafely = (msg: Omit<ChatMessage, 'id'>) => {
+    if (!opponentTag || !opponentGoogleId) {
+      console.error('❌ Datos incompletos para iniciar chat');
+      return;
+    }
+    sendMessage(msg);
+  };
   const [newMessage, setNewMessage] = useState('');
   const [isSubmittingResult, setIsSubmittingResult] = useState(false);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
-  const [resultSubmitted, setResultSubmitted] = useState(false); 
+  const [resultSubmitted, setResultSubmitted] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -43,37 +82,75 @@ const ChatPageContent = () => {
   useEffect(scrollToBottom, [messages]);
 
   useEffect(() => {
-    if (!user || !matchId) return; // user.id es googleId
-      const initialMessage: ChatMessage = {
-        id: `sys-${Date.now()}`, 
-        matchId, // ID de la apuesta del backend (UUID)
-        senderId: 'system', 
-        text: `Chat iniciado para el duelo (Apuesta ID: ${matchId}) con ${opponentTag}. ¡Compartan sus links de amigo de Clash Royale para comenzar!`,
+    const fetchOpponent = async () => {
+      if (!hasValidParams) return;
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/jugadores/${validOpponentGoogleId}`);
+        if (res.ok) {
+          const data = await res.json();
+          const profile: User = {
+            id: data.id,
+            username: data.nombre,
+            email: data.email,
+            phone: data.telefono,
+            clashTag: data.tagClash,
+            nequiAccount: data.telefono,
+            avatarUrl: `https://placehold.co/40x40.png?text=${data.nombre?.[0] ?? 'O'}`,
+            balance: data.saldo ?? 0,
+            friendLink: data.linkAmistad,
+            reputacion: data.reputacion ?? 0,
+          };
+          setOpponentProfile(profile);
+        } else {
+          console.error('Error al obtener datos del oponente');
+        }
+      } catch (err) {
+        console.error('Error al obtener datos del oponente', err);
+      }
+    };
+    fetchOpponent();
+  }, [hasValidParams, validOpponentGoogleId, BACKEND_URL]);
+
+  useEffect(() => {
+    if (incompleteData || !user || !opponentProfile) return;
+    if (messages.length === 0) {
+      const startMsg = {
+        matchId: validChatId,
+        senderId: 'system',
+        text: `Chat iniciado para el duelo (Chat ID: ${validChatId}) con ${validOpponentTag}.`,
         timestamp: new Date().toISOString(),
         isSystemMessage: true,
       };
-      setMessages([initialMessage]);
-  }, [user, matchId, opponentTag]);
+      sendMessageSafely(startMsg);
 
-  const saveMessages = (updatedMessages: ChatMessage[]) => {
-    // La API actual no tiene endpoints para chat.
-    // console.log("Mensajes (no persistidos):", updatedMessages);
-  }
+      const userDisplay = user.clashTag || user.username;
+      const opponentDisplay = opponentProfile.clashTag || opponentProfile.username;
+
+      const userLinkMsg = user.friendLink
+        ? `${userDisplay} compartió su link de amigo: <a href="${user.friendLink}" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">${user.friendLink}</a>`
+        : `${userDisplay} no tiene configurado su link de amigo.`;
+
+      const opponentLinkMsg = opponentProfile.friendLink
+        ? `${opponentDisplay} compartió su link de amigo: <a href="${opponentProfile.friendLink}" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">${opponentProfile.friendLink}</a>`
+        : `${opponentDisplay} no tiene configurado su link de amigo.`;
+
+      const now = new Date().toISOString();
+      sendMessageSafely({ matchId: validChatId, senderId: 'system', text: userLinkMsg, timestamp: now, isSystemMessage: true });
+      sendMessageSafely({ matchId: validChatId, senderId: 'system', text: opponentLinkMsg, timestamp: now, isSystemMessage: true });
+    }
+  }, [user, opponentProfile, validChatId, validOpponentTag, messages.length, incompleteData]);
 
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !user || !user.id) return; // user.id es googleId
 
-    const message: ChatMessage = {
-      id: `${user.id}-${Date.now()}`, 
-      matchId, // ID de la apuesta del backend (UUID)
+    const message = {
+      matchId: validChatId, // ID del chat (UUID)
       senderId: user.id, // googleId del remitente
       text: newMessage,
       timestamp: new Date().toISOString(),
     };
-    const updatedMessages = [...messages, message];
-    setMessages(updatedMessages);
-    saveMessages(updatedMessages); 
+    sendMessageSafely(message);
     setNewMessage('');
   };
   
@@ -90,17 +167,14 @@ const ChatPageContent = () => {
       friendLinkMessage = `${userDisplayName} intentó compartir su link de amigo, pero no lo tiene configurado en su perfil.`;
     }
     
-    const message: ChatMessage = {
-      id: `sys-link-${user.id}-${Date.now()}`,
-      matchId, // ID de la apuesta del backend (UUID)
+    const message = {
+      matchId: validChatId, // ID del chat (UUID)
       senderId: 'system',
       text: friendLinkMessage,
       timestamp: new Date().toISOString(),
       isSystemMessage: true,
     };
-    const updatedMessages = [...messages, message];
-    setMessages(updatedMessages);
-    saveMessages(updatedMessages);
+    sendMessageSafely(message);
     toast({ title: "Link de Amigo Compartido", description: `Tu link de amigo ${user.friendLink ? '' : '(o un aviso de que no lo tienes) '}ha sido publicado en el chat.` });
   };
 
@@ -111,9 +185,9 @@ const ChatPageContent = () => {
     }
     
     // Aquí se llamaría a una acción para enviar el resultado al backend (ej. POST /api/partidas)
-    // Se necesitaría: apuestaId (que es matchId - UUID de la apuesta)
+    // Se necesitaría: apuestaId (identificador de la apuesta)
     // y ganadorId (user.id - googleId, o opponentGoogleId)
-    console.log(`Resultado enviado: Usuario con googleId ${user.id} ${result === 'win' ? 'ganó' : 'perdió'} la apuesta ${matchId}. Oponente googleId: ${opponentGoogleId}. Adjunto: ${screenshotFile?.name || 'ninguno'}`);
+    console.log(`Resultado enviado: Usuario con googleId ${user.id} ${result === 'win' ? 'ganó' : 'perdió'} la apuesta vinculada al chat ${validChatId}. Oponente googleId: ${validOpponentGoogleId}. Adjunto: ${screenshotFile?.name || 'ninguno'}`);
     
     toast({
       title: "¡Resultado Enviado!",
@@ -127,21 +201,21 @@ const ChatPageContent = () => {
     
      const userDisplayName = user.clashTag || user.username;
      const resultMessageText = `${userDisplayName} envió el resultado del duelo como ${result === 'win' ? 'VICTORIA' : 'DERROTA'}. ${screenshotFile ? 'Captura de pantalla proporcionada.' : 'No se proporcionó captura.'}`;
-     const resultSystemMessage: ChatMessage = {
-      id: `sys-result-${user.id}-${Date.now()}`, // user.id es googleId
-      matchId, // ID de la apuesta del backend (UUID)
+    const resultSystemMessage = {
+      matchId: validChatId, // ID del chat (UUID)
       senderId: 'system',
       text: resultMessageText,
       timestamp: new Date().toISOString(),
       isSystemMessage: true,
     };
-    const updatedMessages = [...messages, resultSystemMessage];
-    setMessages(updatedMessages);
-    saveMessages(updatedMessages);
+    sendMessageSafely(resultSystemMessage);
   };
 
 
   if (!user) return <p>Cargando chat...</p>;
+  if (!paramsLoaded) return <p>Cargando datos del chat...</p>;
+  if (!hasValidParams) return <p>Datos de la partida incompletos.</p>;
+
 
   return (
     <div className="flex flex-col h-[calc(100vh-150px)] md:h-[calc(100vh-180px)]">

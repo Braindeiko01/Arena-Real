@@ -3,6 +3,8 @@ package co.com.arena.real.application.controller;
 import co.com.arena.real.application.service.MatchmakingService;
 import co.com.arena.real.infrastructure.dto.rq.CancelarMatchmakingRequest;
 import co.com.arena.real.infrastructure.dto.rq.PartidaEnEsperaRequest;
+import co.com.arena.real.infrastructure.dto.rs.MatchSseDto;
+import co.com.arena.real.domain.entity.Jugador;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,13 +26,19 @@ public class    MatchmakingController {
     public ResponseEntity<?> ejecutarMatchmaking(@RequestBody PartidaEnEsperaRequest request) {
         return matchmakingService.intentarEmparejar(request)
                 .map(partida -> {
-                    Map<String, Object> partidaMap = new HashMap<>();
-                    partidaMap.put("id", partida.getId());
-                    Map<String, Object> resp = new HashMap<>();
-                    resp.put("match", true);
-                    resp.put("partida", partidaMap);
-                    return ResponseEntity.ok(resp);
+                    Jugador oponente = partida.getJugador1().getId().equals(request.getJugadorId())
+                            ? partida.getJugador2()
+                            : partida.getJugador1();
+
+                    String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
+                    return MatchSseDto.builder()
+                            .apuestaId(partida.getApuesta().getId())
+                            .chatId(partida.getChatId())
+                            .jugadorOponenteId(oponente.getId())
+                            .jugadorOponenteTag(tag)
+                            .build();
                 })
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> {
                     Map<String, Object> resp = new HashMap<>();
                     resp.put("status", "esperando");

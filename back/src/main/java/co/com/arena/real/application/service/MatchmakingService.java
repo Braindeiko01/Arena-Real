@@ -90,12 +90,17 @@ public class MatchmakingService {
     }
 
     private Partida crearPartida(PartidaEnEspera partidaEnEspera, PartidaEnEspera partidaEncontrada) {
+        Jugador jugador1 = jugadorRepository.findById(partidaEnEspera.getJugador().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
+        Jugador jugador2 = jugadorRepository.findById(partidaEncontrada.getJugador().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
+
         Apuesta apuesta = apuestaService.crearApuesta(new ApuestaRequest(partidaEnEspera.getMonto()));
-        UUID chatId = chatService.crearChatParaPartida(partidaEnEspera.getJugador().getId(), partidaEncontrada.getJugador().getId());
+        UUID chatId = chatService.crearChatParaPartida(jugador1.getId(), jugador2.getId());
 
         Partida partida = Partida.builder()
-                .jugador1(partidaEnEspera.getJugador())
-                .jugador2(partidaEncontrada.getJugador())
+                .jugador1(jugador1)
+                .jugador2(jugador2)
                 .modoJuego(partidaEnEspera.getModoJuego())
                 .estado(EstadoPartida.EN_CURSO)
                 .creada(LocalDateTime.now())
