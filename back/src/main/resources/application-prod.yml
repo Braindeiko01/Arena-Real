@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}?connectTimeout=10&sslmode=prefer
+    username: ${PGUSER}
+    password: ${PGPASSWORD}

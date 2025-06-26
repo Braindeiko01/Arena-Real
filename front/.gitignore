@@ -1,24 +1,16 @@
+# ======================================
+# 🌐 NODE / NEXT.JS / TYPESCRIPT
+# ======================================
+
 # Dependencias
 /node_modules
 
-# Compilación Next.js
+# Compilación de Next.js
 /.next
-
-# Archivos temporales de desarrollo
-/.vscode
-/.idx
-
-# Archivos de configuración sensibles
-.env*
-.firebase*
-.modified
+/next-env.d.ts
 
 # Archivos de salida de TypeScript
 *.tsbuildinfo
-
-# Archivos de configuración del sistema
-.DS_Store
-Thumbs.db
 
 # Archivos de logs
 npm-debug.log*
@@ -26,20 +18,57 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Firebase hosting
-/firebase.json
-/firebaserc
-/apphosting.yaml
+# Archivos de lock (opcional, según tu gestor)
+/yarn.lock
+/pnpm-lock.yaml
 
-# Build o artefactos generados
+# ======================================
+# ⚙️ CONFIGURACIONES Y TEMPORALES
+# ======================================
+
+# Configs del entorno
+.env
+.env.local
+.env.production
+.env.development
+
+# Firebase
+.firebase*
+firebase.json
+apphosting.yaml
+
+# Archivos modificados por herramientas personalizadas
+.modified
+
+# Configs del editor
+.vscode/
+.idea/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# ======================================
+# 🧪 ENTORNOS LOCALES COMO .idx
+# ======================================
+.idx/
+
+# ======================================
+# ❌ DUPLICADOS EN /public QUE NO VAN
+# ======================================
+
+/public/package.json
+/public/package-lock.json
+/public/tsconfig.json
+/public/next.config.ts
+/public/app/
+/public/.gitignore
+/public/README.md
+
+# ======================================
+# 📦 DIST / BUILD (opcional)
+# ======================================
+
 /dist
 /build
-
-# Otros archivos y carpetas comunes a ignorar
-.idea/
-*.swp
-*.swo
-*.bak
-
-# Sistema de control de versiones
-.git
+/out
