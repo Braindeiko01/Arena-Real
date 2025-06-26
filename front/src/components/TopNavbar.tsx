@@ -11,8 +11,8 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 const TopNavbar = () => {
-  const { logout } = useAuth();
-  const notifications = 0; // replace with real count when available
+  const { user, logout } = useAuth();
+  const notifications = 0;
 
   return (
     <header className="md:hidden fixed top-0 w-full z-50 shadow-sm bg-[#3973FF] h-14 px-4 py-2 flex justify-between items-center">
@@ -28,13 +28,15 @@ const TopNavbar = () => {
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
           )}
         </div>
-        <span className="ml-2 text-white text-sm font-medium">braindeiko</span>
+        <span className="ml-2 text-white text-sm font-medium">
+          {user?.username || "Invitado"}
+        </span>
       </div>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="rounded-full bg-white text-blue-600 w-8 h-8 flex items-center justify-center focus-visible:outline-none">
-            B
+            {user?.username?.[0]?.toUpperCase() || 'U'}
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40">
