@@ -43,11 +43,12 @@ public class MatchSseService {
         if (emitter == null) {
             return;
         }
+        String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
         MatchSseDto dto = MatchSseDto.builder()
                 .apuestaId(apuestaId)
                 .chatId(chatId)
                 .jugadorOponenteId(oponente.getId())
-                .jugadorOponenteTag(oponente.getTagClash())
+                .jugadorOponenteTag(tag)
                 .build();
         try {
             emitter.send(SseEmitter.event()

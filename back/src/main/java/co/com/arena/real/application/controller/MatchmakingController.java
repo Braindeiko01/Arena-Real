@@ -30,11 +30,12 @@ public class    MatchmakingController {
                             ? partida.getJugador2()
                             : partida.getJugador1();
 
+                    String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
                     return MatchSseDto.builder()
                             .apuestaId(partida.getApuesta().getId())
                             .chatId(partida.getChatId())
                             .jugadorOponenteId(oponente.getId())
-                            .jugadorOponenteTag(oponente.getTagClash())
+                            .jugadorOponenteTag(tag)
                             .build();
                 })
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
