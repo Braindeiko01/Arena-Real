@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Bell, Crown } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 
 const TopNavbar = () => {
