@@ -9,6 +9,7 @@ import {
   Menu,
   Crown,
   ScrollText,
+  MessageCircle,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -30,7 +31,8 @@ const Navbar = () => {
   const navItems = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/history', label: 'Historial', icon: ScrollText },
-    { href: '/torneo', label: 'Torneo', icon: Trophy },
+    { href: '/chat', label: 'Chats', icon: MessageCircle },
+    { href: '/torneos', label: 'Torneos', icon: Trophy },
   ];
 
   // TODO: replace with real notification count
