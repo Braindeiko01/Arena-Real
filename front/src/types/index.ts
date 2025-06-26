@@ -60,9 +60,15 @@ export interface BackendPartidaRequestDto {
 export interface BackendPartidaResponseDto {
   id: string; // UUID de la partida
   apuestaId: string; // UUID de la apuesta
+  jugador1Id: string;
+  jugador2Id: string;
   ganadorId?: string;
+  modoJuego: string;
+  estado: string;
   validada: boolean;
+  creada: string; // date-time
   validadaEn?: string; // date-time
+  monto: number;
 }
 
 export interface BackendMatchResultDto {
