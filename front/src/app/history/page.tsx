@@ -4,11 +4,12 @@
 import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { useAuth } from '@/hooks/useAuth';
-import type { Bet } from '@/types';
+import type { Bet, BackendPartidaResponseDto } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollTextIcon, VictoryIcon, DefeatIcon, InfoIcon } from '@/components/icons/ClashRoyaleIcons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
+import { getUserDuelsAction } from '@/lib/actions';
 
 const HistoryPageContent = () => {
   const { user, isLoading: authIsLoading } = useAuth();
@@ -16,30 +17,33 @@ const HistoryPageContent = () => {
   const [isPageLoading, setIsPageLoading] = useState(true);
 
   useEffect(() => {
-    if (!authIsLoading) {
-      if (user) {
-        // En un sistema real, aquí se haría un fetch del historial de apuestas del usuario desde un backend.
-        // Por ahora, el historial de `bets` permanecerá vacío ya que no hay persistencia de apuestas.
-        /*
-        const fetchBets = async () => {
-          if (user?.id) { // Asumiendo que user.id es el googleId
-            // const result = await getUserBetsAction(user.id); // Necesitaría una acción para esto
-            // if (result.bets) {
-            //   setBets(result.bets);
-            // } else {
-            //   console.error("Error fetching bets:", result.error);
-            //   setBets([]);
-            // }
-            setBets([]); // Placeholder
-          }
-        };
-        fetchBets();
-        */
-        setBets([]); // Inicializa como vacío.
+    const fetchDuels = async () => {
+      if (user?.id) {
+        const result = await getUserDuelsAction(user.id);
+        if (result.duels) {
+          const mapped = result.duels.map((d: BackendPartidaResponseDto) => ({
+            id: d.apuestaId,
+            userId: user.id,
+            matchId: d.id,
+            amount: d.monto,
+            opponentId: d.jugador1Id === user.id ? d.jugador2Id : d.jugador1Id,
+            matchDate: d.validadaEn || d.creada,
+            result: d.ganadorId ? (d.ganadorId === user.id ? 'win' : 'loss') : undefined,
+            status: d.estado as any,
+            modoJuego: d.modoJuego,
+          })) as Bet[];
+          setBets(mapped);
+        } else {
+          setBets([]);
+        }
       } else {
-        setBets([]); // También vacío si no hay usuario
+        setBets([]);
       }
       setIsPageLoading(false);
+    };
+
+    if (!authIsLoading) {
+      fetchDuels();
     }
   }, [user, authIsLoading]);
 

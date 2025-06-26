@@ -16,4 +16,7 @@ public interface PartidaRepository extends JpaRepository<Partida, UUID> {
     @Query("SELECT COUNT(p) > 0 FROM Partida p WHERE (p.jugador1.id = :jugadorId OR p.jugador2.id = :jugadorId) AND p.estado IN :estados")
     boolean existsActiveByJugador(@Param("jugadorId") String jugadorId, @Param("estados") Collection<EstadoPartida> estados);
 
+    @Query("SELECT p FROM Partida p WHERE (p.jugador1.id = :jugadorId OR p.jugador2.id = :jugadorId) AND p.estado = :estado ORDER BY p.creada DESC")
+    java.util.List<Partida> findByJugadorAndEstado(@Param("jugadorId") String jugadorId, @Param("estado") EstadoPartida estado);
+
 }

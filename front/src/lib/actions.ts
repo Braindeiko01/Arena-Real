@@ -9,6 +9,7 @@ import type {
   BackendTransaccionResponseDto,
   BackendApuestaRequestDto,
   BackendApuestaResponseDto,
+  BackendPartidaResponseDto,
   BackendMatchmakingResponseDto,
   RegistrarUsuarioRequest,
 } from '@/types'
@@ -168,6 +169,24 @@ export async function getUserTransactionsAction(
     return { transactions: data, error: null }
   } catch (err: any) {
     return { transactions: null, error: err.message || 'Error de red.' }
+  }
+}
+
+export async function getUserDuelsAction(
+  userGoogleId: string
+): Promise<{ duels: BackendPartidaResponseDto[] | null; error: string | null }> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/partidas/jugador/${userGoogleId}`)
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      return { duels: null, error: err.message || `Error ${res.status}` }
+    }
+
+    const data = await res.json() as BackendPartidaResponseDto[]
+    return { duels: data, error: null }
+  } catch (err: any) {
+    return { duels: null, error: err.message || 'Error de red.' }
   }
 }
 
