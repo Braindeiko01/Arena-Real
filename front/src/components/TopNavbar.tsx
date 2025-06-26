@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const TopNavbar = () => {
   const { logout } = useAuth();
-  const notifications = 0; // replace with real count when available
+  const notifications = 0;
 
   return (
     <header className="md:hidden fixed top-0 w-full z-50 shadow-sm bg-[#3973FF] h-14 px-4 py-2 flex justify-between items-center">
