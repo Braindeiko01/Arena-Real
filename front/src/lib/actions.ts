@@ -230,8 +230,8 @@ export async function matchmakingAction(
     })
 
     if (!matchRes.ok) {
-      const err = await matchRes.json().catch(() => ({}))
-      return { match: null, error: err.message || `Error ${matchRes.status} al hacer matchmaking.` }
+      const errorText = await matchRes.text()
+      return { match: null, error: errorText || `Error ${matchRes.status} al hacer matchmaking.` }
     }
 
     const data = await matchRes.json() as BackendMatchmakingResponseDto
