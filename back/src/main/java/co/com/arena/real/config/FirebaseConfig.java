@@ -15,10 +15,9 @@ public class FirebaseConfig {
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
         if (!FirebaseApp.getApps().isEmpty()) {
-            return FirebaseApp.getInstance(); // Ya hay una instancia, la retornamos.
+            return FirebaseApp.getInstance();
         }
 
-        // Obtener ruta del archivo de credenciales
         String serviceAccountPath = System.getenv("FIREBASE_SERVICE_ACCOUNT_FILE");
         if (serviceAccountPath == null || serviceAccountPath.isBlank()) {
             serviceAccountPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
