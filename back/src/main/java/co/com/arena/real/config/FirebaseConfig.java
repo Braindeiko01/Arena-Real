@@ -14,8 +14,6 @@ public class FirebaseConfig {
 
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
-        System.out.println("Firebase inicializado con: " + FirebaseApp.getInstance().getName());
-
         if (!FirebaseApp.getApps().isEmpty()) {
             return FirebaseApp.getInstance(); // Ya hay una instancia, la retornamos.
         }
@@ -41,6 +39,8 @@ public class FirebaseConfig {
                 .setCredentials(credentials)
                 .build();
 
-        return FirebaseApp.initializeApp(options);
+        FirebaseApp app = FirebaseApp.initializeApp(options);
+        System.out.println("Firebase inicializado con: " + app.getName());
+        return app;
     }
 }
