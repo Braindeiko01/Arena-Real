@@ -32,7 +32,7 @@ const AppHeader = () => {
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 text-primary-foreground hover:text-accent transition-colors">
           <CrownIcon className="h-8 w-8 text-accent" />
-          <h1 className="text-2xl md:text-3xl font-bold">CR Duels</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Arena Real</h1>
         </Link>
         
         {isAuthenticated && user && (

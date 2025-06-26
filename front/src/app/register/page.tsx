@@ -152,7 +152,7 @@ export default function RegisterPage() {
       auth.login(result.user as User);
       toast({
         title: "¡Registro Exitoso!",
-        description: `¡Bienvenido a CR Duels, ${result.user.username}!`,
+        description: `¡Bienvenido a Arena Real, ${result.user.username}!`,
         variant: "default",
       });
       router.push('/');
@@ -185,7 +185,7 @@ export default function RegisterPage() {
             {step === 1 ? "Crea Tu Cuenta" : `Completa tu Perfil, ${googleAuthData?.username || ''}`}
           </CardTitle>
           <CardDescription className="text-muted-foreground text-base">
-            {step === 1 ? "¡Únete a CR Duels y empieza a apostar!" : "Necesitamos unos detalles más para empezar."}
+            {step === 1 ? "¡Únete a Arena Real y empieza a apostar!" : "Necesitamos unos detalles más para empezar."}
           </CardDescription>
         </CardHeader>
         <CardContent>

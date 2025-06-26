@@ -86,7 +86,7 @@ export default function LoginPage() {
           <CrownIcon className="mx-auto h-16 w-16 text-accent mb-4" />
           <CardTitle className="text-4xl font-headline text-accent">Iniciar Sesión</CardTitle>
           <CardDescription className="text-muted-foreground text-base">
-            Accede a tu cuenta de CR Duels para continuar.
+            Accede a tu cuenta de Arena Real para continuar.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6 text-center space-y-4">

@@ -116,7 +116,7 @@ const ProfilePageContent = () => {
           ) : (
             <CardTitle className="text-4xl font-headline text-primary">{user.username}</CardTitle>
           )}
-          <CardDescription className="text-muted-foreground mt-1 text-lg">Administra tu identidad en CR Duels.</CardDescription>
+          <CardDescription className="text-muted-foreground mt-1 text-lg">Administra tu identidad en Arena Real.</CardDescription>
         </CardHeader>
         <CardContent className="p-6 space-y-2">
           <InfoRow icon={<AppUserIcon />} label="Nombre de Usuario" value={user.username} name="username" editingValue={formData.username} isEditing={isEditing} readOnly={true} />

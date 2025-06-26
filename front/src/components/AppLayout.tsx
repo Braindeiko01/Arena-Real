@@ -14,7 +14,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
           {children}
         </main>
         <footer className="bg-primary/10 text-center py-4 text-sm text-foreground/70 font-headline">
-          CR Duels &copy; {new Date().getFullYear()} - Bet Responsibly
+          Arena Real &copy; {new Date().getFullYear()}
         </footer>
       </div>
     </AuthGuard>
