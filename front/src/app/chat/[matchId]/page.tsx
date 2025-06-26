@@ -74,6 +74,12 @@ const ChatPageContent = () => {
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [resultSubmitted, setResultSubmitted] = useState(false);
 
+  const startMessageSentRef = useRef(false);
+
+  useEffect(() => {
+    startMessageSentRef.current = false;
+  }, [validChatId]);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -113,7 +119,7 @@ const ChatPageContent = () => {
   }, [hasValidParams, validOpponentGoogleId, BACKEND_URL]);
 
   useEffect(() => {
-    if (incompleteData || !user || !opponentProfile) return;
+    if (incompleteData || !user || !opponentProfile || startMessageSentRef.current) return;
     if (messages.length === 0) {
       const startMsg = {
         matchId: validChatId,
@@ -123,7 +129,7 @@ const ChatPageContent = () => {
         isSystemMessage: true,
       };
       sendMessageSafely(startMsg);
-
+      startMessageSentRef.current = true;
     }
   }, [user, opponentProfile, validChatId, validOpponentTag, opponentDisplayName, messages.length, incompleteData]);
 
