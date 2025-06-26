@@ -58,7 +58,7 @@ const AppHeader = () => {
                   <AvatarImage src={user.avatarUrl || `https://placehold.co/100x100.png?text=${user.clashTag?.[0] || 'U'}`} alt={user.clashTag || "User"} data-ai-hint="gaming avatar" />
                   <AvatarFallback>{user.clashTag?.[0] || 'U'}</AvatarFallback>
                 </Avatar>
-                <span className="hidden lg:inline text-primary-foreground font-semibold">{user.clashTag}</span>
+                <span className="hidden lg:inline text-primary-foreground font-semibold">{user.username}</span>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-card border-border shadow-xl w-56">
