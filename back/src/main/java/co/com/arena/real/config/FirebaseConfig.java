@@ -14,32 +14,27 @@ public class FirebaseConfig {
 
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
+        System.out.println("Firebase inicializado con: " + FirebaseApp.getInstance().getName());
+
         if (!FirebaseApp.getApps().isEmpty()) {
-            return FirebaseApp.getInstance();
+            return FirebaseApp.getInstance(); // Ya hay una instancia, la retornamos.
         }
 
+        // Obtener ruta del archivo de credenciales
         String serviceAccountPath = System.getenv("FIREBASE_SERVICE_ACCOUNT_FILE");
-        if (serviceAccountPath == null) {
+        if (serviceAccountPath == null || serviceAccountPath.isBlank()) {
             serviceAccountPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
         }
 
+        if (serviceAccountPath == null || serviceAccountPath.isBlank()) {
+            throw new IllegalStateException("❌ No se encontró la ruta del archivo de credenciales de Firebase. Asegúrate de definir FIREBASE_SERVICE_ACCOUNT_FILE o GOOGLE_APPLICATION_CREDENTIALS como variable de entorno.");
+        }
+
+        System.out.println("✅ Ruta del archivo de servicio Firebase: " + serviceAccountPath);
+
         GoogleCredentials credentials;
-
-        if (serviceAccountPath != null && !serviceAccountPath.isBlank()) {
-
-            try (FileInputStream serviceAccount = new FileInputStream(serviceAccountPath)) {
-                credentials = GoogleCredentials.fromStream(serviceAccount);
-            }
-        } else {
-
-            try {
-                credentials = GoogleCredentials.getApplicationDefault();
-            } catch (IOException e) {
-                throw new IllegalStateException(
-                        "Firebase credentials not found. Set FIREBASE_SERVICE_ACCOUNT_FILE or GOOGLE_APPLICATION_CREDENTIALS",
-                        e);
-            }
-
+        try (FileInputStream serviceAccount = new FileInputStream(serviceAccountPath)) {
+            credentials = GoogleCredentials.fromStream(serviceAccount);
         }
 
         FirebaseOptions options = FirebaseOptions.builder()
