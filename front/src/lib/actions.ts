@@ -240,3 +240,24 @@ export async function matchmakingAction(
     return { match: null, error: err.message || 'Error de red durante el matchmaking.' }
   }
 }
+
+export async function cancelMatchmakingAction(
+  userGoogleId: string
+): Promise<{ success: boolean; error: string | null }> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/matchmaking/cancelar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jugadorId: userGoogleId }),
+    })
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      return { success: false, error: err.message || `Error ${res.status}` }
+    }
+
+    return { success: true, error: null }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Error de red.' }
+  }
+}
