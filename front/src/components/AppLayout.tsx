@@ -3,6 +3,7 @@
 
 import React from 'react';
 import Navbar from './Navbar';
+import BottomNav from './BottomNav';
 import AuthGuard from './AuthGuard';
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
@@ -16,6 +17,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         <footer className="bg-primary/10 text-center py-4 text-sm text-foreground/70 font-headline">
           Arena Real &copy; {new Date().getFullYear()}
         </footer>
+        <BottomNav />
       </div>
     </AuthGuard>
   );
