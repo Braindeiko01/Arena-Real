@@ -35,6 +35,7 @@ public class MatchmakingService {
     private final ChatService chatService;
     private final ApuestaService apuestaService;
     private final MatchSseService matchSseService;
+    private final MatchPenaltyService matchPenaltyService;
 
     private static final List<ModoJuego> PRIORIDAD_MODO_JUEGO = List.of(
             ModoJuego.TRIPLE_ELECCION,
@@ -66,6 +67,14 @@ public class MatchmakingService {
         return partidaEnEsperaRepository.findByModoJuegoAndMonto(partidaEnEspera.getModoJuego(), request.getMonto())
                 .stream()
                 .filter(p -> !p.getJugador().getId().equals(partidaEnEspera.getJugador().getId()))
+                .filter(p -> {
+                    String a = p.getJugador().getId();
+                    String b = partidaEnEspera.getJugador().getId();
+                    if (matchPenaltyService.isPenalized(a, b) && Math.random() < 0.5) {
+                        return false;
+                    }
+                    return true;
+                })
                 .findFirst() //todo: aquí debería estar la lógica para emparejar el matchmaking con personas del mismo nivel
                 .map(partidaEncontrada -> {
 

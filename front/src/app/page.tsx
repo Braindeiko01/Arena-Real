@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { SaldoIcon, FindMatchIcon } from '@/components/icons/ClashRoyaleIcons';
 import { useToast } from "@/hooks/use-toast";
 import { Coins, UploadCloud, Swords, Layers, Banknote, Loader2 } from 'lucide-react';
-import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction } from '@/lib/actions';
+import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction, penalizeMatchAction } from '@/lib/actions';
 import useTransactionUpdates from '@/hooks/useTransactionUpdates';
 import useMatchmakingSse from '@/hooks/useMatchmakingSse';
 
@@ -35,14 +35,14 @@ const HomePageContent = () => {
 
   const [isModeModalOpen, setIsModeModalOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [pendingMatch, setPendingMatch] = useState<{ apuestaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; chatId: string; } | null>(null);
+  const [timeLeft, setTimeLeft] = useState(25);
 
   const handleMatchFound = (data: { apuestaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; chatId: string; }) => {
     console.log('Match encontrado via SSE:', data);
     setIsSearching(false);
-    toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
-    router.push(
-      `/chat/${data.chatId}?opponentTag=${encodeURIComponent(data.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
-    );
+    setTimeLeft(25);
+    setPendingMatch(data);
   };
 
   useMatchmakingSse(isSearching ? user?.id : undefined, handleMatchFound);
@@ -53,6 +53,21 @@ const HomePageContent = () => {
       console.log("Datos del usuario actualmente en el estado del frontend:", user);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!pendingMatch) return;
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          handleDeclineMatch();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [pendingMatch]);
 
   if (!user) {
     return <p>Cargando datos del usuario...</p>;
@@ -103,6 +118,22 @@ const HomePageContent = () => {
       handleMatchFound(result.match);
     }
   };
+
+  function handleAcceptMatch() {
+    if (!pendingMatch) return;
+    toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
+    router.push(
+      `/chat/${pendingMatch.chatId}?opponentTag=${encodeURIComponent(pendingMatch.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(pendingMatch.jugadorOponenteId)}`
+    );
+    setPendingMatch(null);
+  }
+
+  async function handleDeclineMatch() {
+    if (!pendingMatch) return;
+    await penalizeMatchAction(user.id, pendingMatch.jugadorOponenteId);
+    toast({ title: 'Duelo cancelado', description: 'No se iniciará este duelo.' });
+    setPendingMatch(null);
+  }
 
   // Deposit Modal Logic
   const handleOpenDepositModal = () => {
@@ -363,6 +394,30 @@ const HomePageContent = () => {
               <CartoonButton variant="secondary" size="small" onClick={handleCancelSearch}>
                 Cancelar
               </CartoonButton>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
+
+      {/* Match Found Modal */}
+      {pendingMatch && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in-up">
+          <Card className="w-full max-w-md shadow-xl border-2 border-accent">
+            <CardHeader>
+              <CardTitle className="text-3xl font-headline text-accent text-center">¡Duelo encontrado!</CardTitle>
+              <CardDescription className="text-center text-muted-foreground">Contra {pendingMatch.jugadorOponenteTag}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="h-3 w-full bg-secondary rounded">
+                <div
+                  className="h-3 bg-accent rounded"
+                  style={{ width: `${(timeLeft / 25) * 100}%`, transition: 'width 1s linear' }}
+                ></div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end gap-3">
+              <CartoonButton variant="secondary" size="small" onClick={handleDeclineMatch}>Cancelar</CartoonButton>
+              <CartoonButton variant="default" size="small" onClick={handleAcceptMatch}>Aceptar</CartoonButton>
             </CardFooter>
           </Card>
         </div>

@@ -154,3 +154,8 @@ export interface ChatMessage {
   timestamp: string;
   isSystemMessage?: boolean;
 }
+
+export interface BackendMatchPenaltyRequestDto {
+  jugadorId: string;
+  oponenteId: string;
+}
