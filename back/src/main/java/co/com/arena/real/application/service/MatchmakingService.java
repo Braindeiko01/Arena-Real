@@ -82,7 +82,6 @@ public class MatchmakingService {
                 })
 
                 .findFirst() //todo: aquí debería estar la lógica para emparejar el matchmaking con personas del mismo nivel
-
                 .map(partidaEncontrada -> {
 
                     Jugador jugadorEncontrado = jugadorRepository.findById(partidaEncontrada.getJugador().getId())
@@ -97,10 +96,11 @@ public class MatchmakingService {
 
                     Partida partida = crearPartida(partidaEnEspera, partidaEncontrada);
 
+                    matchSseService.notifyMatch(partida);
+
                     realizarTransaccion(partida.getApuesta(), jugadorEnEspera);
                     realizarTransaccion(partida.getApuesta(), jugadorEncontrado);
 
-                    matchSseService.notifyMatch(partida);
                     return partida;
                 });
     }
