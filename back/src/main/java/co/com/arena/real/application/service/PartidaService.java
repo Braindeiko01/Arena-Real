@@ -36,6 +36,13 @@ public class PartidaService {
         return partidaRepository.findByApuesta_Id(apuestaId).map(partidaMapper::toDto);
     }
 
+    public java.util.List<PartidaResponse> listarHistorial(String jugadorId) {
+        return partidaRepository.findByJugadorAndEstado(jugadorId, EstadoPartida.FINALIZADA)
+                .stream()
+                .map(partidaMapper::toDto)
+                .toList();
+    }
+
     public Optional<UUID> obtenerChatActivo(UUID partidaId) {
         return partidaRepository.findById(partidaId)
                 .filter(p -> p.getEstado() == EstadoPartida.EN_CURSO || p.getEstado() == EstadoPartida.POR_APROBAR)

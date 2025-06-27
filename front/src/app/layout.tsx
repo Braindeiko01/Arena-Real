@@ -4,8 +4,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { ReduxProvider } from '@/store/ReduxProvider';
 
 export const metadata: Metadata = {
-  title: 'CR Duels - P2P Clash Royale Betting',
-  description: 'Bet on your Clash Royale skills against other players!',
+  title: 'Arena Real - Torneos CR Colombia',
+  description: 'Demuestra tus habilidades contra otros jugadores!',
 };
 
 export default function RootLayout({

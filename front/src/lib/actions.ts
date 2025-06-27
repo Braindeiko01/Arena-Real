@@ -9,6 +9,7 @@ import type {
   BackendTransaccionResponseDto,
   BackendApuestaRequestDto,
   BackendApuestaResponseDto,
+  BackendPartidaResponseDto,
   BackendMatchmakingResponseDto,
   RegistrarUsuarioRequest,
 } from '@/types'
@@ -171,6 +172,24 @@ export async function getUserTransactionsAction(
   }
 }
 
+export async function getUserDuelsAction(
+  userGoogleId: string
+): Promise<{ duels: BackendPartidaResponseDto[] | null; error: string | null }> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/partidas/jugador/${userGoogleId}`)
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      return { duels: null, error: err.message || `Error ${res.status}` }
+    }
+
+    const data = await res.json() as BackendPartidaResponseDto[]
+    return { duels: data, error: null }
+  } catch (err: any) {
+    return { duels: null, error: err.message || 'Error de red.' }
+  }
+}
+
 /* -------------------------
    MATCHMAKING
 -------------------------- */
@@ -230,8 +249,8 @@ export async function matchmakingAction(
     })
 
     if (!matchRes.ok) {
-      const err = await matchRes.json().catch(() => ({}))
-      return { match: null, error: err.message || `Error ${matchRes.status} al hacer matchmaking.` }
+      const errorText = await matchRes.text()
+      return { match: null, error: errorText || `Error ${matchRes.status} al hacer matchmaking.` }
     }
 
     const data = await matchRes.json() as BackendMatchmakingResponseDto

@@ -21,7 +21,13 @@ public class PartidaResponse implements Serializable {
 
     private UUID id;
     private UUID apuestaId;
+    private String jugador1Id;
+    private String jugador2Id;
     private String ganadorId;
+    private String modoJuego;
+    private String estado;
     private boolean validada;
+    private LocalDateTime creada;
     private LocalDateTime validadaEn;
+    private java.math.BigDecimal monto;
 }

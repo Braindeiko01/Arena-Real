@@ -36,4 +36,11 @@ public class PartidaController {
         PartidaResponse response = partidaService.marcarComoValidada(id);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/jugador/{jugadorId}")
+    @Operation(summary = "Historial", description = "Obtiene las partidas finalizadas de un jugador")
+    public ResponseEntity<java.util.List<PartidaResponse>> historial(@PathVariable String jugadorId) {
+        java.util.List<PartidaResponse> lista = partidaService.listarHistorial(jugadorId);
+        return ResponseEntity.ok(lista);
+    }
 }

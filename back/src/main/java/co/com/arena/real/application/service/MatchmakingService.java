@@ -50,6 +50,14 @@ public class MatchmakingService {
             throw new IllegalArgumentException("Saldo insuficiente para realizar esta operación");
         }
 
+        if (partidaRepository.existsActiveByJugador(
+                jugadorEnEspera.getId(),
+                List.of(EstadoPartida.EN_CURSO, EstadoPartida.POR_APROBAR))) {
+
+            throw new IllegalArgumentException("El jugador ya tiene una partida en curso");
+
+        }
+
         cancelarSolicitudes(jugadorEnEspera);
 
         PartidaEnEspera partidaEnEsperaRq = PartidaEnEsperaMapper.toEntity(request);

@@ -61,6 +61,7 @@ const ChatPageContent = () => {
   const validOpponentTag = opponentTag as string;
   const validOpponentGoogleId = opponentGoogleId as string;
   const [opponentProfile, setOpponentProfile] = useState<User | null>(null);
+  const opponentDisplayName = opponentProfile?.username || validOpponentTag;
   const sendMessageSafely = (msg: Omit<ChatMessage, 'id'>) => {
     if (!opponentTag || !opponentGoogleId) {
       console.error('❌ Datos incompletos para iniciar chat');
@@ -72,6 +73,12 @@ const ChatPageContent = () => {
   const [isSubmittingResult, setIsSubmittingResult] = useState(false);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [resultSubmitted, setResultSubmitted] = useState(false);
+
+  const startMessageSentRef = useRef(false);
+
+  useEffect(() => {
+    startMessageSentRef.current = false;
+  }, [validChatId]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -112,33 +119,19 @@ const ChatPageContent = () => {
   }, [hasValidParams, validOpponentGoogleId, BACKEND_URL]);
 
   useEffect(() => {
-    if (incompleteData || !user || !opponentProfile) return;
+    if (incompleteData || !user || !opponentProfile || startMessageSentRef.current) return;
     if (messages.length === 0) {
       const startMsg = {
         matchId: validChatId,
         senderId: 'system',
-        text: `Chat iniciado para el duelo (Chat ID: ${validChatId}) con ${validOpponentTag}.`,
+        text: `Chat iniciado para el duelo (Chat ID: ${validChatId}) con ${opponentDisplayName}.`,
         timestamp: new Date().toISOString(),
         isSystemMessage: true,
       };
       sendMessageSafely(startMsg);
-
-      const userDisplay = user.clashTag || user.username;
-      const opponentDisplay = opponentProfile.clashTag || opponentProfile.username;
-
-      const userLinkMsg = user.friendLink
-        ? `${userDisplay} compartió su link de amigo: <a href="${user.friendLink}" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">${user.friendLink}</a>`
-        : `${userDisplay} no tiene configurado su link de amigo.`;
-
-      const opponentLinkMsg = opponentProfile.friendLink
-        ? `${opponentDisplay} compartió su link de amigo: <a href="${opponentProfile.friendLink}" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">${opponentProfile.friendLink}</a>`
-        : `${opponentDisplay} no tiene configurado su link de amigo.`;
-
-      const now = new Date().toISOString();
-      sendMessageSafely({ matchId: validChatId, senderId: 'system', text: userLinkMsg, timestamp: now, isSystemMessage: true });
-      sendMessageSafely({ matchId: validChatId, senderId: 'system', text: opponentLinkMsg, timestamp: now, isSystemMessage: true });
+      startMessageSentRef.current = true;
     }
-  }, [user, opponentProfile, validChatId, validOpponentTag, messages.length, incompleteData]);
+  }, [user, opponentProfile, validChatId, validOpponentTag, opponentDisplayName, messages.length, incompleteData]);
 
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();
@@ -223,10 +216,10 @@ const ChatPageContent = () => {
         <CardHeader className="bg-primary/10 p-4 flex flex-row items-center justify-between border-b border-border">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10 border-2 border-accent">
-              <AvatarImage src={opponentAvatar} alt={opponentTag} data-ai-hint="gaming avatar opponent" />
-              <AvatarFallback>{opponentTag?.[0] || 'O'}</AvatarFallback>
+              <AvatarImage src={opponentAvatar} alt={opponentDisplayName} data-ai-hint="gaming avatar opponent" />
+              <AvatarFallback>{opponentDisplayName?.[0] || 'O'}</AvatarFallback>
             </Avatar>
-            <CardTitle className="text-2xl font-headline text-primary">{opponentTag}</CardTitle>
+            <CardTitle className="text-2xl font-headline text-primary">{opponentDisplayName}</CardTitle>
           </div>
           <CartoonButton size="small" variant="destructive" onClick={() => setIsSubmittingResult(true)} disabled={resultSubmitted}>
             {resultSubmitted ? 'Resultado Enviado' : 'Enviar Resultado'}
@@ -282,7 +275,7 @@ const ChatPageContent = () => {
           <Card className="w-full max-w-lg shadow-xl border-2 border-accent">
             <CardHeader>
               <CardTitle className="text-3xl font-headline text-accent text-center">Enviar Resultado del Duelo</CardTitle>
-              <CardDescription className="text-center text-muted-foreground">Declara el resultado de tu duelo con {opponentTag}.</CardDescription>
+              <CardDescription className="text-center text-muted-foreground">Declara el resultado de tu duelo con {opponentDisplayName}.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
