@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { SaldoIcon, FindMatchIcon } from '@/components/icons/ClashRoyaleIcons';
 import { useToast } from "@/hooks/use-toast";
 import { Coins, UploadCloud, Swords, Layers, Banknote, Loader2 } from 'lucide-react';
-import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction, penalizeMatchAction } from '@/lib/actions';
+import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction, declineMatchAction } from '@/lib/actions';
 import useTransactionUpdates from '@/hooks/useTransactionUpdates';
 import useMatchmakingSse from '@/hooks/useMatchmakingSse';
 
@@ -130,7 +130,7 @@ const HomePageContent = () => {
 
   async function handleDeclineMatch() {
     if (!pendingMatch) return;
-    await penalizeMatchAction(user.id, pendingMatch.jugadorOponenteId);
+    await declineMatchAction(user.id, pendingMatch.jugadorOponenteId);
     toast({ title: 'Duelo cancelado', description: 'No se iniciará este duelo.' });
     setPendingMatch(null);
   }

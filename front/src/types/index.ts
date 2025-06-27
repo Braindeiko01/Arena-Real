@@ -155,7 +155,7 @@ export interface ChatMessage {
   isSystemMessage?: boolean;
 }
 
-export interface BackendMatchPenaltyRequestDto {
+export interface BackendMatchDeclineRequestDto {
   jugadorId: string;
   oponenteId: string;
 }
