@@ -80,7 +80,9 @@ public class MatchmakingService {
                     }
                     return true;
                 })
-                .findFirst()
+
+                .findFirst() //todo: aquí debería estar la lógica para emparejar el matchmaking con personas del mismo nivel
+
                 .map(partidaEncontrada -> {
 
                     Jugador jugadorEncontrado = jugadorRepository.findById(partidaEncontrada.getJugador().getId())
