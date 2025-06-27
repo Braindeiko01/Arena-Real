@@ -46,7 +46,10 @@ export async function middleware(req: NextRequest) {
       if (!snap.exists) {
         return NextResponse.redirect(new URL('/not-found', req.url))
       }
-      const participants = snap.get('participants') as string[] | undefined
+      const data = snap.data() as
+        | { jugadores?: string[]; participants?: string[] }
+        | undefined
+      const participants = data?.jugadores || data?.participants
       if (!participants?.includes(decoded.uid)) {
         return NextResponse.redirect(new URL('/not-found', req.url))
       }
