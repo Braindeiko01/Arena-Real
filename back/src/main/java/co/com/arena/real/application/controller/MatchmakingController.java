@@ -1,7 +1,9 @@
 package co.com.arena.real.application.controller;
 
 import co.com.arena.real.application.service.MatchmakingService;
+import co.com.arena.real.application.service.MatchDeclineService;
 import co.com.arena.real.infrastructure.dto.rq.CancelarMatchmakingRequest;
+import co.com.arena.real.infrastructure.dto.rq.MatchDeclineRequest;
 import co.com.arena.real.infrastructure.dto.rq.PartidaEnEsperaRequest;
 import co.com.arena.real.infrastructure.dto.rs.MatchSseDto;
 import co.com.arena.real.domain.entity.Jugador;
@@ -18,9 +20,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/matchmaking")
 @RequiredArgsConstructor
-public class    MatchmakingController {
+public class MatchmakingController {
 
     private final MatchmakingService matchmakingService;
+    private final MatchDeclineService matchDeclineService;
 
     @PostMapping("/ejecutar")
     public ResponseEntity<?> ejecutarMatchmaking(@RequestBody PartidaEnEsperaRequest request) {
@@ -51,6 +54,14 @@ public class    MatchmakingController {
         matchmakingService.cancelarSolicitudes(request.getJugadorId());
         Map<String, Object> resp = new HashMap<>();
         resp.put("status", "cancelado");
+        return ResponseEntity.ok(resp);
+    }
+
+    @PostMapping("/declinar")
+    public ResponseEntity<?> declinarPareja(@RequestBody MatchDeclineRequest request) {
+        matchDeclineService.recordDecline(request.getJugadorId(), request.getOponenteId());
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("status", "registrado");
         return ResponseEntity.ok(resp);
     }
 }
