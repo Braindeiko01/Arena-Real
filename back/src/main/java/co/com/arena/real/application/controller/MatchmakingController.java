@@ -4,6 +4,7 @@ import co.com.arena.real.application.service.MatchmakingService;
 import co.com.arena.real.application.service.MatchDeclineService;
 import co.com.arena.real.infrastructure.dto.rq.CancelarMatchmakingRequest;
 import co.com.arena.real.infrastructure.dto.rq.MatchDeclineRequest;
+
 import co.com.arena.real.infrastructure.dto.rq.PartidaEnEsperaRequest;
 import co.com.arena.real.infrastructure.dto.rs.MatchSseDto;
 import co.com.arena.real.domain.entity.Jugador;
@@ -62,6 +63,11 @@ public class MatchmakingController {
         matchDeclineService.recordDecline(request.getJugadorId(), request.getOponenteId());
         Map<String, Object> resp = new HashMap<>();
         resp.put("status", "registrado");
+    @PostMapping("/penalizar")
+    public ResponseEntity<?> penalizarPareja(@RequestBody MatchPenaltyRequest request) {
+        matchPenaltyService.penalize(request.getJugadorId(), request.getOponenteId());
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("status", "penalizado");
         return ResponseEntity.ok(resp);
     }
 }

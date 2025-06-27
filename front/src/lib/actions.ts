@@ -287,6 +287,7 @@ export async function declineMatchAction(
 ): Promise<{ success: boolean; error: string | null }> {
   try {
     const res = await fetch(`${BACKEND_URL}/api/matchmaking/declinar`, {
+
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jugadorId: userGoogleId, oponenteId: opponentId }),
