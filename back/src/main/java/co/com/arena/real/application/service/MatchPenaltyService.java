@@ -3,6 +3,7 @@ package co.com.arena.real.application.service;
 import co.com.arena.real.domain.entity.matchmaking.MatchPenalty;
 import co.com.arena.real.infrastructure.repository.MatchPenaltyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +29,20 @@ public class MatchPenaltyService {
                     p.setExpiraEn(expira);
                     repository.save(p);
                 }, () -> {
-                    MatchPenalty p = MatchPenalty.builder()
-                            .jugador1Id(j1)
-                            .jugador2Id(j2)
-                            .expiraEn(expira)
-                            .build();
-                    repository.save(p);
+                    try {
+                        MatchPenalty p = MatchPenalty.builder()
+                                .jugador1Id(j1)
+                                .jugador2Id(j2)
+                                .expiraEn(expira)
+                                .build();
+                        repository.save(p);
+                    } catch (DataIntegrityViolationException e) {
+                        repository.findByJugador1IdAndJugador2Id(j1, j2)
+                                .ifPresent(existing -> {
+                                    existing.setExpiraEn(expira);
+                                    repository.save(existing);
+                                });
+                    }
                 });
     }
 

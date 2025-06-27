@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "match_penalties")
+@Table(name = "match_penalties", uniqueConstraints = @UniqueConstraint(columnNames = {"jugador1_id", "jugador2_id"}))
 @Data
 @Builder
 @NoArgsConstructor
