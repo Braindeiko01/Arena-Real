@@ -15,6 +15,11 @@ import co.com.arena.real.infrastructure.mapper.PartidaEnEsperaMapper;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import co.com.arena.real.infrastructure.repository.PartidaEnEsperaRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
+import co.com.arena.real.application.service.ChatService;
+import co.com.arena.real.application.service.ApuestaService;
+import co.com.arena.real.application.service.MatchSseService;
+import co.com.arena.real.application.service.MatchDeclineService;
+import co.com.arena.real.application.service.TransaccionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +40,7 @@ public class MatchmakingService {
     private final ChatService chatService;
     private final ApuestaService apuestaService;
     private final MatchSseService matchSseService;
+    private final MatchDeclineService matchDeclineService;
 
     private static final List<ModoJuego> PRIORIDAD_MODO_JUEGO = List.of(
             ModoJuego.TRIPLE_ELECCION,
@@ -66,6 +72,14 @@ public class MatchmakingService {
         return partidaEnEsperaRepository.findByModoJuegoAndMonto(partidaEnEspera.getModoJuego(), request.getMonto())
                 .stream()
                 .filter(p -> !p.getJugador().getId().equals(partidaEnEspera.getJugador().getId()))
+                .filter(p -> {
+                    String a = p.getJugador().getId();
+                    String b = partidaEnEspera.getJugador().getId();
+                    if (matchDeclineService.isDeclined(a, b) && Math.random() < 0.5) {
+                        return false;
+                    }
+                    return true;
+                })
                 .findFirst() //todo: aquí debería estar la lógica para emparejar el matchmaking con personas del mismo nivel
                 .map(partidaEncontrada -> {
 
