@@ -31,7 +31,7 @@ const TopNavbar = () => {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 focus-visible:outline-none">
+            <button className="flex items-center gap-2 focus-visible:outline-none transition-transform hover:scale-105">
               <span className="text-white text-sm font-medium">
                 {user?.username || 'Invitado'}
               </span>
