@@ -49,7 +49,7 @@ const Navbar = () => {
 
         {/* Mobile hamburger */}
         <button
-          className="rounded-md p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden"
+          className="rounded-md p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden transition-transform hover:scale-105"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -73,7 +73,7 @@ const Navbar = () => {
         {/* Right side icons */}
         {isAuthenticated && user && (
           <div className="hidden items-center gap-4 md:flex">
-            <button className="relative rounded-full p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+            <button className="relative rounded-full p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
               <Bell className="h-6 w-6" />
               {notifications > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs">
@@ -83,7 +83,7 @@ const Navbar = () => {
             </button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+                <button className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.avatarUrl} alt={user.username} />
                     <AvatarFallback>{user.username?.[0] || 'U'}</AvatarFallback>
@@ -119,7 +119,7 @@ const Navbar = () => {
             ))}
             {isAuthenticated && user && (
               <div className="flex items-center gap-3 pt-2">
-                <button className="relative rounded-full p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+                <button className="relative rounded-full p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
                   <Bell className="h-6 w-6" />
                   {notifications > 0 && (
                     <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs">
@@ -129,7 +129,7 @@ const Navbar = () => {
                 </button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+                    <button className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={user.avatarUrl} alt={user.username} />
                         <AvatarFallback>{user.username?.[0] || 'U'}</AvatarFallback>
