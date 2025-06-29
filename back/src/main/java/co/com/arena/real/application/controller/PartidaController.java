@@ -38,9 +38,14 @@ public class PartidaController {
     }
 
     @PutMapping("/{id}/ganador/{jugadorId}")
-    @Operation(summary = "Asignar ganador", description = "Asigna el ganador de la partida")
-    public ResponseEntity<PartidaResponse> asignarGanador(@PathVariable UUID id,
-                                                         @PathVariable String jugadorId) {
+    @Operation(
+            summary = "Asignar ganador",
+            description = "Asigna el jugador ganador de la partida"
+    )
+    public ResponseEntity<PartidaResponse> asignarGanador(
+            @PathVariable("id") UUID id,
+            @PathVariable("jugadorId") String jugadorId
+    ) {
         PartidaResponse response = partidaService.asignarGanador(id, jugadorId);
         return ResponseEntity.ok(response);
     }
