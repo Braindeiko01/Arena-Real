@@ -9,7 +9,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { BACKEND_URL } from '@/lib/config';
 
-interface OpponentInfo { id: string; tag: string; }
+interface OpponentInfo { id: string; name: string; }
 
 const ChatListPageContent = () => {
   const { user } = useAuth();
@@ -26,7 +26,7 @@ const ChatListPageContent = () => {
           const res = await fetch(`${BACKEND_URL}/api/jugadores/${id}`);
           if (res.ok) {
             const data = await res.json();
-            setOpponents(prev => ({ ...prev, [id]: { id: data.id, tag: data.tagClash || data.nombre } }));
+            setOpponents(prev => ({ ...prev, [id]: { id: data.id, name: data.nombre } }));
           }
         } catch (err) {
           console.error('Error fetching opponent', err);
@@ -54,13 +54,13 @@ const ChatListPageContent = () => {
             {chats.map(chat => {
               const opponentId = chat.jugadores.find(j => j !== user.id) as string | undefined;
               const opponent = opponentId ? opponents[opponentId] : undefined;
-              const tag = opponent ? opponent.tag : opponentId || 'Oponente';
-              const href = `/chat/${chat.id}?opponentTag=${encodeURIComponent(tag)}&opponentGoogleId=${encodeURIComponent(opponentId ?? '')}`;
+              const name = opponent ? opponent.name : opponentId || 'Oponente';
+              const href = `/chat/${chat.id}?opponentTag=${encodeURIComponent(name)}&opponentGoogleId=${encodeURIComponent(opponentId ?? '')}`;
               return (
                 <li key={chat.id}>
                   <Link href={href} className="block border rounded-lg p-3 hover:bg-primary/10">
                     <div className="flex justify-between items-center">
-                      <span className="font-medium">{tag}</span>
+                      <span className="font-medium">{name}</span>
                       {chat.activo && <Badge className="ml-2">En curso</Badge>}
                     </div>
                   </Link>

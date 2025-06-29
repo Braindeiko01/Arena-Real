@@ -166,11 +166,17 @@ const HomePageContent = () => {
     }
 
     setIsDepositLoading(true);
-    // TODO: La subida de archivos (depositScreenshotFile) necesitará un manejo especial.
-    // requestTransactionAction actualmente no maneja la subida de archivos.
-    // Esto es una simplificación; en una app real, subirías el archivo a un storage
-    // y pasarías la URL del archivo al backend, o el backend tendría un endpoint para multipart/form-data.
-    const result = await requestTransactionAction(user.id, amount, "DEPOSITO"); // user.id es googleId
+    let comprobanteBase64: string | undefined;
+    if (depositScreenshotFile) {
+      comprobanteBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error('Error leyendo comprobante'));
+        reader.readAsDataURL(depositScreenshotFile);
+      });
+    }
+
+    const result = await requestTransactionAction(user.id, amount, "DEPOSITO", comprobanteBase64);
     setIsDepositLoading(false);
 
     if (result.transaction) {

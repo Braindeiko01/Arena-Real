@@ -27,5 +27,6 @@ public class TransaccionResponse implements Serializable {
     private TipoTransaccion tipo;
     private EstadoTransaccion estado;
     private LocalDateTime creadoEn;
+    private String comprobante;
 
 }

@@ -15,7 +15,8 @@ public class TransaccionMapper {
         }
         Transaccion.TransaccionBuilder builder = Transaccion.builder()
                 .monto(dto.getMonto())
-                .tipo(dto.getTipo());
+                .tipo(dto.getTipo())
+                .comprobante(dto.getComprobante());
         if (dto.getJugadorId() != null) {
             Jugador jugador = Jugador.builder().id(dto.getJugadorId()).build();
             builder.jugador(jugador);
@@ -34,6 +35,7 @@ public class TransaccionMapper {
                 .tipo(entity.getTipo())
                 .estado(entity.getEstado())
                 .creadoEn(entity.getCreadoEn())
+                .comprobante(entity.getComprobante())
                 .build();
     }
 }

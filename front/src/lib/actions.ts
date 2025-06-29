@@ -127,12 +127,14 @@ export async function updateUserProfileInMemoryAction(
 export async function requestTransactionAction(
   userGoogleId: string,
   amount: number,
-  type: 'DEPOSITO' | 'RETIRO'
+  type: 'DEPOSITO' | 'RETIRO',
+  comprobante?: string
 ): Promise<{ transaction: BackendTransaccionResponseDto | null; error: string | null }> {
   const payload: BackendTransaccionRequestDto = {
     jugadorId: userGoogleId,
     monto: amount,
     tipo: type,
+    comprobante,
   }
 
   try {
