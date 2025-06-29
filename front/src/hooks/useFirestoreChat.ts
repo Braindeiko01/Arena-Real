@@ -6,9 +6,11 @@ import type { ChatMessage } from '@/types';
 export default function useFirestoreChat(chatId: string | undefined) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!chatId) return;
+    setIsLoading(true);
 
     const q = query(collection(db, 'chats', chatId, 'messages'), orderBy('timestamp'));
     const unsub = onSnapshot(
@@ -27,10 +29,12 @@ export default function useFirestoreChat(chatId: string | undefined) {
           });
         });
         setMessages(msgs);
+        setIsLoading(false);
       },
       err => {
         console.error('Error listening to chat messages', err);
         setError(err);
+        setIsLoading(false);
       }
     );
 
@@ -52,5 +56,5 @@ export default function useFirestoreChat(chatId: string | undefined) {
     }
   }, [chatId]);
 
-  return { messages, sendMessage, error };
+  return { messages, sendMessage, error, isLoading };
 }
