@@ -23,10 +23,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 // Simple auth hook to access user data
 import { useAuth } from '@/hooks/useAuth';
+import useFirestoreChats from '@/hooks/useFirestoreChats';
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { chats } = useFirestoreChats(user?.id);
+  const hasActiveChat = chats.some(c => c.activo);
 
   const navItems = [
     { href: '/', label: 'Home', icon: Home },
@@ -64,7 +67,12 @@ const Navbar = () => {
               href={href}
               className="flex items-center gap-1 rounded-full px-3 py-1 text-white hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white active:bg-white/30"
             >
-              <Icon className="h-4 w-4" />
+              <span className="relative">
+                <Icon className="h-4 w-4" />
+                {href === '/chat' && hasActiveChat && (
+                  <span className="absolute -top-1 -right-1 block w-3 h-3 bg-red-500 rounded-full" />
+                )}
+              </span>
               {label}
             </Link>
           ))}
@@ -113,7 +121,12 @@ const Navbar = () => {
                 href={href}
                 className="flex items-center gap-2 rounded-full px-3 py-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
-                <Icon className="h-5 w-5" />
+                <span className="relative">
+                  <Icon className="h-5 w-5" />
+                  {href === '/chat' && hasActiveChat && (
+                    <span className="absolute -top-1 -right-1 block w-3 h-3 bg-red-500 rounded-full" />
+                  )}
+                </span>
                 {label}
               </Link>
             ))}
