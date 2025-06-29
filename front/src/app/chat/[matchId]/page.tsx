@@ -53,7 +53,7 @@ const ChatPageContent = () => {
   }, [chatId, opponentTagParam, opponentGoogleIdParam, paramsLoaded, hasValidParams]);
 
   const { toast } = useToast();
-  const { messages, sendMessage } = useFirestoreChat(hasValidParams ? chatId : undefined);
+  const { messages, sendMessage, isLoading } = useFirestoreChat(hasValidParams ? chatId : undefined);
   const opponentTag = hasValidParams ? opponentTagParam! : undefined;
   const opponentGoogleId = hasValidParams ? opponentGoogleIdParam! : undefined;
   const opponentAvatar = hasValidParams ? (searchParams.get('opponentAvatar') || `https://placehold.co/40x40.png?text=${opponentTag![0]}`) : undefined;
@@ -119,7 +119,7 @@ const ChatPageContent = () => {
   }, [hasValidParams, validOpponentGoogleId, BACKEND_URL]);
 
   useEffect(() => {
-    if (incompleteData || !user || !opponentProfile || startMessageSentRef.current) return;
+    if (incompleteData || isLoading || !user || !opponentProfile || startMessageSentRef.current) return;
     if (messages.length === 0) {
       const startMsg = {
         matchId: validChatId,
@@ -131,7 +131,7 @@ const ChatPageContent = () => {
       sendMessageSafely(startMsg);
       startMessageSentRef.current = true;
     }
-  }, [user, opponentProfile, validChatId, validOpponentTag, opponentDisplayName, messages.length, incompleteData]);
+  }, [user, opponentProfile, validChatId, validOpponentTag, opponentDisplayName, messages.length, incompleteData, isLoading]);
 
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();

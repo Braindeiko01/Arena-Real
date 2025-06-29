@@ -23,6 +23,7 @@ export interface BackendTransaccionRequestDto {
   jugadorId: string;
   monto: number;
   tipo: "DEPOSITO" | "RETIRO" | "PREMIO";
+  comprobante?: string;
 }
 
 export interface BackendTransaccionResponseDto {
@@ -32,6 +33,7 @@ export interface BackendTransaccionResponseDto {
   tipo: "DEPOSITO" | "RETIRO" | "PREMIO";
   estado: "PENDIENTE" | "APROBADA" | "RECHAZADA";
   creadoEn: string; // date-time
+  comprobante?: string;
 }
 
 export interface BackendApuestaRequestDto {

@@ -21,5 +21,6 @@ public class TransaccionRequest implements Serializable {
     private String jugadorId;
     private BigDecimal monto;
     private TipoTransaccion tipo;
+    private String comprobante;
 
 }

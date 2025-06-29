@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,6 +49,10 @@ public class Transaccion {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoTransaccion estado;
+
+    @Lob
+    @Column(name = "comprobante", columnDefinition = "text")
+    private String comprobante;
 
     @Column(name = "creado_en", nullable = false)
     private LocalDateTime creadoEn;
