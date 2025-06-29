@@ -48,7 +48,6 @@ public class PartidaController {
     @Operation(summary = "Asignar ganador", description = "Asigna el ganador de una partida")
     public ResponseEntity<PartidaResponse> asignarGanador(@PathVariable("id") UUID id,
                                                          @PathVariable("jugadorId") String jugadorId) {
-
         PartidaResponse response = partidaService.asignarGanador(id, jugadorId);
         return ResponseEntity.ok(response);
     }
