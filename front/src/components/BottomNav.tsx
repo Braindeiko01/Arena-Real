@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import useFirestoreChats from "@/hooks/useFirestoreChats";
 import {
   Home,
   Bell,
@@ -23,6 +25,9 @@ const navItems = [
 
 const BottomNav = () => {
   const [active, setActive] = useState("jugar");
+  const { user } = useAuth();
+  const { chats } = useFirestoreChats(user?.id);
+  const hasActiveChat = chats.some(c => c.activo);
 
   return (
     <nav className="md:hidden fixed bottom-0 w-full z-50 bg-[#3973FF] border-t border-blue-800 h-16">
@@ -41,7 +46,12 @@ const BottomNav = () => {
                     : "text-white opacity-70"
                 )}
               >
-                <Icon className="w-6 h-6 mb-1" />
+                <span className="relative">
+                  <Icon className="w-6 h-6 mb-1" />
+                  {id === "chat" && hasActiveChat && (
+                    <span className="absolute -top-1 -right-1 block w-3 h-3 bg-red-500 rounded-full" />
+                  )}
+                </span>
                 <span>{label}</span>
               </Link>
             </li>
