@@ -9,7 +9,10 @@ export default function useFirestoreChat(chatId: string | undefined) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!chatId) return;
+    if (!chatId) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
 
     const q = query(collection(db, 'chats', chatId, 'messages'), orderBy('timestamp'));
