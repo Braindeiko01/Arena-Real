@@ -164,6 +164,10 @@ const HomePageContent = () => {
       toast({ title: "Comprobante Requerido", description: "Por favor, adjunta el comprobante.", variant: "destructive" });
       return;
     }
+    if (depositScreenshotFile.size > 5 * 1024 * 1024) {
+      toast({ title: "Archivo muy grande", description: "El comprobante no debe exceder 5 MB.", variant: "destructive" });
+      return;
+    }
 
     setIsDepositLoading(true);
     let comprobanteBase64: string | undefined;
