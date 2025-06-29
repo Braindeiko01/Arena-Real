@@ -50,6 +50,21 @@ public class PartidaService {
     }
 
     @Transactional
+    public PartidaResponse asignarGanador(UUID partidaId, String jugadorId) {
+        Partida partida = partidaRepository.findById(partidaId)
+                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+
+        co.com.arena.real.domain.entity.Jugador jugador = jugadorRepository.findById(jugadorId)
+                .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
+
+        partida.setGanador(jugador);
+        partida.setEstado(EstadoPartida.FINALIZADA);
+
+        Partida saved = partidaRepository.save(partida);
+        return partidaMapper.toDto(saved);
+    }
+
+    @Transactional
     public PartidaResponse marcarComoValidada(UUID partidaId) {
         Partida partida = partidaRepository.findById(partidaId)
                 .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
