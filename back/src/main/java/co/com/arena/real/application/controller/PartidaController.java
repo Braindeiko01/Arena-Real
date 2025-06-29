@@ -37,6 +37,19 @@ public class PartidaController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}/ganador/{jugadorId}")
+    @Operation(
+            summary = "Asignar ganador",
+            description = "Asigna el jugador ganador de la partida"
+    )
+    public ResponseEntity<PartidaResponse> asignarGanador(
+            @PathVariable("id") UUID id,
+            @PathVariable("jugadorId") String jugadorId
+    ) {
+        PartidaResponse response = partidaService.asignarGanador(id, jugadorId);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/jugador/{jugadorId}")
     @Operation(summary = "Historial", description = "Obtiene las partidas finalizadas de un jugador")
     public ResponseEntity<java.util.List<PartidaResponse>> historial(@PathVariable String jugadorId) {
