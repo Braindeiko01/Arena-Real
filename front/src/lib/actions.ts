@@ -280,3 +280,25 @@ export async function cancelMatchmakingAction(
     return { success: false, error: err.message || 'Error de red.' }
   }
 }
+
+export async function setMatchWinnerAction(
+  matchId: string,
+  winnerId: string
+): Promise<{ duel: BackendPartidaResponseDto | null; error: string | null }> {
+  try {
+    const res = await fetch(
+      `${BACKEND_URL}/api/partidas/${matchId}/ganador/${winnerId}`,
+      { method: 'PUT' }
+    )
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      return { duel: null, error: err.message || `Error ${res.status}` }
+    }
+
+    const data = (await res.json()) as BackendPartidaResponseDto
+    return { duel: data, error: null }
+  } catch (err: any) {
+    return { duel: null, error: err.message || 'Error de red.' }
+  }
+}

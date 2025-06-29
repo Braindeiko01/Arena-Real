@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import useFirestoreChat from '@/hooks/useFirestoreChat';
 import { BACKEND_URL } from '@/lib/config';
 import type { ChatMessage, User } from '@/types';
+import { setMatchWinnerAction } from '@/lib/actions';
 
 import { Label } from '@/components/ui/label';
 
@@ -171,38 +172,46 @@ const ChatPageContent = () => {
     toast({ title: "Link de Amigo Compartido", description: `Tu link de amigo ${user.friendLink ? '' : '(o un aviso de que no lo tienes) '}ha sido publicado en el chat.` });
   };
 
-  const handleResultSubmission = (result: 'win' | 'loss') => {
-    if (!user || !user.id || resultSubmitted) { // user.id es googleId
-        toast({ title: "Error", description: "No se puede enviar el resultado sin identificación de usuario.", variant: "destructive"});
-        return;
+  const handleResultSubmission = async (result: 'win' | 'loss') => {
+    if (!user || !user.id || resultSubmitted) {
+      toast({
+        title: 'Error',
+        description: 'No se puede enviar el resultado sin identificación de usuario.',
+        variant: 'destructive',
+      })
+      return
     }
-    
-    // Aquí se llamaría a una acción para enviar el resultado al backend (ej. POST /api/partidas)
-    // Se necesitaría: apuestaId (identificador de la apuesta)
-    // y ganadorId (user.id - googleId, o opponentGoogleId)
-    console.log(`Resultado enviado: Usuario con googleId ${user.id} ${result === 'win' ? 'ganó' : 'perdió'} la apuesta vinculada al chat ${validChatId}. Oponente googleId: ${validOpponentGoogleId}. Adjunto: ${screenshotFile?.name || 'ninguno'}`);
-    
+
+    const winnerId = result === 'win' ? user.id : validOpponentGoogleId
+    const { duel, error } = await setMatchWinnerAction(validChatId, winnerId)
+
+    if (error) {
+      toast({ title: 'Error', description: error, variant: 'destructive' })
+      return
+    }
+
     toast({
-      title: "¡Resultado Enviado!",
-      description: `Reportaste una ${result === 'win' ? 'victoria' : 'derrota'}. ${screenshotFile ? 'Comprobante adjuntado.' : 'Sin comprobante.'} Esperando al oponente si es necesario, o verificación del administrador.`,
-      variant: "default",
-    });
-    
-    setResultSubmitted(true);
-    setIsSubmittingResult(false); 
-    setScreenshotFile(null);
-    
-     const userDisplayName = user.clashTag || user.username;
-     const resultMessageText = `${userDisplayName} envió el resultado del duelo como ${result === 'win' ? 'VICTORIA' : 'DERROTA'}. ${screenshotFile ? 'Captura de pantalla proporcionada.' : 'No se proporcionó captura.'}`;
+      title: '¡Resultado Enviado!',
+      description: `Reportaste una ${result === 'win' ? 'victoria' : 'derrota'}. ${screenshotFile ? 'Comprobante adjuntado.' : 'Sin comprobante.'}`,
+    })
+
+    setResultSubmitted(true)
+    setIsSubmittingResult(false)
+    setScreenshotFile(null)
+
+    const userDisplayName = user.clashTag || user.username
+    const resultMessageText = `${userDisplayName} envió el resultado del duelo como ${
+      result === 'win' ? 'VICTORIA' : 'DERROTA'
+    }. ${screenshotFile ? 'Captura de pantalla proporcionada.' : 'No se proporcionó captura.'}`
     const resultSystemMessage = {
-      matchId: validChatId, // ID del chat (UUID)
+      matchId: validChatId,
       senderId: 'system',
       text: resultMessageText,
       timestamp: new Date().toISOString(),
       isSystemMessage: true,
-    };
-    sendMessageSafely(resultSystemMessage);
-  };
+    }
+    sendMessageSafely(resultSystemMessage)
+  }
 
 
   if (!user) return <p>Cargando chat...</p>;

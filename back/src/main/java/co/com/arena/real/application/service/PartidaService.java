@@ -79,4 +79,17 @@ public class PartidaService {
         Partida saved = partidaRepository.save(partida);
         return partidaMapper.toDto(saved);
     }
+
+    @Transactional
+    public PartidaResponse asignarGanador(UUID partidaId, String jugadorId) {
+        Partida partida = partidaRepository.findById(partidaId)
+                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+
+        partida.setGanador(jugadorRepository.findById(jugadorId)
+                .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado")));
+        partida.setEstado(EstadoPartida.FINALIZADA);
+
+        Partida saved = partidaRepository.save(partida);
+        return partidaMapper.toDto(saved);
+    }
 }
