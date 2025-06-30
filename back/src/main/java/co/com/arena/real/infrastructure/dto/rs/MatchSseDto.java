@@ -18,6 +18,7 @@ public class MatchSseDto implements Serializable {
     private static final long serialVersionUID = -5076615234782375916L;
 
     private UUID apuestaId;
+    private UUID partidaId;
     private String jugadorOponenteId;
     private String jugadorOponenteTag;
     private UUID chatId;

@@ -54,6 +54,14 @@ public class Partida {
     @Column(name = "chat_id")
     private UUID chatId;
 
+    @Builder.Default
+    @Column(name = "aceptado_jugador1")
+    private boolean aceptadoJugador1 = false;
+
+    @Builder.Default
+    @Column(name = "aceptado_jugador2")
+    private boolean aceptadoJugador2 = false;
+
     private boolean validada;
 
     @Column(name = "validada_en")

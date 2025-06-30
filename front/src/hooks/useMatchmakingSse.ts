@@ -4,39 +4,57 @@ import { BACKEND_URL } from '@/lib/config';
 
 interface MatchEventData {
   apuestaId: string;
+  partidaId: string;
   jugadorOponenteId: string;
   jugadorOponenteTag: string;
-  chatId: string;
+  chatId?: string;
 }
 
 export default function useMatchmakingSse(
   playerId: string | undefined,
-  onMatch: (data: MatchEventData) => void
+  onMatchFound: (data: MatchEventData) => void,
+  onChatReady: (data: MatchEventData) => void
 ) {
   const { toast } = useToast();
   const eventSourceRef = useRef<EventSource | null>(null);
-  const onMatchRef = useRef(onMatch);
-  const handlerRef = useRef<(event: MessageEvent) => void>();
+  const onMatchFoundRef = useRef(onMatchFound);
+  const onChatReadyRef = useRef(onChatReady);
+  const matchHandlerRef = useRef<(event: MessageEvent) => void>();
+  const readyHandlerRef = useRef<(event: MessageEvent) => void>();
 
   // Mantener la referencia a la función onMatch sin provocar que el efecto se reinicie
   useEffect(() => {
-    onMatchRef.current = onMatch;
-  }, [onMatch]);
+    onMatchFoundRef.current = onMatchFound;
+  }, [onMatchFound]);
+
+  useEffect(() => {
+    onChatReadyRef.current = onChatReady;
+  }, [onChatReady]);
 
   useEffect(() => {
     if (!playerId) return;
 
-    const handler = (event: MessageEvent) => {
+    const matchHandler = (event: MessageEvent) => {
       try {
         const data: MatchEventData = JSON.parse(event.data);
         console.log('Match encontrado:', data);
-        onMatchRef.current(data);
-        eventSourceRef.current?.close();
+        onMatchFoundRef.current(data);
       } catch (err) {
         console.error('Error al procesar evento SSE de matchmaking:', err);
       }
     };
-    handlerRef.current = handler;
+    matchHandlerRef.current = matchHandler;
+
+    const readyHandler = (event: MessageEvent) => {
+      try {
+        const data: MatchEventData = JSON.parse(event.data);
+        console.log('Chat listo:', data);
+        onChatReadyRef.current(data);
+      } catch (err) {
+        console.error('Error al procesar evento SSE de chat listo:', err);
+      }
+    };
+    readyHandlerRef.current = readyHandler;
 
     const connect = () => {
       const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
@@ -44,8 +62,11 @@ export default function useMatchmakingSse(
       const es = new EventSource(url, { withCredentials: true });
       eventSourceRef.current = es;
 
-      if (handlerRef.current) {
-        es.addEventListener('match-found', handlerRef.current as EventListener);
+      if (matchHandlerRef.current) {
+        es.addEventListener('match-found', matchHandlerRef.current as EventListener);
+      }
+      if (readyHandlerRef.current) {
+        es.addEventListener('chat-ready', readyHandlerRef.current as EventListener);
       }
 
       es.onerror = (err) => {
@@ -60,8 +81,13 @@ export default function useMatchmakingSse(
 
     return () => {
       console.log('Cerrando conexión SSE de matchmaking');
-      if (eventSourceRef.current && handlerRef.current) {
-        eventSourceRef.current.removeEventListener('match-found', handlerRef.current as EventListener);
+      if (eventSourceRef.current) {
+        if (matchHandlerRef.current) {
+          eventSourceRef.current.removeEventListener('match-found', matchHandlerRef.current as EventListener);
+        }
+        if (readyHandlerRef.current) {
+          eventSourceRef.current.removeEventListener('chat-ready', readyHandlerRef.current as EventListener);
+        }
         eventSourceRef.current.close();
       }
 

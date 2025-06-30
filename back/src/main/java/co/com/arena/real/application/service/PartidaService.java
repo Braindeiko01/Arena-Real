@@ -15,6 +15,7 @@ import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
 import co.com.arena.real.domain.entity.partida.EstadoPartida;
 import co.com.arena.real.application.service.ChatService;
+import co.com.arena.real.application.service.MatchSseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ public class PartidaService {
     private final JugadorRepository jugadorRepository;
     private final TransaccionRepository transaccionRepository;
     private final ChatService chatService;
+    private final MatchSseService matchSseService;
 
     public Optional<PartidaResponse> obtenerPorApuestaId(UUID apuestaId) {
         return partidaRepository.findByApuesta_Id(apuestaId).map(partidaMapper::toDto);
@@ -49,6 +51,34 @@ public class PartidaService {
         return partidaRepository.findById(partidaId)
                 .filter(p -> p.getEstado() == EstadoPartida.EN_CURSO || p.getEstado() == EstadoPartida.POR_APROBAR)
                 .map(Partida::getChatId);
+    }
+
+    @Transactional
+    public PartidaResponse aceptarPartida(UUID partidaId, String jugadorId) {
+        Partida partida = partidaRepository.findById(partidaId)
+                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+
+        if (partida.getJugador1() != null && partida.getJugador1().getId().equals(jugadorId)) {
+            partida.setAceptadoJugador1(true);
+        } else if (partida.getJugador2() != null && partida.getJugador2().getId().equals(jugadorId)) {
+            partida.setAceptadoJugador2(true);
+        } else {
+            throw new IllegalArgumentException("Jugador no pertenece a la partida");
+        }
+
+        if (partida.isAceptadoJugador1() && partida.isAceptadoJugador2()) {
+            if (partida.getChatId() == null) {
+                UUID chatId = chatService.crearChatParaPartida(
+                        partida.getJugador1().getId(),
+                        partida.getJugador2().getId());
+                partida.setChatId(chatId);
+            }
+            partida.setEstado(EstadoPartida.EN_CURSO);
+            matchSseService.notifyChatReady(partida);
+        }
+
+        Partida saved = partidaRepository.save(partida);
+        return partidaMapper.toDto(saved);
     }
 
     @Transactional

@@ -32,6 +32,15 @@ public class PartidaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{id}/aceptar/{jugadorId}")
+    @Operation(summary = "Aceptar partida", description = "Marca la partida como aceptada por el jugador")
+    public ResponseEntity<PartidaResponse> aceptarPartida(
+            @PathVariable("id") UUID id,
+            @PathVariable("jugadorId") String jugadorId) {
+        PartidaResponse response = partidaService.aceptarPartida(id, jugadorId);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}/validar")
     @Operation(summary = "Validar", description = "Marca una partida como validada y reparte el premio")
     public ResponseEntity<PartidaResponse> validar(@PathVariable UUID id) {

@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { SaldoIcon, FindMatchIcon } from '@/components/icons/ClashRoyaleIcons';
 import { useToast } from "@/hooks/use-toast";
 import { Coins, UploadCloud, Swords, Layers, Banknote, Loader2 } from 'lucide-react';
-import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction, declineMatchAction } from '@/lib/actions';
+import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction, declineMatchAction, acceptMatchAction } from '@/lib/actions';
 import useTransactionUpdates from '@/hooks/useTransactionUpdates';
 import useMatchmakingSse from '@/hooks/useMatchmakingSse';
 
@@ -35,17 +35,30 @@ const HomePageContent = () => {
 
   const [isModeModalOpen, setIsModeModalOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [pendingMatch, setPendingMatch] = useState<{ apuestaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; chatId: string; } | null>(null);
+  const [pendingMatch, setPendingMatch] = useState<{ apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; chatId?: string; } | null>(null);
+  const [hasAccepted, setHasAccepted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(25);
 
-  const handleMatchFound = (data: { apuestaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; chatId: string; }) => {
+  const handleMatchFound = (data: { apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
     console.log('Match encontrado via SSE:', data);
     setIsSearching(false);
     setTimeLeft(25);
-    setPendingMatch(data);
+    setPendingMatch({ ...data, chatId: undefined });
+    setHasAccepted(false);
   };
 
-  useMatchmakingSse(isSearching ? user?.id : undefined, handleMatchFound);
+  const handleChatReady = (data: { chatId: string; apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
+    if (hasAccepted && pendingMatch && pendingMatch.partidaId === data.partidaId) {
+      toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
+      router.push(
+        `/chat/${data.chatId}?opponentTag=${encodeURIComponent(data.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
+      );
+      setPendingMatch(null);
+      setHasAccepted(false);
+    }
+  };
+
+  useMatchmakingSse(isSearching || hasAccepted ? user?.id : undefined, handleMatchFound, handleChatReady);
 
   useEffect(() => {
     console.log("¡La página de inicio se ha cargado en el frontend! Puedes ver este mensaje en la consola del navegador.");
@@ -111,21 +124,28 @@ const HomePageContent = () => {
     if (
       result.match &&
       result.match.apuestaId &&
+      result.match.partidaId &&
       result.match.jugadorOponenteId &&
-      result.match.jugadorOponenteTag &&
-      result.match.chatId
+      result.match.jugadorOponenteTag
     ) {
       handleMatchFound(result.match);
     }
   };
 
-  function handleAcceptMatch() {
+  async function handleAcceptMatch() {
     if (!pendingMatch) return;
-    toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
-    router.push(
-      `/chat/${pendingMatch.chatId}?opponentTag=${encodeURIComponent(pendingMatch.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(pendingMatch.jugadorOponenteId)}`
-    );
-    setPendingMatch(null);
+    setHasAccepted(true);
+    const result = await acceptMatchAction(pendingMatch.partidaId, user.id);
+    if (result.duel && result.duel.chatId) {
+      toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
+      router.push(
+        `/chat/${result.duel.chatId}?opponentTag=${encodeURIComponent(pendingMatch.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(pendingMatch.jugadorOponenteId)}`
+      );
+      setPendingMatch(null);
+      setHasAccepted(false);
+    } else {
+      toast({ title: 'Esperando al oponente', description: 'Se enviará una notificación cuando el chat esté listo.' });
+    }
   }
 
   async function handleDeclineMatch() {

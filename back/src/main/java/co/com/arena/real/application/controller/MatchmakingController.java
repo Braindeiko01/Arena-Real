@@ -36,7 +36,7 @@ public class MatchmakingController {
                     String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
                     return MatchSseDto.builder()
                             .apuestaId(partida.getApuesta().getId())
-                            .chatId(partida.getChatId())
+                            .partidaId(partida.getId())
                             .jugadorOponenteId(oponente.getId())
                             .jugadorOponenteTag(tag)
                             .build();

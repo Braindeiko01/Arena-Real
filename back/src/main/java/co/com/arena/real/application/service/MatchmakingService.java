@@ -96,7 +96,7 @@ public class MatchmakingService {
 
                     Partida partida = crearPartida(partidaEnEspera, partidaEncontrada);
 
-                    matchSseService.notifyMatch(partida);
+                    matchSseService.notifyMatchFound(partida);
 
                     realizarTransaccion(partida.getApuesta(), jugadorEnEspera);
                     realizarTransaccion(partida.getApuesta(), jugadorEncontrado);
@@ -120,16 +120,14 @@ public class MatchmakingService {
                 .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
 
         Apuesta apuesta = apuestaService.crearApuesta(new ApuestaRequest(partidaEnEspera.getMonto()));
-        UUID chatId = chatService.crearChatParaPartida(jugador1.getId(), jugador2.getId());
-
         Partida partida = Partida.builder()
                 .jugador1(jugador1)
                 .jugador2(jugador2)
                 .modoJuego(partidaEnEspera.getModoJuego())
-                .estado(EstadoPartida.EN_CURSO)
+                .estado(EstadoPartida.PENDIENTE)
                 .creada(LocalDateTime.now())
                 .validada(false)
-                .chatId(chatId)
+                .chatId(null)
                 .apuesta(apuesta)
                 .build();
 
