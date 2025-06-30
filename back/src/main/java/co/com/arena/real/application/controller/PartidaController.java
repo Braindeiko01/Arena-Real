@@ -48,6 +48,13 @@ public class PartidaController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}/cancelar")
+    @Operation(summary = "Cancelar partida", description = "Cancela la partida y reembolsa la apuesta")
+    public ResponseEntity<PartidaResponse> cancelar(@PathVariable UUID id) {
+        PartidaResponse response = partidaService.cancelarPartida(id);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}/resultado")
     @Operation(
             summary = "Reportar resultado",

@@ -151,4 +151,49 @@ public class PartidaService {
         Partida saved = partidaRepository.save(partida);
         return partidaMapper.toDto(saved);
     }
+
+    @Transactional
+    public PartidaResponse cancelarPartida(UUID partidaId) {
+        Partida partida = partidaRepository.findById(partidaId)
+                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+
+        if (partida.getEstado() == EstadoPartida.CANCELADA || partida.getEstado() == EstadoPartida.FINALIZADA) {
+            throw new IllegalStateException("La partida ya está finalizada");
+        }
+
+        partida.setEstado(EstadoPartida.CANCELADA);
+
+        if (partida.getApuesta() != null) {
+            Apuesta apuesta = apuestaRepository.findById(partida.getApuesta().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Apuesta no encontrada"));
+            apuesta.setEstado(co.com.arena.real.domain.entity.EstadoApuesta.CANCELADA);
+            apuestaRepository.save(apuesta);
+
+            registrarReembolso(partida.getJugador1(), apuesta.getMonto());
+            registrarReembolso(partida.getJugador2(), apuesta.getMonto());
+        }
+
+        chatService.cerrarChat(partida.getChatId());
+
+        Partida saved = partidaRepository.save(partida);
+        return partidaMapper.toDto(saved);
+    }
+
+    private void registrarReembolso(co.com.arena.real.domain.entity.Jugador jugador, java.math.BigDecimal monto) {
+        if (jugador == null) {
+            return;
+        }
+        Transaccion reembolso = new Transaccion();
+        reembolso.setJugador(jugador);
+        reembolso.setMonto(monto);
+        reembolso.setTipo(TipoTransaccion.REEMBOLSO);
+        reembolso.setEstado(EstadoTransaccion.APROBADA);
+        reembolso.setCreadoEn(LocalDateTime.now());
+        transaccionRepository.save(reembolso);
+
+        jugadorRepository.findById(jugador.getId()).ifPresent(u -> {
+            u.setSaldo(u.getSaldo().add(monto));
+            jugadorRepository.save(u);
+        });
+    }
 }

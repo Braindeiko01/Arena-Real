@@ -4,5 +4,6 @@ public enum TipoTransaccion {
     DEPOSITO,
     RETIRO,
     APUESTA,
-    PREMIO
+    PREMIO,
+    REEMBOLSO
 }

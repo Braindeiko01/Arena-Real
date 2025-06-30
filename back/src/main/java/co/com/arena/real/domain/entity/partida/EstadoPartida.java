@@ -4,5 +4,6 @@ public enum EstadoPartida {
     PENDIENTE,
     EN_CURSO,
     POR_APROBAR,
-    FINALIZADA
+    FINALIZADA,
+    CANCELADA
 }
