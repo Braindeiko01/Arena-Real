@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { collection, addDoc, onSnapshot, query, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, onSnapshot, query, orderBy, Timestamp, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { ChatMessage } from '@/types';
 
@@ -7,6 +7,7 @@ export default function useFirestoreChat(chatId: string | undefined) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [chatActive, setChatActive] = useState(true);
 
   useEffect(() => {
     if (!chatId) {
@@ -14,6 +15,12 @@ export default function useFirestoreChat(chatId: string | undefined) {
       return;
     }
     setIsLoading(true);
+
+    const chatRef = doc(db, 'chats', chatId);
+    const unsubChat = onSnapshot(chatRef, snap => {
+      const data = snap.data() as any;
+      setChatActive(data?.activo ?? false);
+    });
 
     const q = query(collection(db, 'chats', chatId, 'messages'), orderBy('timestamp'));
     const unsub = onSnapshot(
@@ -41,7 +48,10 @@ export default function useFirestoreChat(chatId: string | undefined) {
       }
     );
 
-    return () => unsub();
+    return () => {
+      unsub();
+      unsubChat();
+    };
   }, [chatId]);
 
   const sendMessage = useCallback(async (message: Omit<ChatMessage, 'id'>) => {
@@ -59,5 +69,5 @@ export default function useFirestoreChat(chatId: string | undefined) {
     }
   }, [chatId]);
 
-  return { messages, sendMessage, error, isLoading };
+  return { messages, sendMessage, error, isLoading, chatActive };
 }
