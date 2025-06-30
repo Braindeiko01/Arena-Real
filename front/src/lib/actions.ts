@@ -327,7 +327,6 @@ export async function assignMatchWinnerAction(
     return { duel: null, error: err.message || 'Error de red.' }
   }
 }
-
 export async function submitMatchResultAction(
   matchId: string,
   jugadorId: string,
