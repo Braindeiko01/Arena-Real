@@ -56,6 +56,10 @@ public class PartidaService {
         Partida partida = partidaRepository.findById(partidaId)
                 .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
 
+        if (partida.isValidada() || partida.getEstado() == EstadoPartida.FINALIZADA) {
+            throw new IllegalStateException("La partida ya está finalizada");
+        }
+
         if (partida.getJugador1() != null && partida.getJugador1().getId().equals(dto.getJugadorId())) {
             partida.setResultadoJugador1(ResultadoJugador.valueOf(dto.getResultado()));
             partida.setCapturaJugador1(dto.getCaptura());

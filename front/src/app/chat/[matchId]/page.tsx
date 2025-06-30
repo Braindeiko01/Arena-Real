@@ -54,7 +54,7 @@ const ChatPageContent = () => {
   }, [chatId, opponentTagParam, opponentGoogleIdParam, paramsLoaded, hasValidParams]);
 
   const { toast } = useToast();
-  const { messages, sendMessage, isLoading } = useFirestoreChat(hasValidParams ? chatId : undefined);
+  const { messages, sendMessage, isLoading, chatActive } = useFirestoreChat(hasValidParams ? chatId : undefined);
   const opponentTag = hasValidParams ? opponentTagParam! : undefined;
   const opponentGoogleId = hasValidParams ? opponentGoogleIdParam! : undefined;
   const opponentAvatar = hasValidParams ? (searchParams.get('opponentAvatar') || `https://placehold.co/40x40.png?text=${opponentTag![0]}`) : undefined;
@@ -239,10 +239,13 @@ const ChatPageContent = () => {
             </Avatar>
             <CardTitle className="text-2xl font-headline text-primary">{opponentDisplayName}</CardTitle>
           </div>
-          <CartoonButton size="small" variant="destructive" onClick={() => setIsSubmittingResult(true)} disabled={resultSubmitted}>
+          <CartoonButton size="small" variant="destructive" onClick={() => setIsSubmittingResult(true)} disabled={resultSubmitted || !chatActive}>
             {resultSubmitted ? 'Resultado Enviado' : 'Enviar Resultado'}
           </CartoonButton>
         </CardHeader>
+        {!chatActive && (
+          <p className="text-center text-sm text-muted-foreground py-2">Chat finalizado. No puedes enviar nuevos mensajes.</p>
+        )}
 
         <ScrollArea className="flex-grow bg-background/50 p-4 space-y-4">
           {messages.map((msg) => (
@@ -270,7 +273,7 @@ const ChatPageContent = () => {
 
         <div className="border-t border-border p-4 bg-card">
           <form onSubmit={handleSendMessage} className="flex items-center space-x-3">
-            <Button type="button" variant="ghost" size="icon" onClick={handleShareFriendLink} aria-label="Compartir Link de Amigo">
+            <Button type="button" variant="ghost" size="icon" onClick={handleShareFriendLink} aria-label="Compartir Link de Amigo" disabled={!chatActive}>
               <LinkIconLucide className="h-6 w-6 text-primary hover:text-accent" />
             </Button>
             <Input
@@ -280,8 +283,9 @@ const ChatPageContent = () => {
               onChange={(e) => setNewMessage(e.target.value)}
               className="flex-grow text-lg py-3 h-12 border-2 focus:border-primary"
               aria-label="Entrada de mensaje de chat"
+              disabled={!chatActive}
             />
-            <CartoonButton type="submit" size="small" className="px-5 py-3" aria-label="Enviar Mensaje">
+            <CartoonButton type="submit" size="small" className="px-5 py-3" aria-label="Enviar Mensaje" disabled={!chatActive}>
               <Send className="h-5 w-5" />
             </CartoonButton>
           </form>
@@ -310,18 +314,20 @@ const ChatPageContent = () => {
                 {screenshotFile && <p className="text-sm text-muted-foreground mt-2">Seleccionado: {screenshotFile.name}</p>}
               </div>
               <div className="flex justify-around space-x-4">
-                <CartoonButton 
-                  variant="default" 
-                  onClick={() => handleResultSubmission('win')} 
+                <CartoonButton
+                  variant="default"
+                  onClick={() => handleResultSubmission('win')}
                   className="flex-1 bg-green-500 hover:bg-green-600 border-green-700 text-white"
                   iconLeft={<CheckCircle />}
+                  disabled={!chatActive}
                 >
                   Gané
                 </CartoonButton>
-                <CartoonButton 
-                  variant="destructive" 
-                  onClick={() => handleResultSubmission('loss')} 
+                <CartoonButton
+                  variant="destructive"
+                  onClick={() => handleResultSubmission('loss')}
                   className="flex-1"
+                  disabled={!chatActive}
                   iconLeft={<XCircle />}
                 >
                   Perdí

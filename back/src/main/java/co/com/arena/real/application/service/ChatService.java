@@ -53,6 +53,17 @@ public class ChatService {
             firestore.collection("chats")
                     .document(chatId.toString())
                     .update("activo", false);
+
+            java.util.Map<String, Object> msg = new java.util.HashMap<>();
+            msg.put("senderId", "system");
+            msg.put("text", "Chat finalizado");
+            msg.put("timestamp", com.google.cloud.Timestamp.now());
+            msg.put("isSystemMessage", true);
+
+            firestore.collection("chats")
+                    .document(chatId.toString())
+                    .collection("messages")
+                    .add(msg);
         } catch (Exception ignored) {
         }
     }
