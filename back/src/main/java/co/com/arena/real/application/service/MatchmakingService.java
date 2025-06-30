@@ -1,25 +1,17 @@
 package co.com.arena.real.application.service;
 
 import co.com.arena.real.domain.entity.partida.EstadoPartida;
-import co.com.arena.real.domain.entity.Apuesta;
 import co.com.arena.real.domain.entity.Jugador;
-import co.com.arena.real.domain.entity.TipoTransaccion;
 import co.com.arena.real.domain.entity.partida.ModoJuego;
 import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.domain.entity.partida.PartidaEnEspera;
-import co.com.arena.real.infrastructure.dto.rq.ApuestaRequest;
 import co.com.arena.real.infrastructure.dto.rq.PartidaEnEsperaRequest;
-import co.com.arena.real.infrastructure.dto.rq.TransaccionRequest;
-import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import co.com.arena.real.infrastructure.mapper.PartidaEnEsperaMapper;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import co.com.arena.real.infrastructure.repository.PartidaEnEsperaRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
-import co.com.arena.real.application.service.ChatService;
-import co.com.arena.real.application.service.ApuestaService;
 import co.com.arena.real.application.service.MatchSseService;
 import co.com.arena.real.application.service.MatchDeclineService;
-import co.com.arena.real.application.service.TransaccionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +26,8 @@ import java.util.UUID;
 public class MatchmakingService {
 
     private final PartidaEnEsperaRepository partidaEnEsperaRepository;
-    private final TransaccionService transaccionService;
     private final JugadorRepository jugadorRepository;
     private final PartidaRepository partidaRepository;
-    private final ChatService chatService;
-    private final ApuestaService apuestaService;
     private final MatchSseService matchSseService;
     private final MatchDeclineService matchDeclineService;
 
@@ -98,9 +87,6 @@ public class MatchmakingService {
 
                     matchSseService.notifyMatchFound(partida);
 
-                    realizarTransaccion(partida.getApuesta(), jugadorEnEspera);
-                    realizarTransaccion(partida.getApuesta(), jugadorEncontrado);
-
                     return partida;
                 });
     }
@@ -119,7 +105,6 @@ public class MatchmakingService {
         Jugador jugador2 = jugadorRepository.findById(partidaEncontrada.getJugador().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
 
-        Apuesta apuesta = apuestaService.crearApuesta(new ApuestaRequest(partidaEnEspera.getMonto()));
         Partida partida = Partida.builder()
                 .jugador1(jugador1)
                 .jugador2(jugador2)
@@ -128,21 +113,10 @@ public class MatchmakingService {
                 .creada(LocalDateTime.now())
                 .validada(false)
                 .chatId(null)
-                .apuesta(apuesta)
+                .monto(partidaEnEspera.getMonto())
                 .build();
 
         return partidaRepository.save(partida);
-    }
-
-
-    private void realizarTransaccion(Apuesta apuesta, Jugador jugador) {
-        TransaccionRequest request = TransaccionRequest.builder()
-                .monto(apuesta.getMonto())
-                .jugadorId(jugador.getId())
-                .tipo(TipoTransaccion.APUESTA)
-                .build();
-        TransaccionResponse response = transaccionService.registrarTransaccion(request);
-        transaccionService.aprobarTransaccion(response.getId());
     }
 
 }

@@ -32,7 +32,7 @@ public class MatchSseService {
     }
 
     public void notifyMatchFound(Partida partida) {
-        UUID apuestaId = partida.getApuesta().getId();
+        UUID apuestaId = partida.getApuesta() != null ? partida.getApuesta().getId() : null;
         UUID partidaId = partida.getId();
         notifyMatchFound(apuestaId, partidaId, partida.getJugador1(), partida.getJugador2());
     }

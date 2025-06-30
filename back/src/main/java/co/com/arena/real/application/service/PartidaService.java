@@ -8,6 +8,9 @@ import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.domain.entity.partida.ResultadoJugador;
 import co.com.arena.real.infrastructure.dto.rs.PartidaResponse;
 import co.com.arena.real.infrastructure.dto.rq.PartidaResultadoRequest;
+import co.com.arena.real.infrastructure.dto.rq.ApuestaRequest;
+import co.com.arena.real.infrastructure.dto.rq.TransaccionRequest;
+import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import co.com.arena.real.infrastructure.mapper.PartidaMapper;
 import co.com.arena.real.infrastructure.repository.ApuestaRepository;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
@@ -15,6 +18,8 @@ import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
 import co.com.arena.real.domain.entity.partida.EstadoPartida;
 import co.com.arena.real.application.service.ChatService;
+import co.com.arena.real.application.service.ApuestaService;
+import co.com.arena.real.application.service.TransaccionService;
 import co.com.arena.real.application.service.MatchSseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +39,8 @@ public class PartidaService {
     private final JugadorRepository jugadorRepository;
     private final TransaccionRepository transaccionRepository;
     private final ChatService chatService;
+    private final ApuestaService apuestaService;
+    private final TransaccionService transaccionService;
     private final MatchSseService matchSseService;
 
     public Optional<PartidaResponse> obtenerPorApuestaId(UUID apuestaId) {
@@ -67,12 +74,21 @@ public class PartidaService {
         }
 
         if (partida.isAceptadoJugador1() && partida.isAceptadoJugador2()) {
+            if (partida.getApuesta() == null) {
+                Apuesta apuesta = apuestaService.crearApuesta(new ApuestaRequest(partida.getMonto()));
+                partida.setApuesta(apuesta);
+
+                realizarTransaccion(apuesta, partida.getJugador1());
+                realizarTransaccion(apuesta, partida.getJugador2());
+            }
+
             if (partida.getChatId() == null) {
                 UUID chatId = chatService.crearChatParaPartida(
                         partida.getJugador1().getId(),
                         partida.getJugador2().getId());
                 partida.setChatId(chatId);
             }
+
             partida.setEstado(EstadoPartida.EN_CURSO);
             matchSseService.notifyChatReady(partida);
         }
@@ -195,5 +211,15 @@ public class PartidaService {
             u.setSaldo(u.getSaldo().add(monto));
             jugadorRepository.save(u);
         });
+    }
+
+    private void realizarTransaccion(Apuesta apuesta, co.com.arena.real.domain.entity.Jugador jugador) {
+        TransaccionRequest request = TransaccionRequest.builder()
+                .monto(apuesta.getMonto())
+                .jugadorId(jugador.getId())
+                .tipo(TipoTransaccion.APUESTA)
+                .build();
+        TransaccionResponse response = transaccionService.registrarTransaccion(request);
+        transaccionService.aprobarTransaccion(response.getId());
     }
 }
