@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import useFirestoreChat from '@/hooks/useFirestoreChat';
 import { BACKEND_URL } from '@/lib/config';
 import type { ChatMessage, User } from '@/types';
+import { submitMatchResultAction } from '@/lib/actions';
 
 import { Label } from '@/components/ui/label';
 
@@ -171,16 +172,33 @@ const ChatPageContent = () => {
     toast({ title: "Link de Amigo Compartido", description: `Tu link de amigo ${user.friendLink ? '' : '(o un aviso de que no lo tienes) '}ha sido publicado en el chat.` });
   };
 
-  const handleResultSubmission = (result: 'win' | 'loss') => {
-    if (!user || !user.id || resultSubmitted) { // user.id es googleId
-        toast({ title: "Error", description: "No se puede enviar el resultado sin identificación de usuario.", variant: "destructive"});
-        return;
+  const handleResultSubmission = async (result: 'win' | 'loss') => {
+    if (!user || !user.id || resultSubmitted) {
+      toast({ title: 'Error', description: 'No se puede enviar el resultado sin identificación de usuario.', variant: 'destructive' })
+      return
     }
-    
-    // Aquí se llamaría a una acción para enviar el resultado al backend (ej. POST /api/partidas)
-    // Se necesitaría: apuestaId (identificador de la apuesta)
-    // y ganadorId (user.id - googleId, o opponentGoogleId)
-    console.log(`Resultado enviado: Usuario con googleId ${user.id} ${result === 'win' ? 'ganó' : 'perdió'} la apuesta vinculada al chat ${validChatId}. Oponente googleId: ${validOpponentGoogleId}. Adjunto: ${screenshotFile?.name || 'ninguno'}`);
+
+    let screenshotBase64: string | undefined
+    if (screenshotFile) {
+      screenshotBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = () => reject(new Error('Error leyendo captura'))
+        reader.readAsDataURL(screenshotFile)
+      })
+    }
+
+    const response = await submitMatchResultAction(
+      validChatId,
+      user.id,
+      result === 'win' ? 'VICTORIA' : 'DERROTA',
+      screenshotBase64,
+    )
+
+    if (response.error) {
+      toast({ title: 'Error', description: response.error, variant: 'destructive' })
+      return
+    }
     
     toast({
       title: "¡Resultado Enviado!",

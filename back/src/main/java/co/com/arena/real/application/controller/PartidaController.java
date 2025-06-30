@@ -1,6 +1,7 @@
 package co.com.arena.real.application.controller;
 
 import co.com.arena.real.application.service.PartidaService;
+import co.com.arena.real.infrastructure.dto.rq.PartidaResultadoRequest;
 import co.com.arena.real.infrastructure.dto.rs.PartidaResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,6 +36,32 @@ public class PartidaController {
     @Operation(summary = "Validar", description = "Marca una partida como validada y reparte el premio")
     public ResponseEntity<PartidaResponse> validar(@PathVariable UUID id) {
         PartidaResponse response = partidaService.marcarComoValidada(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/resultado")
+    @Operation(
+            summary = "Reportar resultado",
+            description = "Envía el resultado de un jugador y la captura"
+    )
+    public ResponseEntity<PartidaResponse> reportarResultado(
+            @PathVariable("id") UUID id,
+            @RequestBody PartidaResultadoRequest dto
+    ) {
+        PartidaResponse response = partidaService.reportarResultado(id, dto);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/ganador/{jugadorId}")
+    @Operation(
+            summary = "Asignar ganador",
+            description = "Asigna el jugador ganador de la partida"
+    )
+    public ResponseEntity<PartidaResponse> asignarGanador(
+            @PathVariable("id") UUID id,
+            @PathVariable("jugadorId") String jugadorId
+    ) {
+        PartidaResponse response = partidaService.asignarGanador(id, jugadorId);
         return ResponseEntity.ok(response);
     }
 

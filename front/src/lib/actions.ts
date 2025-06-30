@@ -12,6 +12,7 @@ import type {
   BackendPartidaResponseDto,
   BackendMatchmakingResponseDto,
   RegistrarUsuarioRequest,
+  BackendPartidaResultadoRequestDto,
 } from '@/types'
 import { BACKEND_URL } from '@/lib/config'
 
@@ -302,5 +303,52 @@ export async function declineMatchAction(
     return { success: true, error: null }
   } catch (err: any) {
     return { success: false, error: err.message || 'Error de red.' }
+  }
+}
+
+export async function assignMatchWinnerAction(
+  matchId: string,
+  winnerId: string
+): Promise<{ duel: BackendPartidaResponseDto | null; error: string | null }> {
+  try {
+    const res = await fetch(
+      `${BACKEND_URL}/api/partidas/${matchId}/ganador/${winnerId}`,
+      { method: 'PUT' }
+    )
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      return { duel: null, error: err.message || `Error ${res.status}` }
+    }
+
+    const data = (await res.json()) as BackendPartidaResponseDto
+    return { duel: data, error: null }
+  } catch (err: any) {
+    return { duel: null, error: err.message || 'Error de red.' }
+  }
+}
+
+export async function submitMatchResultAction(
+  matchId: string,
+  jugadorId: string,
+  result: 'VICTORIA' | 'DERROTA',
+  screenshot?: string,
+): Promise<{ duel: BackendPartidaResponseDto | null; error: string | null }> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/partidas/${matchId}/resultado`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jugadorId, resultado: result, captura: screenshot }),
+    })
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      return { duel: null, error: err.message || `Error ${res.status}` }
+    }
+
+    const data = (await res.json()) as BackendPartidaResponseDto
+    return { duel: data, error: null }
+  } catch (err: any) {
+    return { duel: null, error: err.message || 'Error de red.' }
   }
 }
