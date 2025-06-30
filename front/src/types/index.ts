@@ -92,9 +92,10 @@ export interface BackendMatchResultDto {
 
 export interface BackendMatchmakingResponseDto {
   apuestaId: string; // UUID de la apuesta resultante
+  partidaId: string; // UUID de la partida creada
   jugadorOponenteId: string; // googleId del oponente
   jugadorOponenteTag: string;
-  chatId: string;
+  chatId?: string;
   jugadorOponenteAvatarUrl?: string;
 }
 

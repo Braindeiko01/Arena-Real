@@ -21,6 +21,7 @@ public class PartidaResponse implements Serializable {
 
     private UUID id;
     private UUID apuestaId;
+    private UUID chatId;
     private String jugador1Id;
     private String jugador2Id;
     private String ganadorId;
