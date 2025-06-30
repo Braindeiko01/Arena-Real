@@ -70,7 +70,7 @@ public class TransaccionService {
                 .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
 
         switch (transaccion.getTipo()) {
-            case DEPOSITO, PREMIO -> jugador.setSaldo(jugador.getSaldo().add(transaccion.getMonto()));
+            case DEPOSITO, PREMIO, REEMBOLSO -> jugador.setSaldo(jugador.getSaldo().add(transaccion.getMonto()));
             case RETIRO, APUESTA -> {
                 if (!(jugador.getSaldo().compareTo(transaccion.getMonto()) >= 0)) {
                     throw new IllegalArgumentException("Saldo insuficiente para realizar la transacción");
