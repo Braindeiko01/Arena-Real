@@ -5,7 +5,9 @@ import co.com.arena.real.domain.entity.EstadoTransaccion;
 import co.com.arena.real.domain.entity.TipoTransaccion;
 import co.com.arena.real.domain.entity.Transaccion;
 import co.com.arena.real.domain.entity.partida.Partida;
+import co.com.arena.real.domain.entity.partida.ResultadoJugador;
 import co.com.arena.real.infrastructure.dto.rs.PartidaResponse;
+import co.com.arena.real.infrastructure.dto.rq.PartidaResultadoRequest;
 import co.com.arena.real.infrastructure.mapper.PartidaMapper;
 import co.com.arena.real.infrastructure.repository.ApuestaRepository;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
@@ -47,6 +49,27 @@ public class PartidaService {
         return partidaRepository.findById(partidaId)
                 .filter(p -> p.getEstado() == EstadoPartida.EN_CURSO || p.getEstado() == EstadoPartida.POR_APROBAR)
                 .map(Partida::getChatId);
+    }
+
+    @Transactional
+    public PartidaResponse reportarResultado(UUID partidaId, PartidaResultadoRequest dto) {
+        Partida partida = partidaRepository.findById(partidaId)
+                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+
+        if (partida.getJugador1() != null && partida.getJugador1().getId().equals(dto.getJugadorId())) {
+            partida.setResultadoJugador1(ResultadoJugador.valueOf(dto.getResultado()));
+            partida.setCapturaJugador1(dto.getCaptura());
+        } else if (partida.getJugador2() != null && partida.getJugador2().getId().equals(dto.getJugadorId())) {
+            partida.setResultadoJugador2(ResultadoJugador.valueOf(dto.getResultado()));
+            partida.setCapturaJugador2(dto.getCaptura());
+        } else {
+            throw new IllegalArgumentException("Jugador no pertenece a la partida");
+        }
+
+        partida.setEstado(EstadoPartida.POR_APROBAR);
+
+        Partida saved = partidaRepository.save(partida);
+        return partidaMapper.toDto(saved);
     }
 
     @Transactional

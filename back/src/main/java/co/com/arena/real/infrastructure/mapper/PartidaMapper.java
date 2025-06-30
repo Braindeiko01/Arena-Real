@@ -23,6 +23,10 @@ public class PartidaMapper {
                 .creada(entity.getCreada())
                 .validadaEn(entity.getValidadaEn())
                 .monto(entity.getApuesta() != null ? entity.getApuesta().getMonto() : null)
+                .capturaJugador1(entity.getCapturaJugador1())
+                .capturaJugador2(entity.getCapturaJugador2())
+                .resultadoJugador1(entity.getResultadoJugador1() != null ? entity.getResultadoJugador1().name() : null)
+                .resultadoJugador2(entity.getResultadoJugador2() != null ? entity.getResultadoJugador2().name() : null)
                 .build();
     }
 }

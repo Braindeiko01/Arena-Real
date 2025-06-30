@@ -59,6 +59,12 @@ export interface BackendPartidaRequestDto {
   resultadoJson?: string;
 }
 
+export interface BackendPartidaResultadoRequestDto {
+  jugadorId: string;
+  resultado: 'VICTORIA' | 'DERROTA';
+  captura?: string;
+}
+
 export interface BackendPartidaResponseDto {
   id: string; // UUID de la partida
   apuestaId: string; // UUID de la apuesta
@@ -71,6 +77,10 @@ export interface BackendPartidaResponseDto {
   creada: string; // date-time
   validadaEn?: string; // date-time
   monto: number;
+  capturaJugador1?: string;
+  capturaJugador2?: string;
+  resultadoJugador1?: string;
+  resultadoJugador2?: string;
 }
 
 export interface BackendMatchResultDto {

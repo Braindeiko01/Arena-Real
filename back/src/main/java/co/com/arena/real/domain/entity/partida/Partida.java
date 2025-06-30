@@ -2,6 +2,7 @@ package co.com.arena.real.domain.entity.partida;
 
 import co.com.arena.real.domain.entity.Apuesta;
 import co.com.arena.real.domain.entity.Jugador;
+import co.com.arena.real.domain.entity.partida.ResultadoJugador;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
@@ -64,4 +66,20 @@ public class Partida {
     @ManyToOne
     @JoinColumn(name = "ganador_id")
     private Jugador ganador;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "resultado_jugador1")
+    private ResultadoJugador resultadoJugador1;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "resultado_jugador2")
+    private ResultadoJugador resultadoJugador2;
+
+    @Lob
+    @Column(name = "captura_jugador1", columnDefinition = "text")
+    private String capturaJugador1;
+
+    @Lob
+    @Column(name = "captura_jugador2", columnDefinition = "text")
+    private String capturaJugador2;
 }

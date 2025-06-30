@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import useFirestoreChat from '@/hooks/useFirestoreChat';
 import { BACKEND_URL } from '@/lib/config';
 import type { ChatMessage, User } from '@/types';
-import { assignMatchWinnerAction } from '@/lib/actions';
+import { submitMatchResultAction } from '@/lib/actions';
 
 import { Label } from '@/components/ui/label';
 
@@ -173,18 +173,31 @@ const ChatPageContent = () => {
   };
 
   const handleResultSubmission = async (result: 'win' | 'loss') => {
-    if (!user || !user.id || resultSubmitted) { // user.id es googleId
-        toast({ title: "Error", description: "No se puede enviar el resultado sin identificación de usuario.", variant: "destructive"});
-        return;
+    if (!user || !user.id || resultSubmitted) {
+      toast({ title: 'Error', description: 'No se puede enviar el resultado sin identificación de usuario.', variant: 'destructive' })
+      return
     }
 
-    const winnerId = result === 'win' ? user.id : validOpponentGoogleId;
+    let screenshotBase64: string | undefined
+    if (screenshotFile) {
+      screenshotBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = () => reject(new Error('Error leyendo captura'))
+        reader.readAsDataURL(screenshotFile)
+      })
+    }
 
-    const response = await assignMatchWinnerAction(validChatId, winnerId);
+    const response = await submitMatchResultAction(
+      validChatId,
+      user.id,
+      result === 'win' ? 'VICTORIA' : 'DERROTA',
+      screenshotBase64,
+    )
 
     if (response.error) {
-      toast({ title: 'Error', description: response.error, variant: 'destructive' });
-      return;
+      toast({ title: 'Error', description: response.error, variant: 'destructive' })
+      return
     }
     
     toast({
