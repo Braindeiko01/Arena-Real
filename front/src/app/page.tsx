@@ -34,6 +34,7 @@ const HomePageContent = () => {
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false);
 
   const [isModeModalOpen, setIsModeModalOpen] = useState(false);
+
   const [isSearching, setIsSearching] = useState(false);
   const [pendingMatch, setPendingMatch] = useState<{ apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; chatId?: string; } | null>(null);
   const [hasAccepted, setHasAccepted] = useState(false);
