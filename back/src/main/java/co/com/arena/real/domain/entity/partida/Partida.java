@@ -19,6 +19,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -50,6 +51,9 @@ public class Partida {
 
     @Column(name = "creada_en")
     private LocalDateTime creada;
+
+    @Column(nullable = false)
+    private BigDecimal monto;
 
     @Column(name = "chat_id")
     private UUID chatId;

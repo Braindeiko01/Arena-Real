@@ -32,7 +32,7 @@ public class MatchSseService {
     }
 
     public void notifyMatchFound(Partida partida) {
-        UUID apuestaId = partida.getApuesta().getId();
+        UUID apuestaId = partida.getApuesta() != null ? partida.getApuesta().getId() : null;
         UUID partidaId = partida.getId();
         notifyMatchFound(apuestaId, partidaId, partida.getJugador1(), partida.getJugador2());
     }
@@ -40,8 +40,9 @@ public class MatchSseService {
     public void notifyChatReady(Partida partida) {
         UUID apuestaId = partida.getApuesta().getId();
         UUID chatId = partida.getChatId();
-        sendChatReady(partida.getJugador1().getId(), apuestaId, chatId, partida.getJugador2());
-        sendChatReady(partida.getJugador2().getId(), apuestaId, chatId, partida.getJugador1());
+        UUID partidaId = partida.getId();
+        sendChatReady(partida.getJugador1().getId(), apuestaId, partidaId, chatId, partida.getJugador2());
+        sendChatReady(partida.getJugador2().getId(), apuestaId, partidaId, chatId, partida.getJugador1());
     }
 
     private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, Jugador oponente) {
@@ -66,7 +67,7 @@ public class MatchSseService {
         }
     }
 
-    private void sendChatReady(String receptorId, UUID apuestaId, UUID chatId, Jugador oponente) {
+    private void sendChatReady(String receptorId, UUID apuestaId, UUID partidaId, UUID chatId, Jugador oponente) {
         SseEmitter emitter = emitters.get(receptorId);
         if (emitter == null) {
             return;
@@ -74,7 +75,7 @@ public class MatchSseService {
         String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
         MatchSseDto dto = MatchSseDto.builder()
                 .apuestaId(apuestaId)
-                .partidaId(null)
+                .partidaId(partidaId)
                 .chatId(chatId)
                 .jugadorOponenteId(oponente.getId())
                 .jugadorOponenteTag(tag)
