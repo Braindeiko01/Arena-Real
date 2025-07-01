@@ -35,15 +35,38 @@ const HomePageContent = () => {
 
   const [isModeModalOpen, setIsModeModalOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [matchFoundData, setMatchFoundData] = useState<
+    | {
+        apuestaId: string
+        jugadorOponenteId: string
+        jugadorOponenteTag: string
+        chatId: string
+      }
+    | null
+  >(null)
 
-  const handleMatchFound = (data: { apuestaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; chatId: string; }) => {
-    console.log('Match encontrado via SSE:', data);
-    setIsSearching(false);
-    toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
-    router.push(
-      `/chat/${data.chatId}?opponentTag=${encodeURIComponent(data.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
-    );
-  };
+  const handleMatchFound = (data: {
+    apuestaId: string
+    jugadorOponenteId: string
+    jugadorOponenteTag: string
+    chatId: string
+  }) => {
+    console.log('Match encontrado via SSE:', data)
+    setIsSearching(false)
+    setMatchFoundData(data)
+    toast({
+      title: 'Duelo encontrado',
+      description: `El oponente ${data.jugadorOponenteTag} aceptó el duelo.`,
+    })
+    setTimeout(() => {
+      router.push(
+        `/chat/${data.chatId}?opponentTag=${encodeURIComponent(
+          data.jugadorOponenteTag
+        )}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
+      )
+      setMatchFoundData(null)
+    }, 1500)
+  }
 
   useMatchmakingSse(isSearching ? user?.id : undefined, handleMatchFound);
 
@@ -364,6 +387,20 @@ const HomePageContent = () => {
                 Cancelar
               </CartoonButton>
             </CardFooter>
+          </Card>
+        </div>
+      )}
+
+      {/* Match Found Overlay */}
+      {matchFoundData && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in-up">
+          <Card className="w-full max-w-sm shadow-xl border-2 border-accent text-center space-y-6 p-6">
+            <CardHeader>
+              <CardTitle className="text-2xl font-headline text-primary">Oponente encontrado</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg text-muted-foreground">{matchFoundData.jugadorOponenteTag} aceptó el duelo. Preparando sala...</p>
+            </CardContent>
           </Card>
         </div>
       )}
