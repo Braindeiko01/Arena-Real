@@ -28,15 +28,15 @@ public class MatchmakingController {
     @PostMapping("/ejecutar")
     public ResponseEntity<?> ejecutarMatchmaking(@RequestBody PartidaEnEsperaRequest request) {
         return matchmakingService.intentarEmparejar(request)
-                .map(partida -> {
-                    Jugador oponente = partida.getJugador1().getId().equals(request.getJugadorId())
-                            ? partida.getJugador2()
-                            : partida.getJugador1();
+                .map(proposal -> {
+                    Jugador oponente = proposal.getJugador1().getId().equals(request.getJugadorId())
+                            ? proposal.getJugador2()
+                            : proposal.getJugador1();
 
                     String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
                     return MatchSseDto.builder()
-                            .apuestaId(partida.getApuesta() != null ? partida.getApuesta().getId() : null)
-                            .partidaId(partida.getId())
+                            .apuestaId(null)
+                            .partidaId(proposal.getId())
                             .jugadorOponenteId(oponente.getId())
                             .jugadorOponenteTag(tag)
                             .build();
