@@ -6,6 +6,8 @@ import co.com.arena.real.infrastructure.dto.rs.MatchSseDto;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class MatchSseService {
+
+    private static final Logger log = LoggerFactory.getLogger(MatchSseService.class);
 
     private static class EmitterWrapper {
         final SseEmitter emitter;
@@ -33,28 +37,35 @@ public class MatchSseService {
     }
 
     public SseEmitter subscribe(String jugadorId) {
-        EmitterWrapper existing = emitters.remove(jugadorId);
-        if (existing != null) {
-            existing.emitter.complete();
-        }
-
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-        emitters.put(jugadorId, new EmitterWrapper(emitter));
-        emitter.onCompletion(() -> emitters.remove(jugadorId));
-        emitter.onTimeout(() -> emitters.remove(jugadorId));
-        emitter.onError(ex -> emitters.remove(jugadorId));
-
-        LatestEvent last = latestEvents.get(jugadorId);
-        if (last != null) {
-            try {
-                emitter.send(SseEmitter.event().name(last.name()).data(last.dto()));
-                latestEvents.remove(jugadorId);
-            } catch (IOException e) {
-                emitters.remove(jugadorId);
-                emitter.completeWithError(e);
+        String lock = ("lock_" + jugadorId).intern();
+        synchronized (lock) {
+            EmitterWrapper existing = emitters.remove(jugadorId);
+            if (existing != null) {
+                existing.emitter.complete();
             }
+
+            SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+            EmitterWrapper wrapper = new EmitterWrapper(emitter);
+            emitters.put(jugadorId, wrapper);
+
+            emitter.onCompletion(() -> removeEmitter(jugadorId));
+            emitter.onTimeout(() -> removeEmitter(jugadorId));
+            emitter.onError(ex -> removeEmitter(jugadorId));
+
+            LatestEvent last = latestEvents.get(jugadorId);
+            if (last != null) {
+                try {
+                    emitter.send(SseEmitter.event().name(last.name()).data(last.dto()));
+                    latestEvents.remove(jugadorId);
+                } catch (IOException e) {
+                    removeEmitter(jugadorId);
+                    emitter.completeWithError(e);
+                }
+            }
+
+            log.info("Nueva conexión SSE para jugador: {}", jugadorId);
+            return emitter;
         }
-        return emitter;
     }
 
     public void notifyMatchFound(UUID apuestaId, UUID partidaId, Jugador jugador1, Jugador jugador2) {
@@ -104,7 +115,7 @@ public class MatchSseService {
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
         } catch (IOException e) {
-            emitters.remove(receptorId);
+            removeEmitter(receptorId);
             wrapper.emitter.completeWithError(e);
         }
     }
@@ -131,7 +142,7 @@ public class MatchSseService {
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
         } catch (IOException e) {
-            emitters.remove(receptorId);
+            removeEmitter(receptorId);
             wrapper.emitter.completeWithError(e);
         }
     }
@@ -157,7 +168,7 @@ public class MatchSseService {
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
         } catch (IOException e) {
-            emitters.remove(receptorId);
+            removeEmitter(receptorId);
             wrapper.emitter.completeWithError(e);
         }
     }
@@ -176,7 +187,7 @@ public class MatchSseService {
             wrapper.emitter.send(SseEmitter.event().data(payload));
             wrapper.lastAccess = System.currentTimeMillis();
         } catch (IOException e) {
-            emitters.remove(receptorId);
+            removeEmitter(receptorId);
             wrapper.emitter.completeWithError(e);
         }
     }
@@ -188,7 +199,7 @@ public class MatchSseService {
                 wrapper.emitter.send(SseEmitter.event().comment("heartbeat"));
                 wrapper.lastAccess = System.currentTimeMillis();
             } catch (IOException e) {
-                emitters.remove(id);
+                removeEmitter(id);
             }
         });
     }
@@ -199,9 +210,14 @@ public class MatchSseService {
         long ttl = 5 * 60 * 1000L;
         emitters.forEach((id, wrapper) -> {
             if (now - wrapper.lastAccess > ttl) {
-                emitters.remove(id);
+                removeEmitter(id);
                 wrapper.emitter.complete();
             }
         });
+    }
+
+    private void removeEmitter(String jugadorId) {
+        emitters.remove(jugadorId);
+        log.info("Desconectado SSE jugador: {}", jugadorId);
     }
 }
