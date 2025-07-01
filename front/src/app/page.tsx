@@ -69,7 +69,16 @@ const HomePageContent = () => {
     }
   };
 
-  useMatchmakingSse(user?.id, handleMatchFound, handleChatReady, handleOpponentAccepted);
+  const handleMatchCancelled = (data: { apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
+    if (pendingMatch && pendingMatch.partidaId === data.partidaId) {
+      toast({ title: 'Duelo cancelado', description: `${data.jugadorOponenteTag} canceló el duelo.` });
+      setPendingMatch(null);
+      setHasAccepted(false);
+      setOpponentAccepted(false);
+    }
+  };
+
+  useMatchmakingSse(user?.id, handleMatchFound, handleChatReady, handleOpponentAccepted, handleMatchCancelled);
 
   useEffect(() => {
     console.log("¡La página de inicio se ha cargado en el frontend! Puedes ver este mensaje en la consola del navegador.");
@@ -166,7 +175,7 @@ const HomePageContent = () => {
 
   async function handleDeclineMatch() {
     if (!pendingMatch) return;
-    await declineMatchAction(user.id, pendingMatch.jugadorOponenteId);
+    await declineMatchAction(user.id, pendingMatch.jugadorOponenteId, pendingMatch.partidaId);
     toast({ title: 'Duelo cancelado', description: 'No se iniciará este duelo.' });
     setPendingMatch(null);
   }

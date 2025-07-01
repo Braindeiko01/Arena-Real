@@ -14,16 +14,19 @@ export default function useMatchmakingSse(
   playerId: string | undefined,
   onMatchFound: (data: MatchEventData) => void,
   onChatReady: (data: MatchEventData) => void,
-  onOpponentAccepted?: (data: MatchEventData) => void
+  onOpponentAccepted?: (data: MatchEventData) => void,
+  onMatchCancelled?: (data: MatchEventData) => void
 ) {
   const { toast } = useToast();
   const eventSourceRef = useRef<EventSource | null>(null);
   const onMatchFoundRef = useRef(onMatchFound);
   const onChatReadyRef = useRef(onChatReady);
   const onOpponentAcceptedRef = useRef(onOpponentAccepted);
+  const onMatchCancelledRef = useRef(onMatchCancelled);
   const matchHandlerRef = useRef<(event: MessageEvent) => void>();
   const readyHandlerRef = useRef<(event: MessageEvent) => void>();
   const acceptedHandlerRef = useRef<(event: MessageEvent) => void>();
+  const cancelledHandlerRef = useRef<(event: MessageEvent) => void>();
 
   // Mantener la referencia a la función onMatch sin provocar que el efecto se reinicie
   useEffect(() => {
@@ -37,6 +40,10 @@ export default function useMatchmakingSse(
   useEffect(() => {
     onOpponentAcceptedRef.current = onOpponentAccepted;
   }, [onOpponentAccepted]);
+
+  useEffect(() => {
+    onMatchCancelledRef.current = onMatchCancelled;
+  }, [onMatchCancelled]);
 
   useEffect(() => {
     if (!playerId) return;
@@ -74,6 +81,17 @@ export default function useMatchmakingSse(
     };
     acceptedHandlerRef.current = acceptedHandler;
 
+    const cancelledHandler = (event: MessageEvent) => {
+      try {
+        const data: MatchEventData = JSON.parse(event.data);
+        console.log('Duelo cancelado:', data);
+        onMatchCancelledRef.current && onMatchCancelledRef.current(data);
+      } catch (err) {
+        console.error('Error al procesar evento SSE de cancelación:', err);
+      }
+    };
+    cancelledHandlerRef.current = cancelledHandler;
+
     const connect = () => {
       const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
       console.log('Abriendo conexión SSE de matchmaking:', url);
@@ -88,6 +106,9 @@ export default function useMatchmakingSse(
       }
       if (acceptedHandlerRef.current) {
         es.addEventListener('opponent-accepted', acceptedHandlerRef.current as EventListener);
+      }
+      if (cancelledHandlerRef.current) {
+        es.addEventListener('match-cancelled', cancelledHandlerRef.current as EventListener);
       }
 
       es.onerror = (err) => {
@@ -111,6 +132,9 @@ export default function useMatchmakingSse(
         }
         if (acceptedHandlerRef.current) {
           eventSourceRef.current.removeEventListener('opponent-accepted', acceptedHandlerRef.current as EventListener);
+        }
+        if (cancelledHandlerRef.current) {
+          eventSourceRef.current.removeEventListener('match-cancelled', cancelledHandlerRef.current as EventListener);
         }
         eventSourceRef.current.close();
       }

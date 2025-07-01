@@ -286,13 +286,14 @@ export async function cancelMatchmakingAction(
 
 export async function declineMatchAction(
   userGoogleId: string,
-  opponentId: string
+  opponentId: string,
+  matchId: string
 ): Promise<{ success: boolean; error: string | null }> {
   try {
     const res = await fetch(`${BACKEND_URL}/api/matchmaking/declinar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jugadorId: userGoogleId, oponenteId: opponentId }),
+      body: JSON.stringify({ jugadorId: userGoogleId, oponenteId: opponentId, partidaId: matchId }),
     })
 
     if (!res.ok) {
