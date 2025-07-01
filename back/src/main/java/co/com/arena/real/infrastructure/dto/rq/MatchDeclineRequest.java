@@ -6,4 +6,5 @@ import lombok.Data;
 public class MatchDeclineRequest {
     private String jugadorId;
     private String oponenteId;
+    private java.util.UUID partidaId;
 }

@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Coins, UploadCloud, Swords, Layers, Banknote, Loader2 } from 'lucide-react';
 import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction, declineMatchAction, acceptMatchAction } from '@/lib/actions';
 import useTransactionUpdates from '@/hooks/useTransactionUpdates';
-import useMatchmakingSse from '@/hooks/useMatchmakingSse';
+import useMatchmakingSse, { MatchEventData } from '@/hooks/useMatchmakingSse';
 
 
 const HomePageContent = () => {
@@ -41,7 +41,7 @@ const HomePageContent = () => {
   const [opponentAccepted, setOpponentAccepted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(25);
 
-  const handleMatchFound = (data: { apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
+  const handleMatchFound = (data: MatchEventData) => {
     console.log('Match encontrado via SSE:', data);
     setIsSearching(false);
     setTimeLeft(25);
@@ -50,26 +50,39 @@ const HomePageContent = () => {
     setOpponentAccepted(false);
   };
 
-  const handleChatReady = (data: { chatId: string; apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
+  const handleChatReady = (data: MatchEventData) => {
     if (hasAccepted && pendingMatch && pendingMatch.partidaId === data.partidaId) {
-      toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
-      router.push(
-        `/chat/${data.chatId}?opponentTag=${encodeURIComponent(data.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
-      );
-      setPendingMatch(null);
-      setHasAccepted(false);
-      setOpponentAccepted(false);
+      if (data.chatId) {
+        toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
+        router.push(
+          `/chat/${data.chatId}?opponentTag=${encodeURIComponent(data.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
+        );
+        setPendingMatch(null);
+        setHasAccepted(false);
+        setOpponentAccepted(false);
+      } else {
+        toast({ title: 'Esperando al oponente', description: 'Se enviará una notificación cuando el chat esté listo.' });
+      }
     }
   };
 
-  const handleOpponentAccepted = (data: { apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
+  const handleOpponentAccepted = (data: MatchEventData) => {
     if (pendingMatch && pendingMatch.partidaId === data.partidaId) {
       setOpponentAccepted(true);
       toast({ title: 'Oponente listo', description: `${data.jugadorOponenteTag} ha aceptado el duelo.` });
     }
   };
 
-  useMatchmakingSse(user?.id, handleMatchFound, handleChatReady, handleOpponentAccepted);
+  const handleMatchCancelled = (data: MatchEventData) => {
+    if (pendingMatch && pendingMatch.partidaId === data.partidaId) {
+      toast({ title: 'Duelo cancelado', description: `${data.jugadorOponenteTag} canceló el duelo.` });
+      setPendingMatch(null);
+      setHasAccepted(false);
+      setOpponentAccepted(false);
+    }
+  };
+
+  useMatchmakingSse(user?.id, handleMatchFound, handleChatReady, handleOpponentAccepted, handleMatchCancelled);
 
   useEffect(() => {
     console.log("¡La página de inicio se ha cargado en el frontend! Puedes ver este mensaje en la consola del navegador.");
@@ -144,7 +157,7 @@ const HomePageContent = () => {
   };
 
   async function handleAcceptMatch() {
-    if (!pendingMatch) return;
+    if (!pendingMatch || !user) return;
     setHasAccepted(true);
     const result = await acceptMatchAction(pendingMatch.partidaId, user.id);
     if (result.duel && result.duel.chatId) {
@@ -160,8 +173,8 @@ const HomePageContent = () => {
   }
 
   async function handleDeclineMatch() {
-    if (!pendingMatch) return;
-    await declineMatchAction(user.id, pendingMatch.jugadorOponenteId);
+    if (!pendingMatch || !user) return;
+    await declineMatchAction(user.id, pendingMatch.jugadorOponenteId, pendingMatch.partidaId);
     toast({ title: 'Duelo cancelado', description: 'No se iniciará este duelo.' });
     setPendingMatch(null);
   }

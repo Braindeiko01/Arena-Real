@@ -77,6 +77,7 @@ export interface BackendPartidaResponseDto {
   creada: string; // date-time
   validadaEn?: string; // date-time
   monto: number;
+  chatId?: string;
   capturaJugador1?: string;
   capturaJugador2?: string;
   resultadoJugador1?: string;
