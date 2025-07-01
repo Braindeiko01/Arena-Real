@@ -65,9 +65,9 @@ public class PartidaService {
 
     @Transactional
     public PartidaResponse aceptarPartida(UUID partidaId, String jugadorId) {
-        Partida partida = partidaRepository.findById(partidaId).orElse(null);
+        Partida partida = partidaRepository.findByIdForUpdate(partidaId).orElse(null);
         if (partida == null) {
-            MatchProposal proposal = matchProposalRepository.findById(partidaId)
+            MatchProposal proposal = matchProposalRepository.findByIdForUpdate(partidaId)
                     .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
 
             if (proposal.getJugador1() != null && proposal.getJugador1().getId().equals(jugadorId)) {
@@ -169,7 +169,7 @@ public class PartidaService {
 
     @Transactional
     public PartidaResponse reportarResultado(UUID partidaId, PartidaResultadoRequest dto) {
-        Partida partida = partidaRepository.findById(partidaId)
+        Partida partida = partidaRepository.findByIdForUpdate(partidaId)
                 .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
 
         if (partida.isValidada() || partida.getEstado() == EstadoPartida.FINALIZADA) {
@@ -194,7 +194,7 @@ public class PartidaService {
 
     @Transactional
     public PartidaResponse asignarGanador(UUID partidaId, String jugadorId) {
-        Partida partida = partidaRepository.findById(partidaId)
+        Partida partida = partidaRepository.findByIdForUpdate(partidaId)
                 .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
 
         co.com.arena.real.domain.entity.Jugador jugador = jugadorRepository.findById(jugadorId)
@@ -209,7 +209,7 @@ public class PartidaService {
 
     @Transactional
     public PartidaResponse marcarComoValidada(UUID partidaId) {
-        Partida partida = partidaRepository.findById(partidaId)
+        Partida partida = partidaRepository.findByIdForUpdate(partidaId)
                 .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
         partida.setValidada(true);
         partida.setValidadaEn(LocalDateTime.now());
@@ -240,7 +240,7 @@ public class PartidaService {
 
     @Transactional
     public PartidaResponse cancelarPartida(UUID partidaId) {
-        Partida partida = partidaRepository.findById(partidaId)
+        Partida partida = partidaRepository.findByIdForUpdate(partidaId)
                 .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
 
         if (partida.getEstado() == EstadoPartida.CANCELADA || partida.getEstado() == EstadoPartida.FINALIZADA) {

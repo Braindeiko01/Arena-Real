@@ -24,6 +24,11 @@ const HomePageContent = () => {
   const { toast } = useToast();
   useTransactionUpdates();
 
+  const storedUserId =
+    typeof window !== 'undefined'
+      ? localStorage.getItem('cr_duels_user_id')
+      : null;
+
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [depositAmount, setDepositAmount] = useState('');
   const [depositScreenshotFile, setDepositScreenshotFile] = useState<File | null>(null);
@@ -97,7 +102,6 @@ const HomePageContent = () => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          handleDeclineMatch();
           return 0;
         }
         return prev - 1;
@@ -105,6 +109,12 @@ const HomePageContent = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, [pendingMatch]);
+
+  useEffect(() => {
+    if (pendingMatch && timeLeft === 0) {
+      handleDeclineMatch();
+    }
+  }, [timeLeft, pendingMatch]);
 
   if (!user) {
     return <p>Cargando datos del usuario...</p>;
