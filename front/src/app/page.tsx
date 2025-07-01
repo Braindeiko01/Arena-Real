@@ -38,6 +38,7 @@ const HomePageContent = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [pendingMatch, setPendingMatch] = useState<{ apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; chatId?: string; } | null>(null);
   const [hasAccepted, setHasAccepted] = useState(false);
+  const [opponentAccepted, setOpponentAccepted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(25);
 
   const handleMatchFound = (data: { apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
@@ -46,6 +47,7 @@ const HomePageContent = () => {
     setTimeLeft(25);
     setPendingMatch({ ...data, chatId: undefined });
     setHasAccepted(false);
+    setOpponentAccepted(false);
   };
 
   const handleChatReady = (data: { chatId: string; apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
@@ -56,10 +58,18 @@ const HomePageContent = () => {
       );
       setPendingMatch(null);
       setHasAccepted(false);
+      setOpponentAccepted(false);
     }
   };
 
-  useMatchmakingSse(user?.id, handleMatchFound, handleChatReady);
+  const handleOpponentAccepted = (data: { apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; }) => {
+    if (pendingMatch && pendingMatch.partidaId === data.partidaId) {
+      setOpponentAccepted(true);
+      toast({ title: 'Oponente listo', description: `${data.jugadorOponenteTag} ha aceptado el duelo.` });
+    }
+  };
+
+  useMatchmakingSse(user?.id, handleMatchFound, handleChatReady, handleOpponentAccepted);
 
   useEffect(() => {
     console.log("¡La página de inicio se ha cargado en el frontend! Puedes ver este mensaje en la consola del navegador.");
@@ -445,10 +455,21 @@ const HomePageContent = () => {
                   style={{ width: `${(timeLeft / 25) * 100}%`, transition: 'width 1s linear' }}
                 ></div>
               </div>
+              {hasAccepted && !opponentAccepted && (
+                <p className="text-center text-sm text-muted-foreground">Esperando al oponente...</p>
+              )}
+              {opponentAccepted && !hasAccepted && (
+                <p className="text-center text-sm text-muted-foreground">El oponente ya aceptó.</p>
+              )}
+              {hasAccepted && opponentAccepted && (
+                <p className="text-center text-sm text-muted-foreground">Preparando el chat...</p>
+              )}
             </CardContent>
             <CardFooter className="flex justify-end gap-3">
               <CartoonButton variant="secondary" size="small" onClick={handleDeclineMatch}>Cancelar</CartoonButton>
-              <CartoonButton variant="default" size="small" onClick={handleAcceptMatch}>Aceptar</CartoonButton>
+              {!hasAccepted && (
+                <CartoonButton variant="default" size="small" onClick={handleAcceptMatch}>Aceptar</CartoonButton>
+              )}
             </CardFooter>
           </Card>
         </div>

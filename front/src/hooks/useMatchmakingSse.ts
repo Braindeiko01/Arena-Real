@@ -13,14 +13,17 @@ interface MatchEventData {
 export default function useMatchmakingSse(
   playerId: string | undefined,
   onMatchFound: (data: MatchEventData) => void,
-  onChatReady: (data: MatchEventData) => void
+  onChatReady: (data: MatchEventData) => void,
+  onOpponentAccepted?: (data: MatchEventData) => void
 ) {
   const { toast } = useToast();
   const eventSourceRef = useRef<EventSource | null>(null);
   const onMatchFoundRef = useRef(onMatchFound);
   const onChatReadyRef = useRef(onChatReady);
+  const onOpponentAcceptedRef = useRef(onOpponentAccepted);
   const matchHandlerRef = useRef<(event: MessageEvent) => void>();
   const readyHandlerRef = useRef<(event: MessageEvent) => void>();
+  const acceptedHandlerRef = useRef<(event: MessageEvent) => void>();
 
   // Mantener la referencia a la función onMatch sin provocar que el efecto se reinicie
   useEffect(() => {
@@ -30,6 +33,10 @@ export default function useMatchmakingSse(
   useEffect(() => {
     onChatReadyRef.current = onChatReady;
   }, [onChatReady]);
+
+  useEffect(() => {
+    onOpponentAcceptedRef.current = onOpponentAccepted;
+  }, [onOpponentAccepted]);
 
   useEffect(() => {
     if (!playerId) return;
@@ -56,6 +63,17 @@ export default function useMatchmakingSse(
     };
     readyHandlerRef.current = readyHandler;
 
+    const acceptedHandler = (event: MessageEvent) => {
+      try {
+        const data: MatchEventData = JSON.parse(event.data);
+        console.log('Oponente aceptó:', data);
+        onOpponentAcceptedRef.current && onOpponentAcceptedRef.current(data);
+      } catch (err) {
+        console.error('Error al procesar evento SSE de aceptación:', err);
+      }
+    };
+    acceptedHandlerRef.current = acceptedHandler;
+
     const connect = () => {
       const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
       console.log('Abriendo conexión SSE de matchmaking:', url);
@@ -67,6 +85,9 @@ export default function useMatchmakingSse(
       }
       if (readyHandlerRef.current) {
         es.addEventListener('chat-ready', readyHandlerRef.current as EventListener);
+      }
+      if (acceptedHandlerRef.current) {
+        es.addEventListener('opponent-accepted', acceptedHandlerRef.current as EventListener);
       }
 
       es.onerror = (err) => {
@@ -87,6 +108,9 @@ export default function useMatchmakingSse(
         }
         if (readyHandlerRef.current) {
           eventSourceRef.current.removeEventListener('chat-ready', readyHandlerRef.current as EventListener);
+        }
+        if (acceptedHandlerRef.current) {
+          eventSourceRef.current.removeEventListener('opponent-accepted', acceptedHandlerRef.current as EventListener);
         }
         eventSourceRef.current.close();
       }

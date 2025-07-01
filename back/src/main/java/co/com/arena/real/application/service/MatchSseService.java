@@ -76,6 +76,13 @@ public class MatchSseService {
         sendChatReady(partida.getJugador2().getId(), apuestaId, partidaId, chatId, partida.getJugador1());
     }
 
+    public void notifyOpponentAccepted(UUID apuestaId, UUID partidaId, Jugador aceptante, Jugador receptor) {
+        if (receptor == null) {
+            return;
+        }
+        sendOpponentAccepted(receptor.getId(), apuestaId, partidaId, aceptante);
+    }
+
     private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, Jugador oponente) {
         String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
         MatchSseDto dto = MatchSseDto.builder()
@@ -120,6 +127,32 @@ public class MatchSseService {
         try {
             wrapper.emitter.send(SseEmitter.event()
                     .name("chat-ready")
+                    .data(dto));
+            wrapper.lastAccess = System.currentTimeMillis();
+            latestEvents.remove(receptorId);
+        } catch (IOException e) {
+            emitters.remove(receptorId);
+            wrapper.emitter.completeWithError(e);
+        }
+    }
+
+    private void sendOpponentAccepted(String receptorId, UUID apuestaId, UUID partidaId, Jugador aceptante) {
+        String tag = aceptante.getTagClash() != null ? aceptante.getTagClash() : aceptante.getNombre();
+        MatchSseDto dto = MatchSseDto.builder()
+                .apuestaId(apuestaId)
+                .partidaId(partidaId)
+                .jugadorOponenteId(aceptante.getId())
+                .jugadorOponenteTag(tag)
+                .build();
+        latestEvents.put(receptorId, new LatestEvent("opponent-accepted", dto));
+
+        EmitterWrapper wrapper = emitters.get(receptorId);
+        if (wrapper == null) {
+            return;
+        }
+        try {
+            wrapper.emitter.send(SseEmitter.event()
+                    .name("opponent-accepted")
                     .data(dto));
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
