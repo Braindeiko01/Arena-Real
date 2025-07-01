@@ -94,6 +94,13 @@ public class MatchSseService {
         sendOpponentAccepted(receptor.getId(), apuestaId, partidaId, aceptante);
     }
 
+    public void notifyMatchCancelled(UUID partidaId, Jugador declinante, Jugador receptor) {
+        if (receptor == null) {
+            return;
+        }
+        sendMatchCancelled(receptor.getId(), partidaId, declinante);
+    }
+
     private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, Jugador oponente) {
         String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
         MatchSseDto dto = MatchSseDto.builder()
@@ -164,6 +171,31 @@ public class MatchSseService {
         try {
             wrapper.emitter.send(SseEmitter.event()
                     .name("opponent-accepted")
+                    .data(dto));
+            wrapper.lastAccess = System.currentTimeMillis();
+            latestEvents.remove(receptorId);
+        } catch (IOException e) {
+            removeEmitter(receptorId);
+            wrapper.emitter.completeWithError(e);
+        }
+    }
+
+    private void sendMatchCancelled(String receptorId, UUID partidaId, Jugador declinante) {
+        String tag = declinante.getTagClash() != null ? declinante.getTagClash() : declinante.getNombre();
+        MatchSseDto dto = MatchSseDto.builder()
+                .partidaId(partidaId)
+                .jugadorOponenteId(declinante.getId())
+                .jugadorOponenteTag(tag)
+                .build();
+        latestEvents.put(receptorId, new LatestEvent("match-cancelled", dto));
+
+        EmitterWrapper wrapper = emitters.get(receptorId);
+        if (wrapper == null) {
+            return;
+        }
+        try {
+            wrapper.emitter.send(SseEmitter.event()
+                    .name("match-cancelled")
                     .data(dto));
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
