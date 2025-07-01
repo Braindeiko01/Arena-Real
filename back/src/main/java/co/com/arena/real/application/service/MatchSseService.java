@@ -37,6 +37,7 @@ public class MatchSseService {
         if (last != null) {
             try {
                 emitter.send(SseEmitter.event().name(last.name()).data(last.dto()));
+                latestEvents.remove(jugadorId);
             } catch (IOException e) {
                 emitters.remove(jugadorId);
                 emitter.completeWithError(e);
@@ -82,6 +83,7 @@ public class MatchSseService {
             emitter.send(SseEmitter.event()
                     .name("match-found")
                     .data(dto));
+            latestEvents.remove(receptorId);
         } catch (IOException e) {
             emitters.remove(receptorId);
             emitter.completeWithError(e);
@@ -107,6 +109,7 @@ public class MatchSseService {
             emitter.send(SseEmitter.event()
                     .name("chat-ready")
                     .data(dto));
+            latestEvents.remove(receptorId);
         } catch (IOException e) {
             emitters.remove(receptorId);
             emitter.completeWithError(e);
