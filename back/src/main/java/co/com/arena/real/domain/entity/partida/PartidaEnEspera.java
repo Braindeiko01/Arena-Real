@@ -16,6 +16,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -41,6 +42,9 @@ public class PartidaEnEspera {
 
     @Column(nullable = false)
     private BigDecimal monto;
+
+    @Column(name = "creada_en", nullable = false)
+    private LocalDateTime creadaEn;
 
 
 }

@@ -3,6 +3,7 @@ package co.com.arena.real.application.service;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.infrastructure.dto.rs.MatchSseDto;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -15,20 +16,30 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class MatchSseService {
 
-    private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private static class EmitterWrapper {
+        final SseEmitter emitter;
+        volatile long lastAccess;
+
+        EmitterWrapper(SseEmitter emitter) {
+            this.emitter = emitter;
+            this.lastAccess = System.currentTimeMillis();
+        }
+    }
+
+    private final Map<String, EmitterWrapper> emitters = new ConcurrentHashMap<>();
     private final Map<String, LatestEvent> latestEvents = new ConcurrentHashMap<>();
 
     private record LatestEvent(String name, MatchSseDto dto) {
     }
 
     public SseEmitter subscribe(String jugadorId) {
-        SseEmitter existing = emitters.remove(jugadorId);
+        EmitterWrapper existing = emitters.remove(jugadorId);
         if (existing != null) {
-            existing.complete();
+            existing.emitter.complete();
         }
 
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-        emitters.put(jugadorId, emitter);
+        emitters.put(jugadorId, new EmitterWrapper(emitter));
         emitter.onCompletion(() -> emitters.remove(jugadorId));
         emitter.onTimeout(() -> emitters.remove(jugadorId));
         emitter.onError(ex -> emitters.remove(jugadorId));
@@ -75,18 +86,19 @@ public class MatchSseService {
                 .build();
         latestEvents.put(receptorId, new LatestEvent("match-found", dto));
 
-        SseEmitter emitter = emitters.get(receptorId);
-        if (emitter == null) {
+        EmitterWrapper wrapper = emitters.get(receptorId);
+        if (wrapper == null) {
             return;
         }
         try {
-            emitter.send(SseEmitter.event()
+            wrapper.emitter.send(SseEmitter.event()
                     .name("match-found")
                     .data(dto));
+            wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
         } catch (IOException e) {
             emitters.remove(receptorId);
-            emitter.completeWithError(e);
+            wrapper.emitter.completeWithError(e);
         }
     }
 
@@ -101,24 +113,25 @@ public class MatchSseService {
                 .build();
         latestEvents.put(receptorId, new LatestEvent("chat-ready", dto));
 
-        SseEmitter emitter = emitters.get(receptorId);
-        if (emitter == null) {
+        EmitterWrapper wrapper = emitters.get(receptorId);
+        if (wrapper == null) {
             return;
         }
         try {
-            emitter.send(SseEmitter.event()
+            wrapper.emitter.send(SseEmitter.event()
                     .name("chat-ready")
                     .data(dto));
+            wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
         } catch (IOException e) {
             emitters.remove(receptorId);
-            emitter.completeWithError(e);
+            wrapper.emitter.completeWithError(e);
         }
     }
 
     private void sendMatch(String receptorId, Partida partida) {
-        SseEmitter emitter = emitters.get(receptorId);
-        if (emitter == null) {
+        EmitterWrapper wrapper = emitters.get(receptorId);
+        if (wrapper == null) {
             return;
         }
         Map<String, Object> partidaMap = new HashMap<>();
@@ -127,10 +140,35 @@ public class MatchSseService {
         payload.put("match", true);
         payload.put("partida", partidaMap);
         try {
-            emitter.send(SseEmitter.event().data(payload));
+            wrapper.emitter.send(SseEmitter.event().data(payload));
+            wrapper.lastAccess = System.currentTimeMillis();
         } catch (IOException e) {
             emitters.remove(receptorId);
-            emitter.completeWithError(e);
+            wrapper.emitter.completeWithError(e);
         }
+    }
+
+    @Scheduled(fixedRate = 15000)
+    public void sendHeartbeats() {
+        emitters.forEach((id, wrapper) -> {
+            try {
+                wrapper.emitter.send(SseEmitter.event().comment("heartbeat"));
+                wrapper.lastAccess = System.currentTimeMillis();
+            } catch (IOException e) {
+                emitters.remove(id);
+            }
+        });
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void limpiarEmitters() {
+        long now = System.currentTimeMillis();
+        long ttl = 5 * 60 * 1000L;
+        emitters.forEach((id, wrapper) -> {
+            if (now - wrapper.lastAccess > ttl) {
+                emitters.remove(id);
+                wrapper.emitter.complete();
+            }
+        });
     }
 }

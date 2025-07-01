@@ -14,12 +14,22 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class SseService {
 
-    private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private static class EmitterWrapper {
+        final SseEmitter emitter;
+        volatile long lastAccess;
+
+        EmitterWrapper(SseEmitter emitter) {
+            this.emitter = emitter;
+            this.lastAccess = System.currentTimeMillis();
+        }
+    }
+
+    private final Map<String, EmitterWrapper> emitters = new ConcurrentHashMap<>();
 
     public SseEmitter subscribe(String jugadorId) {
-        SseEmitter existing = emitters.remove(jugadorId);
+        EmitterWrapper existing = emitters.remove(jugadorId);
         if (existing != null) {
-            existing.complete();
+            existing.emitter.complete();
         }
 
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
@@ -28,17 +38,30 @@ public class SseService {
         emitter.onTimeout(() -> removeEmitter(jugadorId));
         emitter.onError(e -> removeEmitter(jugadorId));
 
-        emitters.put(jugadorId, emitter);
+        emitters.put(jugadorId, new EmitterWrapper(emitter));
         return emitter;
     }
 
     @Scheduled(fixedRate = 15000)
     public void sendHeartbeats() {
-        emitters.forEach((id, emitter) -> {
+        emitters.forEach((id, wrapper) -> {
             try {
-                emitter.send(SseEmitter.event().comment("heartbeat"));
+                wrapper.emitter.send(SseEmitter.event().comment("heartbeat"));
+                wrapper.lastAccess = System.currentTimeMillis();
             } catch (IOException e) {
                 removeEmitter(id);
+            }
+        });
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void limpiarEmitters() {
+        long now = System.currentTimeMillis();
+        long ttl = 5 * 60 * 1000L;
+        emitters.forEach((id, wrapper) -> {
+            if (now - wrapper.lastAccess > ttl) {
+                removeEmitter(id);
+                wrapper.emitter.complete();
             }
         });
     }
@@ -46,18 +69,19 @@ public class SseService {
     public void notificarTransaccionAprobada(TransaccionResponse dto) {
         String jugadorId = dto.getJugadorId();
 
-        SseEmitter emitter = emitters.get(jugadorId);
-        if (emitter == null) {
+        EmitterWrapper wrapper = emitters.get(jugadorId);
+        if (wrapper == null) {
             return;
         }
 
         try {
-            emitter.send(SseEmitter.event()
+            wrapper.emitter.send(SseEmitter.event()
                     .name("transaccion-aprobada")
                     .data(dto));
+            wrapper.lastAccess = System.currentTimeMillis();
         } catch (IOException e) {
             removeEmitter(jugadorId);
-            emitter.completeWithError(e);
+            wrapper.emitter.completeWithError(e);
         }
     }
 
