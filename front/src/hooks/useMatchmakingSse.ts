@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { BACKEND_URL } from '@/lib/config';
 
-interface MatchEventData {
+export interface MatchEventData {
   apuestaId: string;
   partidaId: string;
   jugadorOponenteId: string;
