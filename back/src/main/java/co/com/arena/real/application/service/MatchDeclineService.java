@@ -4,6 +4,7 @@ import co.com.arena.real.domain.entity.matchmaking.MatchDecline;
 import co.com.arena.real.infrastructure.repository.MatchDeclineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,5 +53,10 @@ public class MatchDeclineService {
         return repository.findByJugador1IdAndJugador2Id(j1, j2)
                 .filter(p -> p.getExpiraEn().isAfter(LocalDateTime.now()))
                 .isPresent();
+    }
+
+    @Scheduled(fixedRate = 5 * 60 * 1000)
+    public void limpiarDeclinacionesExpiradas() {
+        repository.deleteAllByExpiraEnBefore(LocalDateTime.now());
     }
 }

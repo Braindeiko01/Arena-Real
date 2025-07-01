@@ -2,6 +2,8 @@ package co.com.arena.real.application.service;
 
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -13,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @RequiredArgsConstructor
 public class SseService {
+
+    private static final Logger log = LoggerFactory.getLogger(SseService.class);
 
     private static class EmitterWrapper {
         final SseEmitter emitter;
@@ -27,19 +31,24 @@ public class SseService {
     private final Map<String, EmitterWrapper> emitters = new ConcurrentHashMap<>();
 
     public SseEmitter subscribe(String jugadorId) {
-        EmitterWrapper existing = emitters.remove(jugadorId);
-        if (existing != null) {
-            existing.emitter.complete();
+        String lock = ("lock_" + jugadorId).intern();
+        synchronized (lock) {
+            EmitterWrapper existing = emitters.remove(jugadorId);
+            if (existing != null) {
+                existing.emitter.complete();
+            }
+
+            SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+            EmitterWrapper wrapper = new EmitterWrapper(emitter);
+
+            emitter.onCompletion(() -> removeEmitter(jugadorId));
+            emitter.onTimeout(() -> removeEmitter(jugadorId));
+            emitter.onError(e -> removeEmitter(jugadorId));
+
+            emitters.put(jugadorId, wrapper);
+            log.info("Nueva conexión SSE para jugador: {}", jugadorId);
+            return emitter;
         }
-
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-
-        emitter.onCompletion(() -> removeEmitter(jugadorId));
-        emitter.onTimeout(() -> removeEmitter(jugadorId));
-        emitter.onError(e -> removeEmitter(jugadorId));
-
-        emitters.put(jugadorId, new EmitterWrapper(emitter));
-        return emitter;
     }
 
     @Scheduled(fixedRate = 15000)
@@ -87,5 +96,6 @@ public class SseService {
 
     private void removeEmitter(String jugadorId) {
         emitters.remove(jugadorId);
+        log.info("Desconectado SSE jugador: {}", jugadorId);
     }
 }
