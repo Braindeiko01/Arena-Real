@@ -16,32 +16,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MatchSseService {
 
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
-    private final Map<String, LatestEvent> latestEvents = new ConcurrentHashMap<>();
-
-    private record LatestEvent(String name, MatchSseDto dto) {
-    }
 
     public SseEmitter subscribe(String jugadorId) {
-        SseEmitter existing = emitters.remove(jugadorId);
-        if (existing != null) {
-            existing.complete();
-        }
-
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         emitters.put(jugadorId, emitter);
         emitter.onCompletion(() -> emitters.remove(jugadorId));
         emitter.onTimeout(() -> emitters.remove(jugadorId));
         emitter.onError(ex -> emitters.remove(jugadorId));
-
-        LatestEvent last = latestEvents.get(jugadorId);
-        if (last != null) {
-            try {
-                emitter.send(SseEmitter.event().name(last.name()).data(last.dto()));
-            } catch (IOException e) {
-                emitters.remove(jugadorId);
-                emitter.completeWithError(e);
-            }
-        }
+                latestEvents.remove(jugadorId);
         return emitter;
     }
 
@@ -65,6 +47,11 @@ public class MatchSseService {
     }
 
     private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, Jugador oponente) {
+        SseEmitter emitter = emitters.get(receptorId);
+        if (emitter == null) {
+            return;
+        }
+            latestEvents.remove(receptorId);
         String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
         MatchSseDto dto = MatchSseDto.builder()
                 .apuestaId(apuestaId)
@@ -72,14 +59,9 @@ public class MatchSseService {
                 .jugadorOponenteId(oponente.getId())
                 .jugadorOponenteTag(tag)
                 .build();
-        latestEvents.put(receptorId, new LatestEvent("match-found", dto));
-
-        SseEmitter emitter = emitters.get(receptorId);
-        if (emitter == null) {
-            return;
-        }
         try {
             emitter.send(SseEmitter.event()
+            latestEvents.remove(receptorId);
                     .name("match-found")
                     .data(dto));
         } catch (IOException e) {
@@ -89,6 +71,10 @@ public class MatchSseService {
     }
 
     private void sendChatReady(String receptorId, UUID apuestaId, UUID partidaId, UUID chatId, Jugador oponente) {
+        SseEmitter emitter = emitters.get(receptorId);
+        if (emitter == null) {
+            return;
+        }
         String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
         MatchSseDto dto = MatchSseDto.builder()
                 .apuestaId(apuestaId)
@@ -97,12 +83,6 @@ public class MatchSseService {
                 .jugadorOponenteId(oponente.getId())
                 .jugadorOponenteTag(tag)
                 .build();
-        latestEvents.put(receptorId, new LatestEvent("chat-ready", dto));
-
-        SseEmitter emitter = emitters.get(receptorId);
-        if (emitter == null) {
-            return;
-        }
         try {
             emitter.send(SseEmitter.event()
                     .name("chat-ready")
