@@ -16,6 +16,8 @@ import co.com.arena.real.infrastructure.repository.ApuestaRepository;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
+import co.com.arena.real.infrastructure.repository.MatchProposalRepository;
+import co.com.arena.real.domain.entity.matchmaking.MatchProposal;
 import co.com.arena.real.domain.entity.partida.EstadoPartida;
 import co.com.arena.real.application.service.ChatService;
 import co.com.arena.real.application.service.ApuestaService;
@@ -38,6 +40,7 @@ public class PartidaService {
     private final ApuestaRepository apuestaRepository;
     private final JugadorRepository jugadorRepository;
     private final TransaccionRepository transaccionRepository;
+    private final MatchProposalRepository matchProposalRepository;
     private final ChatService chatService;
     private final ApuestaService apuestaService;
     private final TransaccionService transaccionService;
@@ -62,8 +65,47 @@ public class PartidaService {
 
     @Transactional
     public PartidaResponse aceptarPartida(UUID partidaId, String jugadorId) {
-        Partida partida = partidaRepository.findById(partidaId)
-                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+        Partida partida = partidaRepository.findById(partidaId).orElse(null);
+        if (partida == null) {
+            MatchProposal proposal = matchProposalRepository.findById(partidaId)
+                    .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+
+            if (proposal.getJugador1() != null && proposal.getJugador1().getId().equals(jugadorId)) {
+                proposal.setAceptadoJugador1(true);
+            } else if (proposal.getJugador2() != null && proposal.getJugador2().getId().equals(jugadorId)) {
+                proposal.setAceptadoJugador2(true);
+            } else {
+                throw new IllegalArgumentException("Jugador no pertenece a la partida");
+            }
+
+            if (proposal.isAceptadoJugador1() && proposal.isAceptadoJugador2()) {
+                partida = Partida.builder()
+                        .id(proposal.getId())
+                        .jugador1(proposal.getJugador1())
+                        .jugador2(proposal.getJugador2())
+                        .modoJuego(proposal.getModoJuego())
+                        .estado(EstadoPartida.PENDIENTE)
+                        .creada(LocalDateTime.now())
+                        .monto(proposal.getMonto())
+                        .aceptadoJugador1(true)
+                        .aceptadoJugador2(true)
+                        .build();
+                partida = partidaRepository.save(partida);
+                matchProposalRepository.delete(proposal);
+            } else {
+                matchProposalRepository.save(proposal);
+                return partidaMapper.toDto(Partida.builder()
+                        .id(proposal.getId())
+                        .jugador1(proposal.getJugador1())
+                        .jugador2(proposal.getJugador2())
+                        .modoJuego(proposal.getModoJuego())
+                        .estado(EstadoPartida.PENDIENTE)
+                        .monto(proposal.getMonto())
+                        .aceptadoJugador1(proposal.isAceptadoJugador1())
+                        .aceptadoJugador2(proposal.isAceptadoJugador2())
+                        .build());
+            }
+        }
 
         if (partida.getJugador1() != null && partida.getJugador1().getId().equals(jugadorId)) {
             partida.setAceptadoJugador1(true);

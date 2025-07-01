@@ -3,20 +3,20 @@ package co.com.arena.real.application.service;
 import co.com.arena.real.domain.entity.partida.EstadoPartida;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.partida.ModoJuego;
-import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.domain.entity.partida.PartidaEnEspera;
+import co.com.arena.real.domain.entity.matchmaking.MatchProposal;
 import co.com.arena.real.infrastructure.dto.rq.PartidaEnEsperaRequest;
 import co.com.arena.real.infrastructure.mapper.PartidaEnEsperaMapper;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import co.com.arena.real.infrastructure.repository.PartidaEnEsperaRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
+import co.com.arena.real.infrastructure.repository.MatchProposalRepository;
 import co.com.arena.real.application.service.MatchSseService;
 import co.com.arena.real.application.service.MatchDeclineService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +28,7 @@ public class MatchmakingService {
     private final PartidaEnEsperaRepository partidaEnEsperaRepository;
     private final JugadorRepository jugadorRepository;
     private final PartidaRepository partidaRepository;
+    private final MatchProposalRepository matchProposalRepository;
     private final MatchSseService matchSseService;
     private final MatchDeclineService matchDeclineService;
 
@@ -37,7 +38,7 @@ public class MatchmakingService {
     );
 
     @Transactional
-    public Optional<Partida> intentarEmparejar(PartidaEnEsperaRequest request) {
+    public Optional<MatchProposal> intentarEmparejar(PartidaEnEsperaRequest request) {
         Jugador jugadorEnEspera = jugadorRepository.findById(request.getJugadorId())
                 .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
 
@@ -83,11 +84,11 @@ public class MatchmakingService {
                     cancelarSolicitudes(jugadorEnEspera);
                     cancelarSolicitudes(jugadorEncontrado);
 
-                    Partida partida = crearPartida(partidaEnEspera, partidaEncontrada);
+                    MatchProposal proposal = crearPropuesta(partidaEnEspera, partidaEncontrada);
 
-                    matchSseService.notifyMatchFound(partida);
+                    matchSseService.notifyMatchFound(null, proposal.getId(), jugadorEnEspera, jugadorEncontrado);
 
-                    return partida;
+                    return proposal;
                 });
     }
 
@@ -99,24 +100,20 @@ public class MatchmakingService {
         partidaEnEsperaRepository.deleteByJugador(new Jugador(jugadorId));
     }
 
-    private Partida crearPartida(PartidaEnEspera partidaEnEspera, PartidaEnEspera partidaEncontrada) {
+    private MatchProposal crearPropuesta(PartidaEnEspera partidaEnEspera, PartidaEnEspera partidaEncontrada) {
         Jugador jugador1 = jugadorRepository.findById(partidaEnEspera.getJugador().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
         Jugador jugador2 = jugadorRepository.findById(partidaEncontrada.getJugador().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
 
-        Partida partida = Partida.builder()
+        MatchProposal proposal = MatchProposal.builder()
                 .jugador1(jugador1)
                 .jugador2(jugador2)
                 .modoJuego(partidaEnEspera.getModoJuego())
-                .estado(EstadoPartida.PENDIENTE)
-                .creada(LocalDateTime.now())
-                .validada(false)
-                .chatId(null)
                 .monto(partidaEnEspera.getMonto())
                 .build();
 
-        return partidaRepository.save(partida);
+        return matchProposalRepository.save(proposal);
     }
 
 }
