@@ -84,7 +84,6 @@ const HomePageContent = () => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          handleDeclineMatch();
           return 0;
         }
         return prev - 1;
@@ -92,6 +91,12 @@ const HomePageContent = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, [pendingMatch]);
+
+  useEffect(() => {
+    if (pendingMatch && timeLeft === 0) {
+      handleDeclineMatch();
+    }
+  }, [timeLeft, pendingMatch]);
 
   if (!user) {
     return <p>Cargando datos del usuario...</p>;
