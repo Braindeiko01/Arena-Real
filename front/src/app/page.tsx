@@ -24,6 +24,11 @@ const HomePageContent = () => {
   const { toast } = useToast();
   useTransactionUpdates();
 
+  const storedUserId =
+    typeof window !== 'undefined'
+      ? localStorage.getItem('cr_duels_user_id')
+      : null;
+
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [depositAmount, setDepositAmount] = useState('');
   const [depositScreenshotFile, setDepositScreenshotFile] = useState<File | null>(null);
@@ -78,7 +83,13 @@ const HomePageContent = () => {
     }
   };
 
-  useMatchmakingSse(user?.id, handleMatchFound, handleChatReady, handleOpponentAccepted, handleMatchCancelled);
+  useMatchmakingSse(
+    user?.id || storedUserId || undefined,
+    handleMatchFound,
+    handleChatReady,
+    handleOpponentAccepted,
+    handleMatchCancelled
+  );
 
   useEffect(() => {
     console.log("¡La página de inicio se ha cargado en el frontend! Puedes ver este mensaje en la consola del navegador.");
