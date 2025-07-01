@@ -59,7 +59,7 @@ const HomePageContent = () => {
     }
   };
 
-  useMatchmakingSse(isSearching || hasAccepted ? user?.id : undefined, handleMatchFound, handleChatReady);
+  useMatchmakingSse(user?.id, handleMatchFound, handleChatReady);
 
   useEffect(() => {
     console.log("¡La página de inicio se ha cargado en el frontend! Puedes ver este mensaje en la consola del navegador.");
