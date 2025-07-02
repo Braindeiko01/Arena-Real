@@ -10,11 +10,36 @@ import { ScrollTextIcon, VictoryIcon, DefeatIcon, InfoIcon } from '@/components/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { getUserDuelsAction } from '@/lib/actions';
+import { BACKEND_URL } from '@/lib/config';
 
 const HistoryPageContent = () => {
   const { user, isLoading: authIsLoading } = useAuth();
   const [bets, setBets] = useState<Bet[]>([]);
+  const [opponents, setOpponents] = useState<Record<string, string>>({});
   const [isPageLoading, setIsPageLoading] = useState(true);
+
+  useEffect(() => {
+    const loadOpponents = async () => {
+      const ids = Array.from(new Set(bets.map(b => b.opponentId).filter(Boolean))) as string[];
+      await Promise.all(
+        ids.map(async id => {
+          if (opponents[id]) return;
+          try {
+            const res = await fetch(`${BACKEND_URL}/api/jugadores/${id}`);
+            if (res.ok) {
+              const data = await res.json();
+              setOpponents(prev => ({ ...prev, [id]: data.nombre }));
+            }
+          } catch (err) {
+            console.error('Error fetching opponent', err);
+          }
+        })
+      );
+    };
+    if (bets.length > 0) {
+      loadOpponents();
+    }
+  }, [bets, opponents]);
 
   useEffect(() => {
     const fetchDuels = async () => {
@@ -31,6 +56,7 @@ const HistoryPageContent = () => {
             result: d.ganadorId ? (d.ganadorId === user.id ? 'win' : 'loss') : undefined,
             status: d.estado as any,
             modoJuego: d.modoJuego,
+            opponentTag: undefined,
           })) as Bet[];
           setBets(mapped);
         } else {
@@ -54,7 +80,9 @@ const HistoryPageContent = () => {
   const lostBets = bets.filter(bet => bet.result === 'loss');
   const pendingBets = bets.filter(bet => !bet.result);
 
-  const BetCard = ({ bet }: { bet: Bet }) => (
+  const BetCard = ({ bet }: { bet: Bet }) => {
+    const name = bet.opponentId ? opponents[bet.opponentId] : undefined;
+    return (
     <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
@@ -77,7 +105,7 @@ const HistoryPageContent = () => {
         <div className="flex justify-between items-center">
           <div>
             <p className="text-base">Monto: <span className="font-semibold text-accent">{new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(bet.amount)}</span></p>
-            {bet.opponentTag && <p className="text-base">Oponente: <span className="font-semibold">{bet.opponentTag}</span></p>}
+            {name && <p className="text-base">Oponente: <span className="font-semibold">{name}</span></p>}
           </div>
           {bet.result === 'win' && <VictoryIcon className="h-8 w-8 text-green-500" />}
           {bet.result === 'loss' && <DefeatIcon className="h-8 w-8 text-destructive" />}
@@ -86,6 +114,7 @@ const HistoryPageContent = () => {
       </CardContent>
     </Card>
   );
+  };
 
   return (
     <Card className="shadow-card-medieval border-2 border-primary-dark overflow-hidden">
