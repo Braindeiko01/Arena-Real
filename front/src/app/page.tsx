@@ -45,6 +45,7 @@ const HomePageContent = () => {
   const [hasAccepted, setHasAccepted] = useState(false);
   const [opponentAccepted, setOpponentAccepted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(25);
+  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const handleMatchFound = (data: MatchEventData) => {
     console.log('Match encontrado via SSE:', data);
@@ -98,17 +99,32 @@ const HomePageContent = () => {
 
   useEffect(() => {
     if (!pendingMatch) return;
-    const interval = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          clearInterval(interval);
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-    return () => clearInterval(interval);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [pendingMatch]);
+
+  useEffect(() => {
+    if (hasAccepted && opponentAccepted && timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, [hasAccepted, opponentAccepted]);
 
   useEffect(() => {
     if (pendingMatch && timeLeft === 0) {
