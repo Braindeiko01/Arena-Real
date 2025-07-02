@@ -4,6 +4,8 @@ import co.com.arena.real.domain.entity.Chat;
 import co.com.arena.real.infrastructure.repository.ChatRepository;
 import com.google.cloud.firestore.Firestore;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,10 +15,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatService {
 
+    private static final Logger log = LoggerFactory.getLogger(ChatService.class);
+
     private final ChatRepository chatRepository;
     private final Firestore firestore;
 
     public UUID crearChatParaPartida(String jugador1Id, String jugador2Id) {
+        log.info("Creando chat para partida entre {} y {}", jugador1Id, jugador2Id);
         Chat chat = Chat.builder()
                 .jugadores(List.of(jugador1Id, jugador2Id))
                 .build();
@@ -30,7 +35,8 @@ public class ChatService {
             firestore.collection("chats")
                     .document(saved.getId().toString())
                     .set(data);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            log.error("Error al crear documento de chat en Firestore", e);
         }
 
         return saved.getId();
@@ -44,6 +50,7 @@ public class ChatService {
         if (chatId == null) {
             return;
         }
+        log.info("Cerrando chat {}", chatId);
         chatRepository.findById(chatId).ifPresent(chat -> {
             chat.setActivo(false);
             chatRepository.save(chat);
@@ -64,7 +71,8 @@ public class ChatService {
                     .document(chatId.toString())
                     .collection("messages")
                     .add(msg);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            log.error("Error al cerrar chat en Firestore", e);
         }
     }
 }
