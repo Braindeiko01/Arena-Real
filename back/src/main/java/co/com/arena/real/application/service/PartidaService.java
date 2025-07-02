@@ -22,7 +22,8 @@ import co.com.arena.real.domain.entity.partida.EstadoPartida;
 import co.com.arena.real.application.service.ChatService;
 import co.com.arena.real.application.service.ApuestaService;
 import co.com.arena.real.application.service.TransaccionService;
-import co.com.arena.real.application.service.MatchSseService;
+import co.com.arena.real.application.service.MatchProposalService;
+import co.com.arena.real.application.service.MatchService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +47,8 @@ public class PartidaService {
     private final ChatService chatService;
     private final ApuestaService apuestaService;
     private final TransaccionService transaccionService;
-    private final MatchSseService matchSseService;
+    private final MatchProposalService matchProposalService;
+    private final MatchService matchService;
 
     private static final Logger log = LoggerFactory.getLogger(PartidaService.class);
 
@@ -71,103 +73,17 @@ public class PartidaService {
     public PartidaResponse aceptarPartida(UUID partidaId, String jugadorId) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId).orElse(null);
         if (partida == null) {
-            MatchProposal proposal = matchProposalRepository.findByIdForUpdate(partidaId)
-                    .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
-
-            if (proposal.getJugador1() != null && proposal.getJugador1().getId().equals(jugadorId)) {
-                proposal.setAceptadoJugador1(true);
-                if (!proposal.isAceptadoJugador2()) {
-                    matchSseService.notifyOpponentAccepted(
-                            null,
-                            proposal.getId(),
-                            proposal.getJugador1(),
-                            proposal.getJugador2());
-                }
-            } else if (proposal.getJugador2() != null && proposal.getJugador2().getId().equals(jugadorId)) {
-                proposal.setAceptadoJugador2(true);
-                if (!proposal.isAceptadoJugador1()) {
-                    matchSseService.notifyOpponentAccepted(
-                            null,
-                            proposal.getId(),
-                            proposal.getJugador2(),
-                            proposal.getJugador1());
-                }
+            java.util.Optional<Partida> maybe = matchProposalService.aceptarPropuesta(partidaId, jugadorId);
+            if (maybe.isPresent()) {
+                partida = partidaRepository.save(maybe.get());
             } else {
-                throw new IllegalArgumentException("Jugador no pertenece a la partida");
-            }
-
-            if (proposal.isAceptadoJugador1() && proposal.isAceptadoJugador2()) {
-                partida = Partida.builder()
-                        .id(proposal.getId())
-                        .jugador1(proposal.getJugador1())
-                        .jugador2(proposal.getJugador2())
-                        .modoJuego(proposal.getModoJuego())
-                        .estado(EstadoPartida.PENDIENTE)
-                        .creada(LocalDateTime.now())
-                        .monto(proposal.getMonto())
-                        .aceptadoJugador1(true)
-                        .aceptadoJugador2(true)
-                        .build();
-                partida = partidaRepository.save(partida);
-                matchProposalRepository.delete(proposal);
-            } else {
-                matchProposalRepository.save(proposal);
-                return partidaMapper.toDto(Partida.builder()
-                        .id(proposal.getId())
-                        .jugador1(proposal.getJugador1())
-                        .jugador2(proposal.getJugador2())
-                        .modoJuego(proposal.getModoJuego())
-                        .estado(EstadoPartida.PENDIENTE)
-                        .monto(proposal.getMonto())
-                        .aceptadoJugador1(proposal.isAceptadoJugador1())
-                        .aceptadoJugador2(proposal.isAceptadoJugador2())
-                        .build());
-            }
-        }
-
-        if (partida.getJugador1() != null && partida.getJugador1().getId().equals(jugadorId)) {
-            partida.setAceptadoJugador1(true);
-            if (!partida.isAceptadoJugador2()) {
-                matchSseService.notifyOpponentAccepted(
-                        partida.getApuesta() != null ? partida.getApuesta().getId() : null,
-                        partida.getId(),
-                        partida.getJugador1(),
-                        partida.getJugador2());
-            }
-        } else if (partida.getJugador2() != null && partida.getJugador2().getId().equals(jugadorId)) {
-            partida.setAceptadoJugador2(true);
-            if (!partida.isAceptadoJugador1()) {
-                matchSseService.notifyOpponentAccepted(
-                        partida.getApuesta() != null ? partida.getApuesta().getId() : null,
-                        partida.getId(),
-                        partida.getJugador2(),
-                        partida.getJugador1());
+                MatchProposal updated = matchProposalRepository.findById(partidaId)
+                        .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+                return partidaMapper.toDto(matchProposalService.crearPartidaDesdePropuesta(updated));
             }
         } else {
-            throw new IllegalArgumentException("Jugador no pertenece a la partida");
-        }
-
-        if (partida.isAceptadoJugador1() && partida.isAceptadoJugador2()) {
-            if (partida.getApuesta() == null) {
-                Apuesta apuesta = apuestaService.crearApuesta(new ApuestaRequest(partida.getMonto()));
-                partida.setApuesta(apuesta);
-
-                realizarTransaccion(apuesta, partida.getJugador1());
-                realizarTransaccion(apuesta, partida.getJugador2());
-            }
-
-            if (partida.getChatId() == null) {
-                log.info("Creando chat para partida {}", partida.getId());
-                UUID chatId = chatService.crearChatParaPartida(
-                        partida.getJugador1().getId(),
-                        partida.getJugador2().getId());
-                partida.setChatId(chatId);
-                log.info("Chat {} creado para partida {}", chatId, partida.getId());
-            }
-
-            partida.setEstado(EstadoPartida.EN_CURSO);
-            log.info("Notificando chat listo para partida {}", partida.getId());
-            matchSseService.notifyChatReady(partida);
+            matchService.aceptar(partida, jugadorId);
+            matchService.procesarSiListo(partida);
         }
 
         Partida saved = partidaRepository.save(partida);
@@ -290,13 +206,4 @@ public class PartidaService {
         });
     }
 
-    private void realizarTransaccion(Apuesta apuesta, co.com.arena.real.domain.entity.Jugador jugador) {
-        TransaccionRequest request = TransaccionRequest.builder()
-                .monto(apuesta.getMonto())
-                .jugadorId(jugador.getId())
-                .tipo(TipoTransaccion.APUESTA)
-                .build();
-        TransaccionResponse response = transaccionService.registrarTransaccion(request);
-        transaccionService.aprobarTransaccion(response.getId());
-    }
 }
