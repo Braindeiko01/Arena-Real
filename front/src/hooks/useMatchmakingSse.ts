@@ -7,6 +7,7 @@ export interface MatchEventData {
   partidaId: string;
   jugadorOponenteId: string;
   jugadorOponenteTag: string;
+  jugadorOponenteNombre: string;
   chatId?: string;
 }
 
