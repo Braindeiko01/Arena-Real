@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class MatchSseService {
@@ -54,13 +55,18 @@ public class MatchSseService {
 
             LatestEvent last = latestEvents.get(jugadorId);
             if (last != null) {
-                try {
-                    emitter.send(SseEmitter.event().name(last.name()).data(last.dto()));
-                    latestEvents.remove(jugadorId);
-                } catch (IOException e) {
-                    removeEmitter(jugadorId);
-                    emitter.completeWithError(e);
-                }
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        wrapper.emitter.send(SseEmitter.event()
+                                .name(last.name())
+                                .data(last.dto()));
+                        wrapper.lastAccess = System.currentTimeMillis();
+                        latestEvents.remove(jugadorId);
+                    } catch (IOException e) {
+                        removeEmitter(jugadorId);
+                        wrapper.emitter.completeWithError(e);
+                    }
+                });
             }
 
             log.info("Nueva conexión SSE para jugador: {}", jugadorId);
@@ -103,11 +109,13 @@ public class MatchSseService {
 
     private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, Jugador oponente) {
         String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
+        String nombre = oponente.getNombre() != null ? oponente.getNombre() : tag;
         MatchSseDto dto = MatchSseDto.builder()
                 .apuestaId(apuestaId)
                 .partidaId(partidaId)
                 .jugadorOponenteId(oponente.getId())
                 .jugadorOponenteTag(tag)
+                .jugadorOponenteNombre(nombre)
                 .build();
         latestEvents.put(receptorId, new LatestEvent("match-found", dto));
 
@@ -129,12 +137,14 @@ public class MatchSseService {
 
     private void sendChatReady(String receptorId, UUID apuestaId, UUID partidaId, UUID chatId, Jugador oponente) {
         String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
+        String nombre = oponente.getNombre() != null ? oponente.getNombre() : tag;
         MatchSseDto dto = MatchSseDto.builder()
                 .apuestaId(apuestaId)
                 .partidaId(partidaId)
                 .chatId(chatId)
                 .jugadorOponenteId(oponente.getId())
                 .jugadorOponenteTag(tag)
+                .jugadorOponenteNombre(nombre)
                 .build();
         latestEvents.put(receptorId, new LatestEvent("chat-ready", dto));
 
@@ -156,11 +166,13 @@ public class MatchSseService {
 
     private void sendOpponentAccepted(String receptorId, UUID apuestaId, UUID partidaId, Jugador aceptante) {
         String tag = aceptante.getTagClash() != null ? aceptante.getTagClash() : aceptante.getNombre();
+        String nombre = aceptante.getNombre() != null ? aceptante.getNombre() : tag;
         MatchSseDto dto = MatchSseDto.builder()
                 .apuestaId(apuestaId)
                 .partidaId(partidaId)
                 .jugadorOponenteId(aceptante.getId())
                 .jugadorOponenteTag(tag)
+                .jugadorOponenteNombre(nombre)
                 .build();
         latestEvents.put(receptorId, new LatestEvent("opponent-accepted", dto));
 
@@ -182,10 +194,12 @@ public class MatchSseService {
 
     private void sendMatchCancelled(String receptorId, UUID partidaId, Jugador declinante) {
         String tag = declinante.getTagClash() != null ? declinante.getTagClash() : declinante.getNombre();
+        String nombre = declinante.getNombre() != null ? declinante.getNombre() : tag;
         MatchSseDto dto = MatchSseDto.builder()
                 .partidaId(partidaId)
                 .jugadorOponenteId(declinante.getId())
                 .jugadorOponenteTag(tag)
+                .jugadorOponenteNombre(nombre)
                 .build();
         latestEvents.put(receptorId, new LatestEvent("match-cancelled", dto));
 

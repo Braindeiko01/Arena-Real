@@ -96,6 +96,7 @@ export interface BackendMatchmakingResponseDto {
   partidaId: string; // UUID de la partida creada
   jugadorOponenteId: string; // googleId del oponente
   jugadorOponenteTag: string;
+  jugadorOponenteNombre: string;
   chatId?: string;
   jugadorOponenteAvatarUrl?: string;
 }

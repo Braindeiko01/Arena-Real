@@ -38,11 +38,13 @@ public class MatchmakingController {
                             : proposal.getJugador1();
 
                     String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
+                    String nombre = oponente.getNombre() != null ? oponente.getNombre() : tag;
                     return MatchSseDto.builder()
                             .apuestaId(null)
                             .partidaId(proposal.getId())
                             .jugadorOponenteId(oponente.getId())
                             .jugadorOponenteTag(tag)
+                            .jugadorOponenteNombre(nombre)
                             .build();
                 })
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
