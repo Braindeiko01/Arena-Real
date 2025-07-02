@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class MatchSseService {
@@ -54,13 +55,18 @@ public class MatchSseService {
 
             LatestEvent last = latestEvents.get(jugadorId);
             if (last != null) {
-                try {
-                    emitter.send(SseEmitter.event().name(last.name()).data(last.dto()));
-                    latestEvents.remove(jugadorId);
-                } catch (IOException e) {
-                    removeEmitter(jugadorId);
-                    emitter.completeWithError(e);
-                }
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        wrapper.emitter.send(SseEmitter.event()
+                                .name(last.name())
+                                .data(last.dto()));
+                        wrapper.lastAccess = System.currentTimeMillis();
+                        latestEvents.remove(jugadorId);
+                    } catch (IOException e) {
+                        removeEmitter(jugadorId);
+                        wrapper.emitter.completeWithError(e);
+                    }
+                });
             }
 
             log.info("Nueva conexión SSE para jugador: {}", jugadorId);
@@ -108,6 +114,7 @@ public class MatchSseService {
                 .partidaId(partidaId)
                 .jugadorOponenteId(oponente.getId())
                 .jugadorOponenteTag(tag)
+                .jugadorOponenteNombre(oponente.getNombre())
                 .build();
         latestEvents.put(receptorId, new LatestEvent("match-found", dto));
 
@@ -135,6 +142,7 @@ public class MatchSseService {
                 .chatId(chatId)
                 .jugadorOponenteId(oponente.getId())
                 .jugadorOponenteTag(tag)
+                .jugadorOponenteNombre(oponente.getNombre())
                 .build();
         latestEvents.put(receptorId, new LatestEvent("chat-ready", dto));
 
@@ -161,6 +169,7 @@ public class MatchSseService {
                 .partidaId(partidaId)
                 .jugadorOponenteId(aceptante.getId())
                 .jugadorOponenteTag(tag)
+                .jugadorOponenteNombre(aceptante.getNombre())
                 .build();
         latestEvents.put(receptorId, new LatestEvent("opponent-accepted", dto));
 
@@ -186,6 +195,7 @@ public class MatchSseService {
                 .partidaId(partidaId)
                 .jugadorOponenteId(declinante.getId())
                 .jugadorOponenteTag(tag)
+                .jugadorOponenteNombre(declinante.getNombre())
                 .build();
         latestEvents.put(receptorId, new LatestEvent("match-cancelled", dto));
 

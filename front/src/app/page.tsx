@@ -41,7 +41,7 @@ const HomePageContent = () => {
   const [isModeModalOpen, setIsModeModalOpen] = useState(false);
 
   const [isSearching, setIsSearching] = useState(false);
-  const [pendingMatch, setPendingMatch] = useState<{ apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; chatId?: string; } | null>(null);
+  const [pendingMatch, setPendingMatch] = useState<{ apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; jugadorOponenteNombre: string; chatId?: string; } | null>(null);
   const [hasAccepted, setHasAccepted] = useState(false);
   const [opponentAccepted, setOpponentAccepted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(25);
@@ -61,7 +61,7 @@ const HomePageContent = () => {
       if (data.chatId) {
         toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
         router.push(
-          `/chat/${data.chatId}?opponentTag=${encodeURIComponent(data.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
+          `/chat/${data.chatId}?opponentTag=${encodeURIComponent(data.jugadorOponenteNombre)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
         );
         setPendingMatch(null);
         setHasAccepted(false);
@@ -75,13 +75,13 @@ const HomePageContent = () => {
   const handleOpponentAccepted = (data: MatchEventData) => {
     if (pendingMatch && pendingMatch.partidaId === data.partidaId) {
       setOpponentAccepted(true);
-      toast({ title: 'Oponente listo', description: `${data.jugadorOponenteTag} ha aceptado el duelo.` });
+      toast({ title: 'Oponente listo', description: `${data.jugadorOponenteNombre} ha aceptado el duelo.` });
     }
   };
 
   const handleMatchCancelled = (data: MatchEventData) => {
     if (pendingMatch && pendingMatch.partidaId === data.partidaId) {
-      toast({ title: 'Duelo cancelado', description: `${data.jugadorOponenteTag} canceló el duelo.` });
+      toast({ title: 'Duelo cancelado', description: `${data.jugadorOponenteNombre} canceló el duelo.` });
       setPendingMatch(null);
       setHasAccepted(false);
       setOpponentAccepted(false);
@@ -176,7 +176,7 @@ const HomePageContent = () => {
       result.match.apuestaId &&
       result.match.partidaId &&
       result.match.jugadorOponenteId &&
-      result.match.jugadorOponenteTag
+      result.match.jugadorOponenteNombre
     ) {
       handleMatchFound(result.match);
     }
@@ -189,7 +189,7 @@ const HomePageContent = () => {
     if (result.duel && result.duel.chatId) {
       toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
       router.push(
-        `/chat/${result.duel.chatId}?opponentTag=${encodeURIComponent(pendingMatch.jugadorOponenteTag)}&opponentGoogleId=${encodeURIComponent(pendingMatch.jugadorOponenteId)}`
+        `/chat/${result.duel.chatId}?opponentTag=${encodeURIComponent(pendingMatch.jugadorOponenteNombre)}&opponentGoogleId=${encodeURIComponent(pendingMatch.jugadorOponenteId)}`
       );
       setPendingMatch(null);
       setHasAccepted(false);
@@ -485,7 +485,7 @@ const HomePageContent = () => {
           <Card className="w-full max-w-md shadow-xl border-2 border-accent">
             <CardHeader>
               <CardTitle className="text-3xl font-headline text-accent text-center">¡Duelo encontrado!</CardTitle>
-              <CardDescription className="text-center text-muted-foreground">Contra {pendingMatch.jugadorOponenteTag}</CardDescription>
+              <CardDescription className="text-center text-muted-foreground">Contra {pendingMatch.jugadorOponenteNombre}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="h-3 w-full bg-secondary rounded">
