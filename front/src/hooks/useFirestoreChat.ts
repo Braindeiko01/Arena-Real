@@ -19,7 +19,9 @@ export default function useFirestoreChat(chatId: string | undefined) {
     const chatRef = doc(db, 'chats', chatId);
     const unsubChat = onSnapshot(chatRef, snap => {
       const data = snap.data() as any;
-      setChatActive(data?.activo ?? false);
+      if (snap.exists() && typeof data.activo === 'boolean') {
+        setChatActive(data.activo);
+      }
     });
 
     const q = query(collection(db, 'chats', chatId, 'messages'), orderBy('timestamp'));
