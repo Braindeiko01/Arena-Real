@@ -76,22 +76,18 @@ public class PartidaService {
 
             if (proposal.getJugador1() != null && proposal.getJugador1().getId().equals(jugadorId)) {
                 proposal.setAceptadoJugador1(true);
-                if (!proposal.isAceptadoJugador2()) {
-                    matchSseService.notifyOpponentAccepted(
-                            null,
-                            proposal.getId(),
-                            proposal.getJugador1(),
-                            proposal.getJugador2());
-                }
+                matchSseService.notifyOpponentAccepted(
+                        null,
+                        proposal.getId(),
+                        proposal.getJugador1(),
+                        proposal.getJugador2());
             } else if (proposal.getJugador2() != null && proposal.getJugador2().getId().equals(jugadorId)) {
                 proposal.setAceptadoJugador2(true);
-                if (!proposal.isAceptadoJugador1()) {
-                    matchSseService.notifyOpponentAccepted(
-                            null,
-                            proposal.getId(),
-                            proposal.getJugador2(),
-                            proposal.getJugador1());
-                }
+                matchSseService.notifyOpponentAccepted(
+                        null,
+                        proposal.getId(),
+                        proposal.getJugador2(),
+                        proposal.getJugador1());
             } else {
                 throw new IllegalArgumentException("Jugador no pertenece a la partida");
             }
@@ -127,22 +123,18 @@ public class PartidaService {
 
         if (partida.getJugador1() != null && partida.getJugador1().getId().equals(jugadorId)) {
             partida.setAceptadoJugador1(true);
-            if (!partida.isAceptadoJugador2()) {
-                matchSseService.notifyOpponentAccepted(
-                        partida.getApuesta() != null ? partida.getApuesta().getId() : null,
-                        partida.getId(),
-                        partida.getJugador1(),
-                        partida.getJugador2());
-            }
+            matchSseService.notifyOpponentAccepted(
+                    partida.getApuesta() != null ? partida.getApuesta().getId() : null,
+                    partida.getId(),
+                    partida.getJugador1(),
+                    partida.getJugador2());
         } else if (partida.getJugador2() != null && partida.getJugador2().getId().equals(jugadorId)) {
             partida.setAceptadoJugador2(true);
-            if (!partida.isAceptadoJugador1()) {
-                matchSseService.notifyOpponentAccepted(
-                        partida.getApuesta() != null ? partida.getApuesta().getId() : null,
-                        partida.getId(),
-                        partida.getJugador2(),
-                        partida.getJugador1());
-            }
+            matchSseService.notifyOpponentAccepted(
+                    partida.getApuesta() != null ? partida.getApuesta().getId() : null,
+                    partida.getId(),
+                    partida.getJugador2(),
+                    partida.getJugador1());
         } else {
             throw new IllegalArgumentException("Jugador no pertenece a la partida");
         }
