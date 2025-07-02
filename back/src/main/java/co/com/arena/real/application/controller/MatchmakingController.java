@@ -45,7 +45,6 @@ public class MatchmakingController {
                             .jugadorOponenteId(oponente.getId())
                             .jugadorOponenteTag(tag)
                             .jugadorOponenteNombre(nombre)
-
                             .build();
                 })
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
