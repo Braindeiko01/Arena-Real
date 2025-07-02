@@ -24,6 +24,8 @@ import co.com.arena.real.application.service.ApuestaService;
 import co.com.arena.real.application.service.TransaccionService;
 import co.com.arena.real.application.service.MatchSseService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +47,8 @@ public class PartidaService {
     private final ApuestaService apuestaService;
     private final TransaccionService transaccionService;
     private final MatchSseService matchSseService;
+
+    private static final Logger log = LoggerFactory.getLogger(PartidaService.class);
 
     public Optional<PartidaResponse> obtenerPorApuestaId(UUID apuestaId) {
         return partidaRepository.findByApuesta_Id(apuestaId).map(partidaMapper::toDto);
@@ -153,13 +157,16 @@ public class PartidaService {
             }
 
             if (partida.getChatId() == null) {
+                log.info("Creando chat para partida {}", partida.getId());
                 UUID chatId = chatService.crearChatParaPartida(
                         partida.getJugador1().getId(),
                         partida.getJugador2().getId());
                 partida.setChatId(chatId);
+                log.info("Chat {} creado para partida {}", chatId, partida.getId());
             }
 
             partida.setEstado(EstadoPartida.EN_CURSO);
+            log.info("Notificando chat listo para partida {}", partida.getId());
             matchSseService.notifyChatReady(partida);
         }
 
