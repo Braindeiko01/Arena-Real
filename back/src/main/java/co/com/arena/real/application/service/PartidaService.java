@@ -75,7 +75,8 @@ public class PartidaService {
         if (partida == null) {
             java.util.Optional<Partida> maybe = matchProposalService.aceptarPropuesta(partidaId, jugadorId);
             if (maybe.isPresent()) {
-                partida = partidaRepository.save(maybe.get());
+                partida = maybe.get();
+                matchService.procesarSiListo(partida);
             } else {
                 MatchProposal updated = matchProposalRepository.findById(partidaId)
                         .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
