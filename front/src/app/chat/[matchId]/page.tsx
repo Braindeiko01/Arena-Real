@@ -32,6 +32,12 @@ const ChatPageContent = () => {
   const opponentTagParam = searchParams.get('opponentTag');
   const opponentGoogleIdParam = searchParams.get('opponentGoogleId');
   const partidaIdParam = searchParams.get('partidaId');
+  const initialPartidaId =
+    partidaIdParam &&
+    partidaIdParam !== 'null' &&
+    partidaIdParam !== 'undefined'
+      ? partidaIdParam
+      : null;
 
   const paramsLoaded =
     chatId !== undefined &&
@@ -63,7 +69,7 @@ const ChatPageContent = () => {
   const validChatId = chatId as string;
   const validOpponentTag = opponentTag as string;
   const validOpponentGoogleId = opponentGoogleId as string;
-  const [partidaId, setPartidaId] = useState<string | null>(partidaIdParam);
+  const [partidaId, setPartidaId] = useState<string | null>(initialPartidaId);
   const [opponentProfile, setOpponentProfile] = useState<User | null>(null);
   const opponentDisplayName = opponentProfile?.username || validOpponentTag;
   const sendMessageSafely = (msg: Omit<ChatMessage, 'id'>) => {
@@ -94,7 +100,7 @@ const ChatPageContent = () => {
 
   useEffect(() => {
     const fetchPartida = async () => {
-      if (partidaId || !chatId) return;
+      if ((partidaId && partidaId !== 'null' && partidaId !== 'undefined') || !chatId) return;
       try {
         const res = await fetch(`${BACKEND_URL}/api/partidas/chat/${encodeURIComponent(chatId)}`);
         if (res.ok) {
