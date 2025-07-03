@@ -15,10 +15,8 @@ import java.util.UUID;
 
 public interface PartidaRepository extends JpaRepository<Partida, UUID> {
     Optional<Partida> findByApuesta_Id(UUID apuestaId);
-
     @Query("SELECT p FROM Partida p WHERE p.chatId = :chatId")
     Optional<Partida> findByChatId(@Param("chatId") UUID chatId);
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Partida p WHERE p.id = :id")
     Optional<Partida> findByIdForUpdate(@Param("id") UUID id);
