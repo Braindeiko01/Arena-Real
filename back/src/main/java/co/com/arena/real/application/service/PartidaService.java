@@ -16,6 +16,7 @@ import co.com.arena.real.infrastructure.repository.ApuestaRepository;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
+import co.com.arena.real.infrastructure.exception.ResourceNotFoundException;
 import co.com.arena.real.infrastructure.repository.MatchProposalRepository;
 import co.com.arena.real.domain.entity.matchmaking.MatchProposal;
 import co.com.arena.real.domain.entity.partida.EstadoPartida;
@@ -83,7 +84,7 @@ public class PartidaService {
                 matchService.procesarSiListo(partida);
             } else {
                 MatchProposal updated = matchProposalRepository.findById(partidaId)
-                        .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Partida no encontrada"));
                 return partidaMapper.toDto(matchProposalService.crearPartidaDesdePropuesta(updated));
             }
         } else {
@@ -99,7 +100,7 @@ public class PartidaService {
     @Transactional
     public PartidaResponse reportarResultado(UUID partidaId, PartidaResultadoRequest dto) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId)
-                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Partida no encontrada"));
 
         if (partida.isValidada() || partida.getEstado() == EstadoPartida.FINALIZADA) {
             throw new IllegalStateException("La partida ya está finalizada");
@@ -124,7 +125,7 @@ public class PartidaService {
     @Transactional
     public PartidaResponse asignarGanador(UUID partidaId, String jugadorId) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId)
-                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Partida no encontrada"));
 
         co.com.arena.real.domain.entity.Jugador jugador = jugadorRepository.findById(jugadorId)
                 .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
@@ -139,7 +140,7 @@ public class PartidaService {
     @Transactional
     public PartidaResponse marcarComoValidada(UUID partidaId) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId)
-                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Partida no encontrada"));
         partida.setValidada(true);
         partida.setValidadaEn(LocalDateTime.now());
         partida.setEstado(EstadoPartida.FINALIZADA);
@@ -170,7 +171,7 @@ public class PartidaService {
     @Transactional
     public PartidaResponse cancelarPartida(UUID partidaId) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId)
-                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Partida no encontrada"));
 
         if (partida.getEstado() == EstadoPartida.CANCELADA || partida.getEstado() == EstadoPartida.FINALIZADA) {
             throw new IllegalStateException("La partida ya está finalizada");
