@@ -11,6 +11,7 @@ import { CartoonButton } from '@/components/ui/CartoonButton';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import useFirestoreChat from '@/hooks/useFirestoreChat';
@@ -238,6 +239,7 @@ const ChatPageContent = () => {
               <AvatarFallback>{opponentDisplayName?.[0] || 'O'}</AvatarFallback>
             </Avatar>
             <CardTitle className="text-2xl font-headline text-primary">{opponentDisplayName}</CardTitle>
+            {chatActive && <Badge className="ml-2">En curso</Badge>}
           </div>
           <CartoonButton size="small" variant="destructive" onClick={() => setIsSubmittingResult(true)} disabled={resultSubmitted || !chatActive}>
             {resultSubmitted ? 'Resultado Enviado' : 'Enviar Resultado'}
