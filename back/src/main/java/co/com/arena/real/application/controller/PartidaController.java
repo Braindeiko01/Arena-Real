@@ -32,6 +32,14 @@ public class PartidaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/chat/{chatId}")
+    @Operation(summary = "Buscar por chat", description = "Obtiene la partida asociada a un chat")
+    public ResponseEntity<PartidaResponse> obtenerPorChat(@PathVariable UUID chatId) {
+        return partidaService.obtenerPorChatId(chatId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PutMapping("/{id}/aceptar/{jugadorId}")
     @Operation(summary = "Aceptar partida", description = "Marca la partida como aceptada por el jugador")
     public ResponseEntity<PartidaResponse> aceptarPartida(

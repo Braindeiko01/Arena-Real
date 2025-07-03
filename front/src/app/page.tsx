@@ -61,7 +61,7 @@ const HomePageContent = () => {
       if (data.chatId) {
         toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
         router.push(
-          `/chat/${data.chatId}?opponentTag=${encodeURIComponent(data.jugadorOponenteNombre)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
+          `/chat/${data.chatId}?partidaId=${data.partidaId}&opponentTag=${encodeURIComponent(data.jugadorOponenteNombre)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
         );
         setPendingMatch(null);
         setHasAccepted(false);
@@ -189,7 +189,7 @@ const HomePageContent = () => {
     if (result.duel && result.duel.chatId) {
       toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
       router.push(
-        `/chat/${result.duel.chatId}?opponentTag=${encodeURIComponent(pendingMatch.jugadorOponenteNombre)}&opponentGoogleId=${encodeURIComponent(pendingMatch.jugadorOponenteId)}`
+        `/chat/${result.duel.chatId}?partidaId=${result.duel.id}&opponentTag=${encodeURIComponent(pendingMatch.jugadorOponenteNombre)}&opponentGoogleId=${encodeURIComponent(pendingMatch.jugadorOponenteId)}`
       );
       setPendingMatch(null);
       setHasAccepted(false);
