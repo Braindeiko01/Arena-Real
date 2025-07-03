@@ -4,6 +4,7 @@ import co.com.arena.real.domain.entity.matchmaking.MatchProposal;
 import co.com.arena.real.domain.entity.partida.EstadoPartida;
 import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.infrastructure.repository.MatchProposalRepository;
+import co.com.arena.real.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class MatchProposalService {
 
     public Optional<Partida> aceptarPropuesta(UUID partidaId, String jugadorId) {
         MatchProposal proposal = matchProposalRepository.findByIdForUpdate(partidaId)
-                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Partida no encontrada"));
 
         if (proposal.getJugador1() != null && jugadorId.equals(proposal.getJugador1().getId())) {
             proposal.setAceptadoJugador1(true);
