@@ -232,16 +232,25 @@ const ChatPageContent = () => {
   return (
     <div className="flex flex-col h-[calc(100vh-150px)] md:h-[calc(100vh-180px)]">
       <Card className="flex-grow flex flex-col shadow-card-medieval border-2 border-primary-dark overflow-hidden">
-        <CardHeader className="bg-primary/10 p-4 flex flex-row items-center justify-between border-b border-border">
-          <div className="flex items-center space-x-3">
+        <CardHeader className="bg-primary/10 p-4 flex flex-wrap items-center justify-between gap-2 border-b border-border">
+          <div className="flex flex-wrap items-center gap-2 min-w-0">
             <Avatar className="h-10 w-10 border-2 border-accent">
               <AvatarImage src={opponentAvatar} alt={opponentDisplayName} data-ai-hint="gaming avatar opponent" />
               <AvatarFallback>{opponentDisplayName?.[0] || 'O'}</AvatarFallback>
             </Avatar>
-            <CardTitle className="text-2xl font-headline text-primary">{opponentDisplayName}</CardTitle>
-            {chatActive && <Badge className="ml-2">En curso</Badge>}
+            <CardTitle className="text-2xl font-headline text-primary truncate">
+              {opponentDisplayName}
+            </CardTitle>
+            {chatActive && (
+              <Badge className="text-sm sm:text-xs flex-none">En curso</Badge>
+            )}
           </div>
-          <CartoonButton size="small" variant="destructive" onClick={() => setIsSubmittingResult(true)} disabled={resultSubmitted || !chatActive}>
+          <CartoonButton
+            size="small"
+            variant="destructive"
+            onClick={() => setIsSubmittingResult(true)}
+            disabled={resultSubmitted || !chatActive}
+          >
             {resultSubmitted ? 'Resultado Enviado' : 'Enviar Resultado'}
           </CartoonButton>
         </CardHeader>
