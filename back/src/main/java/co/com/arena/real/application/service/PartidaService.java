@@ -114,7 +114,7 @@ public class PartidaService {
             throw new IllegalArgumentException("Jugador no pertenece a la partida");
         }
 
-        partida.setEstado(EstadoPartida.POR_APROBAR);
+        determinarGanador(partida);
 
         Partida saved = partidaRepository.save(partida);
         return partidaMapper.toDto(saved);
@@ -164,6 +164,26 @@ public class PartidaService {
 
         Partida saved = partidaRepository.save(partida);
         return partidaMapper.toDto(saved);
+    }
+
+    private void determinarGanador(Partida partida) {
+        ResultadoJugador r1 = partida.getResultadoJugador1();
+        ResultadoJugador r2 = partida.getResultadoJugador2();
+
+        if (r1 != null && r2 != null) {
+            if (r1 == ResultadoJugador.VICTORIA && r2 == ResultadoJugador.DERROTA) {
+                partida.setGanador(partida.getJugador1());
+                partida.setEstado(EstadoPartida.FINALIZADA);
+            } else if (r1 == ResultadoJugador.DERROTA && r2 == ResultadoJugador.VICTORIA) {
+                partida.setGanador(partida.getJugador2());
+                partida.setEstado(EstadoPartida.FINALIZADA);
+            } else {
+                partida.setGanador(null);
+                partida.setEstado(EstadoPartida.POR_APROBAR);
+            }
+        } else {
+            partida.setEstado(EstadoPartida.POR_APROBAR);
+        }
     }
 
     @Transactional
