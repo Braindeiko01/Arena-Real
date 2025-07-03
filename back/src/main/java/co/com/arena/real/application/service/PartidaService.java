@@ -70,6 +70,7 @@ public class PartidaService {
                 .map(Partida::getChatId);
     }
 
+    @Transactional(readOnly = true)
     public Optional<PartidaResponse> obtenerPorChatId(UUID chatId) {
         return partidaRepository.findByChatId(chatId).map(partidaMapper::toDto);
     }
