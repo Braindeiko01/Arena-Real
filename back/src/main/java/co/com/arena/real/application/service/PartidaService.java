@@ -114,7 +114,7 @@ public class PartidaService {
             throw new IllegalArgumentException("Jugador no pertenece a la partida");
         }
 
-        partida.setEstado(EstadoPartida.POR_APROBAR);
+        determinarGanador(partida);
 
         Partida saved = partidaRepository.save(partida);
         return partidaMapper.toDto(saved);
@@ -165,8 +165,7 @@ public class PartidaService {
         Partida saved = partidaRepository.save(partida);
         return partidaMapper.toDto(saved);
     }
-
-
+  
     @Transactional
     public PartidaResponse cancelarPartida(UUID partidaId) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId)
