@@ -13,7 +13,7 @@ interface OpponentInfo { id: string; tag: string; }
 
 const ChatListPageContent = () => {
   const { user } = useAuth();
-  const { chats, error } = useFirestoreChats(user?.id);
+  const { chats, error, loading } = useFirestoreChats(user?.id);
   const [opponents, setOpponents] = useState<Record<string, OpponentInfo>>({});
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const ChatListPageContent = () => {
     loadOpponents();
   }, [chats, user]);
 
-  if (!user) return <p>Cargando chats...</p>;
+  if (!user || loading) return <p>Cargando chats...</p>;
   if (error) {
     return (
       <Card className="shadow-card-medieval border-2 border-primary-dark overflow-hidden">
