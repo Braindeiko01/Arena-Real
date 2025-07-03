@@ -31,6 +31,7 @@ const ChatPageContent = () => {
   const chatId = params.matchId as string | undefined;
   const opponentTagParam = searchParams.get('opponentTag');
   const opponentGoogleIdParam = searchParams.get('opponentGoogleId');
+  const partidaIdParam = searchParams.get('partidaId');
 
   const paramsLoaded =
     chatId !== undefined &&
@@ -62,6 +63,7 @@ const ChatPageContent = () => {
   const validChatId = chatId as string;
   const validOpponentTag = opponentTag as string;
   const validOpponentGoogleId = opponentGoogleId as string;
+  const [partidaId, setPartidaId] = useState<string | null>(partidaIdParam);
   const [opponentProfile, setOpponentProfile] = useState<User | null>(null);
   const opponentDisplayName = opponentProfile?.username || validOpponentTag;
   const sendMessageSafely = (msg: Omit<ChatMessage, 'id'>) => {
@@ -89,6 +91,24 @@ const ChatPageContent = () => {
   };
 
   useEffect(scrollToBottom, [messages]);
+
+  useEffect(() => {
+    const fetchPartida = async () => {
+      if (partidaId || !chatId) return;
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/partidas/chat/${chatId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setPartidaId(data.id);
+        } else {
+          console.error('Error al obtener partida por chat');
+        }
+      } catch (err) {
+        console.error('Error al obtener partida por chat', err);
+      }
+    };
+    fetchPartida();
+  }, [chatId, partidaId, BACKEND_URL]);
 
   useEffect(() => {
     const fetchOpponent = async () => {
@@ -189,8 +209,13 @@ const ChatPageContent = () => {
       })
     }
 
+    if (!partidaId) {
+      toast({ title: 'Error', description: 'No se encontró la partida asociada al chat.', variant: 'destructive' })
+      return
+    }
+
     const response = await submitMatchResultAction(
-      validChatId,
+      partidaId,
       user.id,
       result === 'win' ? 'VICTORIA' : 'DERROTA',
       screenshotBase64,

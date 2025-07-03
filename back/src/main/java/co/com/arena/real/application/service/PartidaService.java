@@ -69,6 +69,10 @@ public class PartidaService {
                 .map(Partida::getChatId);
     }
 
+    public Optional<PartidaResponse> obtenerPorChatId(UUID chatId) {
+        return partidaRepository.findByChatId(chatId).map(partidaMapper::toDto);
+    }
+
     @Transactional
     public PartidaResponse aceptarPartida(UUID partidaId, String jugadorId) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId).orElse(null);
