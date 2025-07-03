@@ -96,12 +96,12 @@ const ChatPageContent = () => {
     const fetchPartida = async () => {
       if (partidaId || !chatId) return;
       try {
-        const res = await fetch(`${BACKEND_URL}/api/partidas/chat/${chatId}`);
+        const res = await fetch(`${BACKEND_URL}/api/partidas/chat/${encodeURIComponent(chatId)}`);
         if (res.ok) {
           const data = await res.json();
           setPartidaId(data.id);
         } else {
-          console.error('Error al obtener partida por chat');
+          console.error('Error al obtener partida por chat', res.status);
         }
       } catch (err) {
         console.error('Error al obtener partida por chat', err);
