@@ -166,6 +166,7 @@ public class PartidaService {
         return partidaMapper.toDto(saved);
     }
 
+
     @Transactional
     public PartidaResponse cancelarPartida(UUID partidaId) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId)
