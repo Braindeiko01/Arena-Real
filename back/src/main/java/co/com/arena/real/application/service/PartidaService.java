@@ -95,6 +95,24 @@ public class PartidaService {
         return partidaMapper.toDto(saved);
     }
 
+    private void determinarGanador(Partida partida) {
+        ResultadoJugador r1 = partida.getResultadoJugador1();
+        ResultadoJugador r2 = partida.getResultadoJugador2();
+
+        if (r1 == null || r2 == null) {
+            partida.setEstado(EstadoPartida.POR_APROBAR);
+            return;
+        }
+
+        if (r1 != r2) {
+            partida.setGanador(r1 == ResultadoJugador.VICTORIA ? partida.getJugador1() : partida.getJugador2());
+        } else {
+            partida.setGanador(null);
+        }
+
+        partida.setEstado(EstadoPartida.POR_APROBAR);
+    }
+
     @Transactional
     public PartidaResponse reportarResultado(UUID partidaId, PartidaResultadoRequest dto) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId)
