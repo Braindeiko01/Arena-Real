@@ -34,10 +34,15 @@ public class PartidaController {
 
     @GetMapping("/chat/{chatId}")
     @Operation(summary = "Buscar por chat", description = "Obtiene la partida asociada a un chat")
-    public ResponseEntity<PartidaResponse> obtenerPorChat(@PathVariable UUID chatId) {
-        return partidaService.obtenerPorChatId(chatId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PartidaResponse> obtenerPorChat(@PathVariable String chatId) {
+        try {
+            UUID uuid = UUID.fromString(chatId);
+            return partidaService.obtenerPorChatId(uuid)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}/aceptar/{jugadorId}")
