@@ -51,3 +51,37 @@ NEXT_PUBLIC_FIREBASE_APP_ID=tu-app-id
 
 Recuerda reiniciar el servidor de desarrollo después de modificar este archivo.
 
+
+## Admin console
+
+Two new applications provide an isolated admin panel:
+
+- `admin-back` – Spring Boot backend exposing admin endpoints on port `8081`.
+- `admin` – Next.js frontend located in the `admin/` folder.
+
+Run the admin backend:
+
+```bash
+cd admin-back
+mvn spring-boot:run
+```
+
+The admin backend expects a secret used to validate JWTs:
+
+```bash
+export ADMIN_JWT_SECRET=changeMe
+```
+
+Run the admin frontend:
+
+```bash
+cd admin
+npm install
+npm run dev
+```
+
+Create `admin/.env.local` with:
+
+```env
+NEXT_PUBLIC_ADMIN_API_URL=http://localhost:8081
+```
