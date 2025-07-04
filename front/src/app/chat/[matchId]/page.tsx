@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import useFirestoreChat from '@/hooks/useFirestoreChat';
 import { BACKEND_URL } from '@/lib/config';
 import type { ChatMessage, User } from '@/types';
-import { submitMatchResultAction } from '@/lib/actions';
+import { submitMatchResultAction, fetchMatchIdByChat } from '@/lib/actions';
 
 import { Label } from '@/components/ui/label';
 
@@ -215,13 +215,19 @@ const ChatPageContent = () => {
       })
     }
 
-    if (!partidaId) {
-      toast({ title: 'Error', description: 'No se encontró la partida asociada al chat.', variant: 'destructive' })
-      return
+    let validPartidaId = partidaId
+    if (!validPartidaId) {
+      validPartidaId = await fetchMatchIdByChat(validChatId)
+      if (validPartidaId) {
+        setPartidaId(validPartidaId)
+      } else {
+        toast({ title: 'Error', description: 'No se encontró la partida asociada al chat.', variant: 'destructive' })
+        return
+      }
     }
 
     const response = await submitMatchResultAction(
-      partidaId,
+      validPartidaId,
       user.id,
       result === 'win' ? 'VICTORIA' : 'DERROTA',
       screenshotBase64,
