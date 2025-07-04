@@ -68,13 +68,14 @@ mvn spring-boot:run
 
 Administrative operations like approving transactions or validating game results
 are no longer available in the main backend. Use the admin API instead.
-The admin backend expects a secret used to validate JWTs:
+The admin backend uses a JWT secret and credentials that can be overridden via environment variables:
 
 ```bash
-export ADMIN_JWT_SECRET=changeMe
-export ADMIN_USER=admin
-export ADMIN_PASSWORD=admin
+export ADMIN_SECURITY_JWT_SECRET=changeMe
+export ADMIN_CREDENTIALS_USER=admin
+export ADMIN_CREDENTIALS_PASSWORD=admin
 ```
+Default values are provided in `admin-back/src/main/resources/application.properties`.
 
 You can obtain a JWT with:
 

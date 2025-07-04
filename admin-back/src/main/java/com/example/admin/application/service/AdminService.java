@@ -24,6 +24,7 @@ public class AdminService {
     private final PartidaRepository partidaRepository;
     private final TransaccionRepository transaccionRepository;
     private final ApuestaRepository apuestaRepository;
+    private final JugadorRepository jugadorRepository;
 
     public List<ImageDto> listPendingImages() {
         return partidaRepository.findByEstado(EstadoPartida.POR_APROBAR).stream()
