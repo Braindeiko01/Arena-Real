@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES6",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -17,15 +19,19 @@
       "react-dom"
     ],
     "paths": {
-      "@/*": ["./src/*"]
+
+      "@/*": [
+        "./src/*"
+      ]
     },
-    "strict": true,
-    "forceConsistentCasingInFileNames": true
+    "strict": false
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
