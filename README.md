@@ -92,7 +92,7 @@ npm install
 npm run dev
 ```
 
-Create `admin/.env.local` with:
+Copy `admin/.env.example` to `admin/.env.local` with:
 
 ```env
 NEXT_PUBLIC_ADMIN_API_URL=http://localhost:8081
