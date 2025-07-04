@@ -373,3 +373,16 @@ export async function submitMatchResultAction(
     return { duel: null, error: err.message || 'Error de red.' }
   }
 }
+
+export async function fetchMatchIdByChat(
+  chatId: string,
+): Promise<string | null> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/partidas/chat/${encodeURIComponent(chatId)}`)
+    if (!res.ok) return null
+    const data = (await res.json()) as { id: string }
+    return data.id
+  } catch {
+    return null
+  }
+}
