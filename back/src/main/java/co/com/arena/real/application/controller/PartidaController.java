@@ -54,13 +54,6 @@ public class PartidaController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}/validar")
-    @Operation(summary = "Validar", description = "Marca una partida como validada y reparte el premio")
-    public ResponseEntity<PartidaResponse> validar(@PathVariable UUID id) {
-        PartidaResponse response = partidaService.marcarComoValidada(id);
-        return ResponseEntity.ok(response);
-    }
-
     @PutMapping("/{id}/cancelar")
     @Operation(summary = "Cancelar partida", description = "Cancela la partida y reembolsa la apuesta")
     public ResponseEntity<PartidaResponse> cancelar(@PathVariable UUID id) {
@@ -78,19 +71,6 @@ public class PartidaController {
             @RequestBody PartidaResultadoRequest dto
     ) {
         PartidaResponse response = partidaService.reportarResultado(id, dto);
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/{id}/ganador/{jugadorId}")
-    @Operation(
-            summary = "Asignar ganador",
-            description = "Asigna el jugador ganador de la partida"
-    )
-    public ResponseEntity<PartidaResponse> asignarGanador(
-            @PathVariable("id") UUID id,
-            @PathVariable("jugadorId") String jugadorId
-    ) {
-        PartidaResponse response = partidaService.asignarGanador(id, jugadorId);
         return ResponseEntity.ok(response);
     }
 
