@@ -66,6 +66,8 @@ cd admin-back
 mvn spring-boot:run
 ```
 
+Administrative operations like approving transactions or validating game results
+are no longer available in the main backend. Use the admin API instead.
 The admin backend expects a secret used to validate JWTs:
 
 ```bash
