@@ -47,13 +47,4 @@ public class TransaccionController {
     public SseEmitter stream(@PathVariable String jugadorId) {
         return sseService.subscribe(jugadorId); // <- usando tu SseService refactorizado
     }
-
-    @PostMapping("/{id}/aprobar")
-    @Operation(summary = "Aprobar transacción", description = "Aprueba la transacción y actualiza el saldo")
-    public ResponseEntity<TransaccionResponse> aprobar(@PathVariable UUID id) {
-        TransaccionResponse response = transaccionService.aprobarTransaccion(id);
-        return ResponseEntity.ok(response);
-
-    }
-
 }

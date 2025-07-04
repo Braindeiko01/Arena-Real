@@ -38,4 +38,12 @@ public class AdminService {
     public void distributePrize(UUID gameId) {
         // TODO distribute prize in database
     }
+
+    public void assignWinner(UUID gameId, String playerId) {
+        // TODO update winner in database
+    }
+
+    public void changeBetState(UUID betId, String state) {
+        // TODO update bet state in database
+    }
 }
