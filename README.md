@@ -76,6 +76,15 @@ export ADMIN_USER=admin
 export ADMIN_PASSWORD=admin
 ```
 
+Configure the PostgreSQL datasource using environment variables:
+
+```bash
+export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/admin
+export SPRING_DATASOURCE_USERNAME=postgres
+export SPRING_DATASOURCE_PASSWORD=postgres
+export SPRING_JPA_HIBERNATE_DDL_AUTO=update
+```
+
 You can obtain a JWT with:
 
 ```bash
