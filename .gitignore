@@ -10,3 +10,27 @@ admin-back/.idea/jarRepositories.xml
 admin-back/.idea/encodings.xml
 admin-back/.idea/compiler.xml
 admin-back/.idea/workspace.xml
+
+# -----------------------------------------------------
+# Common build and dependency directories
+# -----------------------------------------------------
+**/target/
+**/node_modules/
+**/.next/
+
+# -----------------------------------------------------
+# Local environment files
+# -----------------------------------------------------
+.env.local
+.env
+.env.*
+
+# -----------------------------------------------------
+# IDE directories
+# -----------------------------------------------------
+**/.idea/
+
+# -----------------------------------------------------
+# Editor and OS artefacts
+# -----------------------------------------------------
+.DS_Store
