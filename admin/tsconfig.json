@@ -9,8 +9,12 @@
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "jsx": "preserve",
     "noEmit": true,
     "incremental": true,
     "types": [
@@ -19,12 +23,11 @@
       "react-dom"
     ],
     "paths": {
-
       "@/*": [
         "./src/*"
       ]
     },
-    "strict": false
+    "strict": true
   },
   "include": [
     "next-env.d.ts",
