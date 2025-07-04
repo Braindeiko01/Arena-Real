@@ -9,11 +9,8 @@
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
     "noEmit": true,
     "incremental": true,
     "types": [
@@ -22,6 +19,7 @@
       "react-dom"
     ],
     "paths": {
+
       "@/*": [
         "./src/*"
       ]
