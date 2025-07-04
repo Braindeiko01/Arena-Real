@@ -17,7 +17,9 @@
     "noEmit": true,
     "incremental": true,
     "types": [
-      "node"
+      "node",
+      "react",
+      "react-dom"
     ],
     "paths": {
       "@/*": [
