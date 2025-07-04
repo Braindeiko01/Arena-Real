@@ -1,7 +1,7 @@
-package com.example.admin.infrastructure.repository;
+package co.com.arena.real.infrastructure.repository;
 
-import com.example.admin.domain.entity.partida.EstadoPartida;
-import com.example.admin.domain.entity.partida.Partida;
+import co.com.arena.real.domain.entity.partida.EstadoPartida;
+import co.com.arena.real.domain.entity.partida.Partida;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -28,5 +28,4 @@ public interface PartidaRepository extends JpaRepository<Partida, UUID> {
     java.util.List<Partida> findByJugadorAndEstado(@Param("jugadorId") String jugadorId, @Param("estado") EstadoPartida estado);
 
     java.util.List<Partida> findByEstado(EstadoPartida estado);
-
 }

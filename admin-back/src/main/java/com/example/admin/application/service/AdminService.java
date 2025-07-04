@@ -3,13 +3,13 @@ package com.example.admin.application.service;
 import com.example.admin.infrastructure.dto.GameResultDto;
 import com.example.admin.infrastructure.dto.ImageDto;
 import com.example.admin.infrastructure.dto.TransactionDto;
-import com.example.admin.domain.entity.EstadoApuesta;
-import com.example.admin.domain.entity.EstadoTransaccion;
-import com.example.admin.domain.entity.partida.EstadoPartida;
-import com.example.admin.domain.entity.partida.Partida;
-import com.example.admin.infrastructure.repository.ApuestaRepository;
-import com.example.admin.infrastructure.repository.TransaccionRepository;
-import com.example.admin.infrastructure.repository.PartidaRepository;
+import co.com.arena.real.domain.entity.EstadoApuesta;
+import co.com.arena.real.domain.entity.EstadoTransaccion;
+import co.com.arena.real.domain.entity.partida.EstadoPartida;
+import co.com.arena.real.domain.entity.partida.Partida;
+import co.com.arena.real.infrastructure.repository.ApuestaRepository;
+import co.com.arena.real.infrastructure.repository.TransaccionRepository;
+import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,7 +93,7 @@ public class AdminService {
     @Transactional
     public void assignWinner(UUID gameId, String playerId) {
         partidaRepository.findById(gameId).ifPresent(p -> {
-            p.setGanador(new com.example.admin.domain.entity.Jugador(playerId));
+            p.setGanador(new co.com.arena.real.domain.entity.Jugador(playerId));
             partidaRepository.save(p);
         });
     }

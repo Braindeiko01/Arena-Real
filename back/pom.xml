@@ -20,6 +20,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>co.com.arena.shared</groupId>
+            <artifactId>shared-core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <!-- Validación -->
         <dependency>
             <groupId>jakarta.validation</groupId>
