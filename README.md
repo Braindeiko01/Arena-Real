@@ -72,6 +72,16 @@ The admin backend expects a secret used to validate JWTs:
 
 ```bash
 export ADMIN_JWT_SECRET=changeMe
+export ADMIN_USER=admin
+export ADMIN_PASSWORD=admin
+```
+
+You can obtain a JWT with:
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin"}' \
+  http://localhost:8081/api/admin/auth/login
 ```
 
 Run the admin frontend:
