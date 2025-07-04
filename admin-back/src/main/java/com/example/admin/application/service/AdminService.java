@@ -10,6 +10,7 @@ import com.example.admin.domain.entity.partida.Partida;
 import com.example.admin.infrastructure.repository.ApuestaRepository;
 import com.example.admin.infrastructure.repository.TransaccionRepository;
 import com.example.admin.infrastructure.repository.PartidaRepository;
+import com.example.admin.infrastructure.repository.JugadorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class AdminService {
     private final PartidaRepository partidaRepository;
     private final TransaccionRepository transaccionRepository;
     private final ApuestaRepository apuestaRepository;
+    private final JugadorRepository jugadorRepository;
 
     public List<ImageDto> listPendingImages() {
         return partidaRepository.findByEstado(EstadoPartida.POR_APROBAR).stream()
@@ -93,8 +95,12 @@ public class AdminService {
     @Transactional
     public void assignWinner(UUID gameId, String playerId) {
         partidaRepository.findById(gameId).ifPresent(p -> {
-            p.setGanador(new com.example.admin.domain.entity.Jugador(playerId));
-            partidaRepository.save(p);
+            jugadorRepository.findById(playerId).ifPresentOrElse(jugador -> {
+                p.setGanador(jugador);
+                partidaRepository.save(p);
+            }, () -> {
+                throw new IllegalArgumentException("Jugador no encontrado");
+            });
         });
     }
 
