@@ -22,6 +22,14 @@ cd back
 mvn spring-boot:run
 ```
 
+If Maven cannot resolve `co.com.arena.shared:shared-core:1.0.0`, build and
+install the shared library first:
+
+```bash
+cd shared-core
+mvn install
+```
+
 Before starting the backend, set the path to your Firebase service account
 credentials using either the custom `FIREBASE_SERVICE_ACCOUNT_FILE` variable or
 the standard `GOOGLE_APPLICATION_CREDENTIALS`:
@@ -98,3 +106,15 @@ Create `admin/.env.local` with:
 ```env
 NEXT_PUBLIC_ADMIN_API_URL=http://localhost:8081
 ```
+
+## Maven troubleshooting
+
+If Maven reports errors resolving plugins or dependencies, run with the `-U`
+flag to update local metadata:
+
+```bash
+mvn -U clean install
+```
+
+If your environment lacks internet access, configure a mirror in `settings.xml`
+that points to an accessible Maven repository.
