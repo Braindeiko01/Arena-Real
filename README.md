@@ -22,6 +22,14 @@ cd back
 mvn spring-boot:run
 ```
 
+If Maven cannot resolve `co.com.arena.shared:shared-core:1.0.0`, build and
+install the shared library first:
+
+```bash
+cd shared-core
+mvn install
+```
+
 Before starting the backend, set the path to your Firebase service account
 credentials using either the custom `FIREBASE_SERVICE_ACCOUNT_FILE` variable or
 the standard `GOOGLE_APPLICATION_CREDENTIALS`:
