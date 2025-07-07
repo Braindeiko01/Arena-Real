@@ -98,3 +98,15 @@ Create `admin/.env.local` with:
 ```env
 NEXT_PUBLIC_ADMIN_API_URL=http://localhost:8081
 ```
+
+## Maven troubleshooting
+
+If Maven reports errors resolving plugins or dependencies, run with the `-U`
+flag to update local metadata:
+
+```bash
+mvn -U clean install
+```
+
+If your environment lacks internet access, configure a mirror in `settings.xml`
+that points to an accessible Maven repository.
