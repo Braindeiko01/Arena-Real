@@ -9,8 +9,9 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.jose.jwk.source.ImmutableSecret;
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.Customizer;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -22,9 +23,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth.anyRequest().hasRole("ADMIN"))
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt());
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
         return http.build();
     }
 
