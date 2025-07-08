@@ -4,8 +4,6 @@ import com.example.admin.infrastructure.exception.InvalidCredentialsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -36,8 +34,7 @@ public class AuthService {
                     .expiresAt(Instant.now().plus(1, ChronoUnit.HOURS))
                     .claim("scope", "ROLE_ADMIN")
                     .build();
-            JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
-            String token = encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
+            String token = encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
             log.debug("Generated admin token for {}", username);
             return token;
         }
