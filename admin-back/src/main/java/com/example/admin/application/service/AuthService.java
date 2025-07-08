@@ -27,6 +27,7 @@ public class AuthService {
     @Value("${admin.credentials.password:admin}")
     private String adminPassword;
 
+
     public String login(String username, String password) {
         if (adminUser.equals(username) && adminPassword.equals(password)) {
             JwtClaimsSet claims = JwtClaimsSet.builder()
