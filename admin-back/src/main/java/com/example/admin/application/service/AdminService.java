@@ -10,6 +10,7 @@ import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.infrastructure.repository.ApuestaRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
+import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,7 +76,7 @@ public class AdminService {
                 .map(p -> {
                     GameResultDto dto = new GameResultDto();
                     dto.setId(p.getId());
-                    dto.setWinnerId(p.getGanador() != null ? p.getGanador().getId() : null);
+                    dto.setWinnerId(p.getGanador() != null ? UUID.fromString(p.getGanador().getId()) : null);
                     dto.setDistributed(p.isValidada());
                     return dto;
                 })
