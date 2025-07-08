@@ -76,7 +76,7 @@ public class AdminService {
                 .map(p -> {
                     GameResultDto dto = new GameResultDto();
                     dto.setId(p.getId());
-                    dto.setWinnerId(p.getGanador() != null ? p.getGanador().getId() : null);
+                    dto.setWinnerId(p.getGanador() != null ? UUID.fromString(p.getGanador().getId()) : null);
                     dto.setDistributed(p.isValidada());
                     return dto;
                 })
