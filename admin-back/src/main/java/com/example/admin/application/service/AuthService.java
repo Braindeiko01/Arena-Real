@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jose.jws.JwsHeader;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
@@ -34,7 +36,8 @@ public class AuthService {
                     .expiresAt(Instant.now().plus(1, ChronoUnit.HOURS))
                     .claim("scope", "ROLE_ADMIN")
                     .build();
-            String token = encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+            JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
+            String token = encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
             log.debug("Generated admin token for {}", username);
             return token;
         }
