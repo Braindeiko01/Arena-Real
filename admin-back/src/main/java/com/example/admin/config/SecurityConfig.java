@@ -51,7 +51,9 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Primary
     public JwtEncoder jwtEncoder(@Value("${admin.security.jwt-secret}") String secret) {
+        System.out.println("SECRET => " + secret);
         SecretKey key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         return new NimbusJwtEncoder(new ImmutableSecret<>(key));
     }
