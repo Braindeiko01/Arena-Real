@@ -3,9 +3,9 @@ package com.example.admin.application.controller;
 import com.example.admin.application.service.AuthService;
 import com.example.admin.infrastructure.dto.LoginRequest;
 import com.example.admin.infrastructure.dto.TokenDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,12 +24,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginRequest request) {
-        return authService.authenticate(request.getUsername(), request.getPassword())
-                .map(token -> ResponseEntity.ok(new TokenDto(token)))
-                .orElseGet(() -> {
-                    log.warn("Failed login attempt for user: {}", request.getUsername());
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-                });
+    public ResponseEntity<TokenDto> login(@Valid @RequestBody LoginRequest request) {
+        String token = authService.login(request.getUsername(), request.getPassword());
+        return ResponseEntity.ok(new TokenDto(token));
     }
 }
