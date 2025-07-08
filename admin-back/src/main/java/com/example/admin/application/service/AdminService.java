@@ -10,6 +10,7 @@ import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.infrastructure.repository.ApuestaRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
+import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
