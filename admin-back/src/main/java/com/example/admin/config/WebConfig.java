@@ -17,6 +17,7 @@ public class WebConfig {
                         .allowedOriginPatterns("*")
                         .allowedMethods("*")
                         .allowedHeaders("*")
+                        .exposedHeaders("Authorization")
                         .allowCredentials(true);
             }
         };

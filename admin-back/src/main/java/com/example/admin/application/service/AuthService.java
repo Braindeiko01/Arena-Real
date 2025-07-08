@@ -1,6 +1,7 @@
 package com.example.admin.application.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -13,6 +14,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -35,8 +37,10 @@ public class AuthService {
                     .build();
             JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
             String token = encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
+            log.debug("Generated admin token for {}", username);
             return Optional.of(token);
         }
+        log.debug("Invalid credentials for {}", username);
         return Optional.empty();
     }
 }
