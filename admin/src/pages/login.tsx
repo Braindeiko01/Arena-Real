@@ -8,7 +8,7 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const baseUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || '';
+    const baseUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || 'http://localhost:8081';
     const res = await fetch(`${baseUrl}/api/admin/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
