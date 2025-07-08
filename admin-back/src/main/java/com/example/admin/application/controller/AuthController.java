@@ -7,6 +7,8 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +32,7 @@ public class AuthController {
     private String adminPassword;
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> payload) {
         String username = payload.get("username");
         String password = payload.get("password");
         if (adminUser.equals(username) && adminPassword.equals(password)) {
@@ -42,8 +44,8 @@ public class AuthController {
                     .build();
             JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
             String token = encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
-            return Map.of("token", token);
+            return ResponseEntity.ok(Map.of("token", token));
         }
-        throw new RuntimeException("Invalid credentials");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
