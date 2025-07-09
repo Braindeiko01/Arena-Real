@@ -5,13 +5,12 @@ import { post } from '@/lib/api'
 import Toast from './Toast'
 
 export interface ReviewTransaction {
-  id: string;
-  origin: string;
-  destination: string;
-  type: 'DEPOSITO' | 'RETIRO' | 'APUESTA';
-  amount: number;
-  date: string;
-  proofOfPayment?: string;
+  id: string
+  origin: string
+  type: 'DEPOSITO' | 'RETIRO' | 'APUESTA'
+  amount: number
+  date: string
+  proofOfPayment?: string
 }
 
 interface Props {
@@ -84,10 +83,8 @@ export default function ReviewTransactionDialog({
                 <Dialog.Title className="text-lg font-medium">Revisar Transacción</Dialog.Title>
                 {transaction && (
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    <span className="font-semibold">De:</span>
+                    <span className="font-semibold">Usuario:</span>
                     <span>{transaction.origin}</span>
-                    <span className="font-semibold">A:</span>
-                    <span>{transaction.destination}</span>
                     <span className="font-semibold">Monto:</span>
                     <span>${"" + transaction.amount}</span>
                     <span className="font-semibold">Fecha:</span>
