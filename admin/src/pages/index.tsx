@@ -11,7 +11,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     get<any[]>('/api/admin/transactions')
-      .then(res => setTxCount(res.length))
+      .then(res => setTxCount(res.filter((t: any) => t.status === 'PENDIENTE').length))
       .catch(() => {});
     get<any[]>('/api/admin/games/results')
       .then(res => setGameCount(res.length))

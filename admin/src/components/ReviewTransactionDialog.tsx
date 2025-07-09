@@ -3,7 +3,7 @@ import { Fragment } from 'react';
 import Image from 'next/image';
 
 export interface ReviewTransaction {
-  id: number;
+  id: string;
   origin: string;
   destination: string;
   type: 'DEPOSITO' | 'RETIRO' | 'APUESTA';
@@ -16,8 +16,8 @@ interface Props {
   open: boolean;
   transaction: ReviewTransaction | null;
   onClose: () => void;
-  onReject: (id: number) => void;
-  onApprove: (id: number) => void;
+  onReject: (id: string) => void;
+  onApprove: (id: string) => void;
 }
 
 export default function ReviewTransactionDialog({ open, transaction, onClose, onReject, onApprove }: Props) {

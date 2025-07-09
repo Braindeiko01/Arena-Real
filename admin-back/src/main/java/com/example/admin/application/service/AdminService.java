@@ -50,14 +50,17 @@ public class AdminService {
         });
     }
 
-    public List<TransactionDto> listPendingTransactions() {
-        return transaccionRepository.findByEstado(EstadoTransaccion.PENDIENTE).stream()
+    public List<TransactionDto> listTransactions() {
+        return transaccionRepository.findAll().stream()
                 .map(t -> {
                     TransactionDto dto = new TransactionDto();
                     dto.setId(t.getId());
                     dto.setPlayerId(t.getJugador().getId());
                     dto.setAmount(t.getMonto());
-                    dto.setApproved(EstadoTransaccion.APROBADA.equals(t.getEstado()));
+                    dto.setType(t.getTipo().name());
+                    dto.setStatus(t.getEstado().name());
+                    dto.setCreatedAt(t.getCreadoEn());
+                    dto.setReceipt(t.getComprobante());
                     return dto;
                 })
                 .toList();
@@ -67,6 +70,14 @@ public class AdminService {
     public void approveTransaction(UUID id) {
         transaccionRepository.findById(id).ifPresent(t -> {
             t.setEstado(EstadoTransaccion.APROBADA);
+            transaccionRepository.save(t);
+        });
+    }
+
+    @Transactional
+    public void changeTransactionStatus(UUID id, String status) {
+        transaccionRepository.findById(id).ifPresent(t -> {
+            t.setEstado(EstadoTransaccion.valueOf(status));
             transaccionRepository.save(t);
         });
     }
