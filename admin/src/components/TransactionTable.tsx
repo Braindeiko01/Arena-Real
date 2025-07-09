@@ -19,7 +19,7 @@ export default function TransactionTable() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
-  const [reviewTx, setReviewTx] = useState<Transaction | null>(null);
+  const [reviewTx, setReviewTx] = useState<ReviewTransaction | null>(null);
   const [toast, setToast] = useState('');
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function TransactionTable() {
       .catch(err => setError(err.message));
   }, []);
 
-  const changeStatus = async (id: string, status: 'APROBADA' | 'RECHAZADA') => {
+  const changeStatus = async (id: string, status: 'ENTREGADA' | 'CANCELADA') => {
     try {
       await post(`/api/admin/transactions/${id}/status`, { status });
       setTransactions(prev =>
@@ -69,8 +69,8 @@ export default function TransactionTable() {
         >
           <option value="">Todos los estados</option>
           <option value="PENDIENTE">PENDIENTE</option>
-          <option value="APROBADA">APROBADA</option>
-          <option value="RECHAZADA">RECHAZADA</option>
+          <option value="ENTREGADA">ENTREGADA</option>
+          <option value="CANCELADA">CANCELADA</option>
         </select>
         <select
           className="px-2 py-1 rounded bg-gray-800 border border-gray-700"
@@ -107,10 +107,10 @@ export default function TransactionTable() {
               <td className="border px-2 py-1">${'' + t.amount}</td>
               <td className="border px-2 py-1">{new Date(t.createdAt).toLocaleString()}</td>
               <td className="border px-2 py-1">
-                {t.status === 'APROBADA' ? (
-                  <span className="px-2 py-1 rounded bg-green-600 text-white">APROBADA</span>
-                ) : t.status === 'RECHAZADA' ? (
-                  <span className="px-2 py-1 rounded bg-red-600 text-white">RECHAZADA</span>
+                {t.status === 'ENTREGADA' ? (
+                  <span className="px-2 py-1 rounded bg-green-600 text-white">ENTREGADA</span>
+                ) : t.status === 'CANCELADA' ? (
+                  <span className="px-2 py-1 rounded bg-red-600 text-white">CANCELADA</span>
                 ) : (
                   <span className="px-2 py-1 rounded bg-yellow-600 text-white">PENDIENTE</span>
                 )}
@@ -119,7 +119,17 @@ export default function TransactionTable() {
                 {t.status === 'PENDIENTE' && (
                   <button
                     className="px-2 py-1 bg-blue-600 rounded"
-                    onClick={() => setReviewTx(t)}
+                    onClick={() =>
+                      setReviewTx({
+                        id: t.id,
+                        origin: t.playerId,
+                        destination: '',
+                        type: t.type as any,
+                        amount: t.amount,
+                        date: t.createdAt,
+                        proofOfPayment: t.receipt || undefined,
+                      })
+                    }
                   >
                     Revisar
                   </button>
@@ -132,10 +142,10 @@ export default function TransactionTable() {
 
       <ReviewTransactionDialog
         open={!!reviewTx}
-        transaction={reviewTx as unknown as ReviewTransaction}
+        transaction={reviewTx}
         onClose={() => setReviewTx(null)}
-        onReject={id => changeStatus(id.toString(), 'RECHAZADA')}
-        onApprove={id => changeStatus(id.toString(), 'APROBADA')}
+        onReject={id => changeStatus(id.toString(), 'CANCELADA')}
+        onApprove={id => changeStatus(id.toString(), 'ENTREGADA')}
       />
 
       {toast && <Toast message={toast} onClose={() => setToast('')} />}

@@ -15,11 +15,10 @@ export interface ReviewTransaction {
 }
 
 interface Props {
-  open: boolean
-  transaction: ReviewTransaction | null
-  onClose: () => void
-  onReject: (id: number) => void
-  onApprove: (id: number) => void
+  transaction: ReviewTransaction | null;
+  onClose: () => void;
+  onReject: (id: string) => void;
+  onApprove: (id: string) => void;
 }
 
 export default function ReviewTransactionDialog({

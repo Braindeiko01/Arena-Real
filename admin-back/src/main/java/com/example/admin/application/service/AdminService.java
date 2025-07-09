@@ -58,7 +58,13 @@ public class AdminService {
                     dto.setPlayerId(t.getJugador().getId());
                     dto.setAmount(t.getMonto());
                     dto.setType(t.getTipo().name());
-                    dto.setStatus(t.getEstado().name());
+                    String estado = t.getEstado().name();
+                    if (EstadoTransaccion.APROBADA.equals(t.getEstado())) {
+                        estado = "ENTREGADA";
+                    } else if (EstadoTransaccion.RECHAZADA.equals(t.getEstado())) {
+                        estado = "CANCELADA";
+                    }
+                    dto.setStatus(estado);
                     dto.setCreatedAt(t.getCreadoEn());
                     dto.setReceipt(t.getComprobante());
                     return dto;
@@ -77,7 +83,15 @@ public class AdminService {
     @Transactional
     public void changeTransactionStatus(UUID id, String status) {
         transaccionRepository.findById(id).ifPresent(t -> {
-            t.setEstado(EstadoTransaccion.valueOf(status));
+            EstadoTransaccion newStatus;
+            if ("ENTREGADA".equalsIgnoreCase(status) || "APROBADA".equalsIgnoreCase(status)) {
+                newStatus = EstadoTransaccion.APROBADA;
+            } else if ("CANCELADA".equalsIgnoreCase(status) || "RECHAZADA".equalsIgnoreCase(status)) {
+                newStatus = EstadoTransaccion.RECHAZADA;
+            } else {
+                newStatus = EstadoTransaccion.valueOf(status);
+            }
+            t.setEstado(newStatus);
             transaccionRepository.save(t);
         });
     }
