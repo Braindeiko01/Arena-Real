@@ -51,3 +51,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=tu-app-id
 
 Recuerda reiniciar el servidor de desarrollo después de modificar este archivo.
 
+
+## Admin Dashboard
+
+Las páginas de administración están en `front/src/app/admin` y utilizan un layout independiente con un sidebar y tarjetas de resumen. Ejecuta el frontend y navega a `/admin` para acceder al panel. Estas vistas no afectan el sitio público de Arena Real.
