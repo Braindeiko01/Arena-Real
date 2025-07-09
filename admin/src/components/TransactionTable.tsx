@@ -63,6 +63,7 @@ export default function TransactionTable() {
           onChange={e => setSearch(e.target.value)}
         />
         <select
+          aria-label="Filtrar por estado"
           className="px-2 py-1 rounded bg-gray-800 border border-gray-700"
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value)}
@@ -73,6 +74,7 @@ export default function TransactionTable() {
           <option value="CANCELADA">CANCELADA</option>
         </select>
         <select
+          aria-label="Filtrar por tipo"
           className="px-2 py-1 rounded bg-gray-800 border border-gray-700"
           value={typeFilter}
           onChange={e => setTypeFilter(e.target.value)}
