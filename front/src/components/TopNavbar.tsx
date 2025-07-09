@@ -16,7 +16,7 @@ const TopNavbar = () => {
   const notifications = 0;
 
   return (
-    <header className="md:hidden fixed top-0 w-full z-50 shadow-sm bg-[#3973FF] h-16 px-4 py-3 flex justify-between items-center">
+    <header className="md:hidden fixed top-0 w-full z-50 shadow-sm bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-16 px-4 py-3 flex justify-between items-center animate-gradient-x">
       <div className="flex items-center gap-1 text-white font-bold text-lg">
         <Crown className="h-5 w-5" />
         Arena Real

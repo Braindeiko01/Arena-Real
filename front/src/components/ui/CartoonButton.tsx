@@ -10,10 +10,10 @@ const cartoonButtonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground border-b-4 border-primary-dark shadow-cartoon hover:brightness-110 active:shadow-cartoon-active active:border-b-2",
-        secondary: "bg-secondary text-secondary-foreground border-b-4 border-[hsl(var(--secondary))] shadow-cartoon hover:brightness-110 active:shadow-cartoon-active active:border-b-2", // Example, define secondary-dark if needed
-        accent: "bg-accent text-accent-foreground border-b-4 border-[hsl(var(--accent))] shadow-cartoon hover:brightness-110 active:shadow-cartoon-active active:border-b-2", // Example, define accent-dark if needed
-        destructive: "bg-destructive text-destructive-foreground border-b-4 border-[hsl(var(--destructive))] shadow-cartoon hover:brightness-110 active:shadow-cartoon-active active:border-b-2", // Example, define destructive-dark if needed
+        default: "bg-primary text-primary-foreground border-b-4 border-primary-dark shadow-cartoon hover:brightness-110 hover:-translate-y-0.5 active:shadow-cartoon-active active:border-b-2",
+        secondary: "bg-secondary text-secondary-foreground border-b-4 border-[hsl(var(--secondary))] shadow-cartoon hover:brightness-110 hover:-translate-y-0.5 active:shadow-cartoon-active active:border-b-2", // Example, define secondary-dark if needed
+        accent: "bg-accent text-accent-foreground border-b-4 border-[hsl(var(--accent))] shadow-cartoon hover:brightness-110 hover:-translate-y-0.5 active:shadow-cartoon-active active:border-b-2", // Example, define accent-dark if needed
+        destructive: "bg-destructive text-destructive-foreground border-b-4 border-[hsl(var(--destructive))] shadow-cartoon hover:brightness-110 hover:-translate-y-0.5 active:shadow-cartoon-active active:border-b-2", // Example, define destructive-dark if needed
       },
       size: {
         default: "px-8 py-4 text-xl", // Large buttons
