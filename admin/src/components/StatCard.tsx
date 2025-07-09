@@ -1,25 +1,19 @@
-// src/components/StatCard.tsx
 import { ReactNode } from 'react';
 
-export default function StatCard({
-  title,
-  value,
-  description,
-  icon,
-}: {
-  title: string;
-  value: number;
-  description: string;
+interface StatCardProps {
   icon: ReactNode;
-}) {
+  label: string;
+  value: number;
+}
+
+export default function StatCard({ icon, label, value }: StatCardProps) {
   return (
-    <div className="bg-zinc-900 rounded-xl p-5 flex items-center justify-between shadow-md w-full h-28">
-      <div>
-        <h2 className="text-3xl font-bold">{value}</h2>
-        <p className="text-sm text-zinc-300">{title}</p>
-        <p className="text-xs text-zinc-500">{description}</p>
+    <div className="flex items-center justify-between bg-[#1e1e1e] text-white rounded-lg p-6 w-full">
+      <div className="text-center flex-1">
+        <div className="text-4xl font-bold">{value}</div>
+        <div className="text-sm uppercase tracking-wider mt-1">{label}</div>
       </div>
-      <div className="text-yellow-400">{icon}</div>
+      <div className="ml-4 text-gray-400">{icon}</div>
     </div>
   );
 }
