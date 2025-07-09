@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Layout from '@/components/Layout';
 
 const Home: NextPage = () => {
   const [images, setImages] = useState<string[]>([]);
@@ -18,15 +19,22 @@ const Home: NextPage = () => {
     })
       .then(res => res.json())
       .then(data => setImages(data.map((i: any) => i.base64)));
-  }, []);
+  }, [router]);
 
   return (
-    <div>
-      <h1>Admin Panel</h1>
-      {images.map((img, idx) => (
-        <img key={idx} src={`data:image/jpeg;base64,${img}`} alt={`img-${idx}`} />
-      ))}
-    </div>
+    <Layout>
+      <h1 className="text-2xl font-semibold mb-4">Panel</h1>
+      <div className="grid grid-cols-2 gap-4">
+        {images.map((img, idx) => (
+          <img
+            key={idx}
+            src={`data:image/jpeg;base64,${img}`}
+            alt={`img-${idx}`}
+            className="w-full h-auto rounded"
+          />
+        ))}
+      </div>
+    </Layout>
   );
 };
 
