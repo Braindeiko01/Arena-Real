@@ -1,7 +1,7 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
-import { useRouter } from 'next/router';
-import { LayoutDashboard, Banknote, Shield } from 'lucide-react';
+import { useRouter } from 'next/router'
+import { LayoutDashboard, Banknote, Shield } from 'lucide-react'
 
 const links = [
   { href: '/', label: 'Panel', icon: <LayoutDashboard size={20} /> },
@@ -10,9 +10,9 @@ const links = [
 ];
 
 export default function Sidebar() {
-  const { pathname } = useRouter();
+  const { pathname } = useRouter()
   return (
-    <aside className="w-56 bg-[#121212] text-white min-h-screen p-4 space-y-4">
+    <aside className="w-56 bg-gradient-to-b from-[#121212] via-[#181818] to-[#1e1e1e] text-white min-h-screen p-4 space-y-4 shadow-lg">
       <h1 className="text-xl font-bold text-yellow-400">Panel de Admin</h1>
       <nav className="space-y-2">
         {links.map(link => (
@@ -27,5 +27,5 @@ export default function Sidebar() {
         ))}
       </nav>
     </aside>
-  );
+  )
 }
