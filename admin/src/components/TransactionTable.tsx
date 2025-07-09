@@ -14,7 +14,7 @@ interface Transaction {
   date: string;
   status: TransactionStatus;
 }
-
+.
 const typeIcons = {
   DEPOSITO: <ArrowDownCircle size={20} />,
   RETIRO: <ArrowUpCircle size={20} />,

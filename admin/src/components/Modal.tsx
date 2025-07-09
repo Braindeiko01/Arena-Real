@@ -5,7 +5,7 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
 }
-
+.
 export default function Modal({ open, onClose, children }: ModalProps) {
   if (!open) return null;
   return (
