@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
 import StatCard from '@/components/StatCard';
-import { Banknote, ListChecks, Users } from 'lucide-react';
+import { Clock, ShieldCheck, Users } from 'lucide-react';
 import { get } from '@/lib/api';
 
 const Home: NextPage = () => {
@@ -19,17 +19,38 @@ const Home: NextPage = () => {
   }, []);
 
   const stats = [
-    { label: 'Transacciones Pendientes', value: txCount, icon: <Banknote size={32} /> },
-    { label: 'Partidas Pendientes', value: gameCount, icon: <ListChecks size={32} /> },
-    { label: 'Usuarios Totales', value: 0, icon: <Users size={32} /> }
+    {
+      title: 'Transacciones Pendientes',
+      description: 'Transacciones esperando aprobación',
+      value: txCount,
+      icon: <Clock size={32} />
+    },
+    {
+      title: 'Partidas Pendientes',
+      description: 'Partidas esperando validación',
+      value: gameCount,
+      icon: <ShieldCheck size={32} />
+    },
+    {
+      title: 'Usuarios Totales',
+      description: 'Total de usuarios activos en la plataforma',
+      value: 0,
+      icon: <Users size={32} />
+    }
   ];
 
   return (
     <Layout>
       <h1 className="text-2xl font-semibold mb-6">Panel</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map(stat => (
-          <StatCard key={stat.label} icon={stat.icon} label={stat.label} value={stat.value} />
+          <StatCard
+            key={stat.title}
+            icon={stat.icon}
+            title={stat.title}
+            value={stat.value}
+            description={stat.description}
+          />
         ))}
       </div>
     </Layout>
