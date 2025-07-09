@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.4",
     "lucide-react": "^0.475.0",
     "next": "15.3.3",
     "react": "^18.3.1",

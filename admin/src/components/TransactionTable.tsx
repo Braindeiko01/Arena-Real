@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ArrowDownCircle, ArrowUpCircle, Coins } from 'lucide-react';
-import Modal from '@/components/Modal';
+import ReviewTransactionDialog from '@/components/ReviewTransactionDialog';
 
 export type TransactionType = 'DEPOSITO' | 'RETIRO' | 'APUESTA';
 export type TransactionStatus = 'PENDIENTE' | 'ENTREGADA' | 'CANCELADA';
@@ -13,8 +13,9 @@ interface Transaction {
   amount: number;
   date: string;
   status: TransactionStatus;
+  proofOfPayment?: string;
 }
-.
+
 const typeIcons = {
   DEPOSITO: <ArrowDownCircle size={20} />,
   RETIRO: <ArrowUpCircle size={20} />,
@@ -22,15 +23,50 @@ const typeIcons = {
 };
 
 export default function TransactionTable() {
-  const [transactions] = useState<Transaction[]>([
-    { id: 1, origin: 'Alice', destination: 'Casino', type: 'DEPOSITO', amount: 100, date: '2025-01-01', status: 'PENDIENTE' },
-    { id: 2, origin: 'Bob', destination: 'Casino', type: 'RETIRO', amount: 50, date: '2025-01-02', status: 'ENTREGADA' },
-    { id: 3, origin: 'Carl', destination: 'Dave', type: 'APUESTA', amount: 20, date: '2025-01-03', status: 'CANCELADA' }
+  const [transactions, setTransactions] = useState<Transaction[]>([
+    {
+      id: 1,
+      origin: 'Alice',
+      destination: 'Casino',
+      type: 'DEPOSITO',
+      amount: 100,
+      date: '2025-01-01',
+      status: 'PENDIENTE',
+      proofOfPayment: 'https://via.placeholder.com/300x200'
+    },
+    {
+      id: 2,
+      origin: 'Bob',
+      destination: 'Casino',
+      type: 'RETIRO',
+      amount: 50,
+      date: '2025-01-02',
+      status: 'ENTREGADA'
+    },
+    {
+      id: 3,
+      origin: 'Carl',
+      destination: 'Dave',
+      type: 'APUESTA',
+      amount: 20,
+      date: '2025-01-03',
+      status: 'CANCELADA'
+    }
   ]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<TransactionStatus | 'ALL'>('ALL');
   const [typeFilter, setTypeFilter] = useState<TransactionType | 'ALL'>('ALL');
   const [selected, setSelected] = useState<Transaction | null>(null);
+
+  const handleReject = (id: number) => {
+    setTransactions(prev => prev.map(t => (t.id === id ? { ...t, status: 'CANCELADA' } : t)));
+    setSelected(null);
+  };
+
+  const handleApprove = (id: number) => {
+    setTransactions(prev => prev.map(t => (t.id === id ? { ...t, status: 'ENTREGADA' } : t)));
+    setSelected(null);
+  };
 
   const filtered = transactions.filter(t => {
     const matchesSearch =
@@ -58,6 +94,7 @@ export default function TransactionTable() {
           onChange={e => setSearch(e.target.value)}
         />
         <select
+          aria-label="Filtrar por estado"
           className="px-2 py-1 rounded bg-gray-800 text-white"
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value as TransactionStatus | 'ALL')}
@@ -68,6 +105,7 @@ export default function TransactionTable() {
           <option value="CANCELADA">Cancelada</option>
         </select>
         <select
+          aria-label="Filtrar por tipo"
           className="px-2 py-1 rounded bg-gray-800 text-white"
           value={typeFilter}
           onChange={e => setTypeFilter(e.target.value as TransactionType | 'ALL')}
@@ -121,12 +159,13 @@ export default function TransactionTable() {
         </tbody>
       </table>
 
-      <Modal open={!!selected} onClose={() => setSelected(null)}>
-        <h2 className="text-lg font-bold mb-2">Revisar Transacción</h2>
-        {selected && (
-          <pre className="whitespace-pre-wrap text-sm">{JSON.stringify(selected, null, 2)}</pre>
-        )}
-      </Modal>
+      <ReviewTransactionDialog
+        open={!!selected}
+        transaction={selected}
+        onClose={() => setSelected(null)}
+        onReject={handleReject}
+        onApprove={handleApprove}
+      />
     </div>
   );
 }
