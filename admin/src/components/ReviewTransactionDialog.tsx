@@ -1,6 +1,8 @@
-import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
-import Image from 'next/image';
+import { Dialog, Transition } from '@headlessui/react'
+import { Fragment, useState } from 'react'
+import Image from 'next/image'
+import { post } from '@/lib/api'
+import Toast from './Toast'
 
 export interface ReviewTransaction {
   id: string;
@@ -13,17 +15,47 @@ export interface ReviewTransaction {
 }
 
 interface Props {
-  open: boolean;
   transaction: ReviewTransaction | null;
   onClose: () => void;
   onReject: (id: string) => void;
   onApprove: (id: string) => void;
 }
 
-export default function ReviewTransactionDialog({ open, transaction, onClose, onReject, onApprove }: Props) {
+export default function ReviewTransactionDialog({
+  open,
+  transaction,
+  onClose,
+  onReject,
+  onApprove,
+}: Props) {
+  const [toastMsg, setToastMsg] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handle = async (status: 'ENTREGADA' | 'CANCELADA') => {
+    if (!transaction) return
+    setLoading(true)
+    try {
+      await post(`/api/admin/transactions/${transaction.id}/status`, { status })
+      if (status === 'ENTREGADA') {
+        onApprove(transaction.id)
+        setToastMsg('Transacción aprobada')
+      } else {
+        onReject(transaction.id)
+        setToastMsg('Transacción rechazada')
+      }
+      onClose()
+    } catch (err) {
+      console.error('status update failed', err)
+      setToastMsg('Error al actualizar')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
+    <>
+      <Transition.Root show={open} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={onClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -72,8 +104,20 @@ export default function ReviewTransactionDialog({ open, transaction, onClose, on
                   <button className="px-3 py-1 rounded bg-gray-700" onClick={onClose}>Cancelar</button>
                   {transaction && (
                     <>
-                      <button className="px-3 py-1 rounded bg-red-600" onClick={() => onReject(transaction.id)}>Rechazar</button>
-                      <button className="px-3 py-1 rounded bg-green-600" onClick={() => onApprove(transaction.id)}>Aprobar</button>
+                      <button
+                        className="px-3 py-1 rounded bg-red-600 disabled:opacity-50"
+                        onClick={() => handle('CANCELADA')}
+                        disabled={loading}
+                      >
+                        Rechazar
+                      </button>
+                      <button
+                        className="px-3 py-1 rounded bg-green-600 disabled:opacity-50"
+                        onClick={() => handle('ENTREGADA')}
+                        disabled={loading}
+                      >
+                        Aprobar
+                      </button>
                     </>
                   )}
                 </div>
@@ -81,7 +125,9 @@ export default function ReviewTransactionDialog({ open, transaction, onClose, on
             </Transition.Child>
           </div>
         </div>
-      </Dialog>
-    </Transition.Root>
-  );
+        </Dialog>
+      </Transition.Root>
+      {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg('')} />}
+    </>
+  )
 }
