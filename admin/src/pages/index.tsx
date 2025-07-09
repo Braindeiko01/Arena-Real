@@ -1,36 +1,26 @@
 import type { NextPage } from 'next';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
+import StatCard from '@/components/StatCard';
+import { Banknote, ListChecks, Users } from 'lucide-react';
+
+const stats = [
+  { label: 'Transacciones Pendientes', value: 5, icon: <Banknote size={32} /> },
+  { label: 'Partidas Pendientes', value: 2, icon: <ListChecks size={32} /> },
+  { label: 'Usuarios Totales', value: 37, icon: <Users size={32} /> }
+];
 
 const Home: NextPage = () => {
-  const [images, setImages] = useState<string[]>([]);
-  const router = useRouter();
-
-  useEffect(() => {
-    const baseUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || '';
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-    fetch(`${baseUrl}/api/admin/images`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => setImages(data.map((i: any) => i.base64)));
-  }, [router]);
-
+  // In a real application, values should come from the backend
   return (
     <Layout>
-      <h1 className="text-2xl font-semibold mb-4">Panel</h1>
-      <div className="grid grid-cols-2 gap-4">
-        {images.map((img, idx) => (
-          <img
-            key={idx}
-            src={`data:image/jpeg;base64,${img}`}
-            alt={`img-${idx}`}
-            className="w-full h-auto rounded"
+      <h1 className="text-2xl font-semibold mb-6">Panel</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {stats.map(stat => (
+          <StatCard
+            key={stat.label}
+            icon={stat.icon}
+            label={stat.label}
+            value={stat.value}
           />
         ))}
       </div>
