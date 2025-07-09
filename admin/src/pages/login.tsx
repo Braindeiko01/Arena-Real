@@ -54,10 +54,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#121212]">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#1e1e1e] via-[#111111] to-black">
       <form
         onSubmit={handleSubmit}
-        className="w-80 flex flex-col gap-4 p-6 border border-gray-700 rounded-lg shadow-md bg-[#1a1a1a] text-white"
+        className="w-80 flex flex-col gap-4 p-6 border border-gray-700 rounded-xl shadow-lg bg-[#1a1a1a] text-white"
       >
         <h2 className="text-2xl font-semibold text-center">Iniciar sesión</h2>
 
