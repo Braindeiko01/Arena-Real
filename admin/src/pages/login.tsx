@@ -54,11 +54,12 @@ const Login = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="w-80 mx-auto flex flex-col gap-4 p-6 border rounded-lg shadow-md mt-24 bg-white"
-    >
-      <h2 className="text-2xl font-semibold text-center text-gray-800">Iniciar sesión</h2>
+    <div className="min-h-screen flex items-center justify-center bg-[#121212]">
+      <form
+        onSubmit={handleSubmit}
+        className="w-80 flex flex-col gap-4 p-6 border border-gray-700 rounded-lg shadow-md bg-[#1a1a1a] text-white"
+      >
+        <h2 className="text-2xl font-semibold text-center">Iniciar sesión</h2>
 
       <input
         className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -86,7 +87,8 @@ const Login = () => {
       </button>
 
       {errorMsg && <p className="text-red-600 text-sm text-center">{errorMsg}</p>}
-    </form>
+      </form>
+    </div>
   );
 };
 
