@@ -9,9 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,13 +38,14 @@ public class AdminController {
     }
 
     @GetMapping("/transactions")
-    public ResponseEntity<List<TransactionDto>> pendingTransactions() {
-        return ResponseEntity.ok(adminService.listPendingTransactions());
+    public ResponseEntity<List<TransactionDto>> transactions() {
+        return ResponseEntity.ok(adminService.listTransactions());
     }
 
-    @PostMapping("/transactions/{id}/approve")
-    public ResponseEntity<Void> approveTransaction(@PathVariable UUID id) {
-        adminService.approveTransaction(id);
+    @PostMapping("/transactions/{id}/status")
+    public ResponseEntity<Void> changeTransactionStatus(@PathVariable UUID id,
+                                                       @RequestBody Map<String, String> body) {
+        adminService.changeTransactionStatus(id, body.get("status"));
         return ResponseEntity.ok().build();
     }
 
