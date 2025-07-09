@@ -15,6 +15,7 @@ export interface ReviewTransaction {
 }
 
 interface Props {
+  open: boolean;
   transaction: ReviewTransaction | null;
   onClose: () => void;
   onReject: (id: string) => void;
