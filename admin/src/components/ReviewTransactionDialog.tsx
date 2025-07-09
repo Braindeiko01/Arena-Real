@@ -5,7 +5,7 @@ import { post } from '@/lib/api'
 import Toast from './Toast'
 
 export interface ReviewTransaction {
-  id: number;
+  id: string;
   origin: string;
   destination: string;
   type: 'DEPOSITO' | 'RETIRO' | 'APUESTA';
