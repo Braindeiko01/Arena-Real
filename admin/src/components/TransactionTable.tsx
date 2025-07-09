@@ -91,8 +91,7 @@ export default function TransactionTable() {
       <table className="min-w-full bg-[#1e1e1e] text-white border border-gray-700 text-sm">
         <thead>
           <tr>
-            <th className="border px-2 py-1">Usuario Origen</th>
-            <th className="border px-2 py-1">Usuario Destino</th>
+            <th className="border px-2 py-1">Usuario</th>
             <th className="border px-2 py-1">Tipo</th>
             <th className="border px-2 py-1">Monto</th>
             <th className="border px-2 py-1">Fecha</th>
@@ -104,7 +103,6 @@ export default function TransactionTable() {
           {filtered.map(t => (
             <tr key={t.id} className="text-center">
               <td className="border px-2 py-1">{t.playerId}</td>
-              <td className="border px-2 py-1">N/A</td>
               <td className="border px-2 py-1">{t.type}</td>
               <td className="border px-2 py-1">${'' + t.amount}</td>
               <td className="border px-2 py-1">{new Date(t.createdAt).toLocaleString()}</td>
@@ -125,7 +123,6 @@ export default function TransactionTable() {
                       setReviewTx({
                         id: t.id,
                         origin: t.playerId,
-                        destination: '',
                         type: t.type as any,
                         amount: t.amount,
                         date: t.createdAt,
