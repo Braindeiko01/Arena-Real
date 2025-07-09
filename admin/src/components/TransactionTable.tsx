@@ -94,6 +94,7 @@ export default function TransactionTable() {
           onChange={e => setSearch(e.target.value)}
         />
         <select
+          aria-label="Filtrar por estado"
           className="px-2 py-1 rounded bg-gray-800 text-white"
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value as TransactionStatus | 'ALL')}
@@ -104,6 +105,7 @@ export default function TransactionTable() {
           <option value="CANCELADA">Cancelada</option>
         </select>
         <select
+          aria-label="Filtrar por tipo"
           className="px-2 py-1 rounded bg-gray-800 text-white"
           value={typeFilter}
           onChange={e => setTypeFilter(e.target.value as TransactionType | 'ALL')}
