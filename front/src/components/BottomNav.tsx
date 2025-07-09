@@ -30,7 +30,7 @@ const BottomNav = () => {
   const hasActiveChat = chats.some(c => c.activo);
 
   return (
-    <nav className="md:hidden fixed bottom-0 w-full z-50 bg-[#3973FF] border-t border-blue-800 h-16">
+    <nav className="md:hidden fixed bottom-0 w-full z-50 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 border-t border-blue-800 h-16 animate-gradient-x">
       <ul className="flex h-full items-center justify-around">
         {navItems.map(({ id, label, href, icon: Icon }) => {
           const isActive = active === id;
