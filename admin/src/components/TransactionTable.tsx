@@ -15,7 +15,7 @@ interface Transaction {
   status: TransactionStatus;
   proofOfPayment?: string;
 }
-.
+
 const typeIcons = {
   DEPOSITO: <ArrowDownCircle size={20} />,
   RETIRO: <ArrowUpCircle size={20} />,

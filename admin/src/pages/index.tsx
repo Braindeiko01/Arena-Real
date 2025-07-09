@@ -50,4 +50,3 @@ const Home: NextPage = () => {
     </Layout>
   );
 }
-.
