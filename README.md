@@ -119,6 +119,24 @@ Copy `admin/.env.example` to `admin/.env.local` and set the API URL:
 NEXT_PUBLIC_ADMIN_API_URL=http://localhost:8081
 ```
 
+### Troubleshooting 401 errors
+
+If you receive `401` responses from the admin API after logging in, verify:
+
+1. The backend is running with the environment variables from `admin-back/.env`.
+   You can load them with:
+
+   ```bash
+   export $(grep -v '^#' admin-back/.env | xargs)
+   mvn spring-boot:run
+   ```
+
+2. The login request returns a token and it is stored as `adminToken` in
+   `localStorage`. Use the browser dev tools to inspect this value.
+3. Subsequent requests must include `Authorization: Bearer <token>` in the
+   headers. If the token is missing or expired, remove it with
+   `localStorage.removeItem('adminToken')` and log in again.
+
 ## Maven troubleshooting
 
 If Maven reports errors resolving plugins or dependencies, run with the `-U`
