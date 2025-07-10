@@ -97,7 +97,7 @@ public class AdminService {
     }
 
     public List<GameResultDto> listGameResults() {
-        return partidaRepository.findByEstado(EstadoPartida.FINALIZADA).stream()
+        return partidaRepository.findByEstado(EstadoPartida.POR_APROBAR).stream()
                 .map(p -> {
                     GameResultDto dto = new GameResultDto();
                     dto.setId(p.getId());

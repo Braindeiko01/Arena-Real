@@ -22,10 +22,14 @@ export default function TransactionTable() {
   const [reviewTx, setReviewTx] = useState<ReviewTransaction | null>(null);
   const [toast, setToast] = useState('');
 
-  useEffect(() => {
+  const loadTransactions = () => {
     get<Transaction[]>('/api/admin/transactions')
       .then(setTransactions)
       .catch(err => setError(err.message));
+  };
+
+  useEffect(() => {
+    loadTransactions();
   }, []);
 
   const changeStatus = async (id: string, status: 'ENTREGADA' | 'CANCELADA') => {
@@ -86,6 +90,12 @@ export default function TransactionTable() {
           <option value="PREMIO">PREMIO</option>
           <option value="REEMBOLSO">REEMBOLSO</option>
         </select>
+        <button
+          className="px-2 py-1 bg-gray-700 rounded"
+          onClick={loadTransactions}
+        >
+          Actualizar
+        </button>
       </div>
 
       <table className="min-w-full bg-[#1e1e1e] text-white border border-gray-700 text-sm">
