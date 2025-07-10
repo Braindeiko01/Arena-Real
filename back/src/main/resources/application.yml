@@ -1,6 +1,9 @@
 server:
   port: ${PORT:8080}
 
+dotenv:
+  enabled: true
+
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL}
