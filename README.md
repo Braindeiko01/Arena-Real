@@ -85,16 +85,10 @@ ADMIN_SECURITY_JWT_SECRET=changeMe
 ADMIN_CREDENTIALS_USER=admin
 ADMIN_CREDENTIALS_PASSWORD=admin
 ```
-Then export these variables or use a tool like `direnv` so that `mvn spring-boot:run` can read them.
-Administrative operations like approving transactions or validating game results
-are no longer available in the main backend. Use the admin API instead.
-The admin backend uses a JWT secret and credentials that can be overridden via environment variables:
-
-```bash
-export ADMIN_SECURITY_JWT_SECRET=changeMe
-export ADMIN_CREDENTIALS_USER=admin
-export ADMIN_CREDENTIALS_PASSWORD=admin
-```
+The application reads this `.env` file automatically at startup thanks to the
+`dotenv-spring-boot` dependency, so no manual `export` is required. Administrative
+operations like approving transactions or validating game results are no longer
+available in the main backend. Use the admin API instead.
 Default values are provided in `admin-back/src/main/resources/application.properties`.
 
 You can obtain a JWT with:
@@ -123,13 +117,8 @@ NEXT_PUBLIC_ADMIN_API_URL=http://localhost:8081
 
 If you receive `401` responses from the admin API after logging in, verify:
 
-1. The backend is running with the environment variables from `admin-back/.env`.
-   You can load them with:
-
-   ```bash
-   export $(grep -v '^#' admin-back/.env | xargs)
-   mvn spring-boot:run
-   ```
+1. Ensure the values in `admin-back/.env` are correct. The backend loads this
+   file automatically when starting.
 
 2. The login request returns a token and it is stored as `adminToken` in
    `localStorage`. Use the browser dev tools to inspect this value.
