@@ -42,7 +42,7 @@ const Navbar = () => {
   const notifications = 0;
 
   return (
-    <header className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-md animate-gradient-x">
+    <header className="bg-gradient-to-r from-blue-500 via-blue-700 to-blue-900 text-white shadow-md animate-gradient-x">
       <div className="container mx-auto flex items-center justify-between py-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
