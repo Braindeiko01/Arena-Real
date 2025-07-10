@@ -3,6 +3,7 @@ package co.com.arena.real.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,14 +14,17 @@ import java.io.IOException;
 public class FirebaseConfig {
 
     @Bean
-    public FirebaseApp firebaseApp() throws IOException {
+    public FirebaseApp firebaseApp(
+            @Value("${FIREBASE_SERVICE_ACCOUNT_FILE:}") String firebaseServiceAccount,
+            @Value("${GOOGLE_APPLICATION_CREDENTIALS:}") String googleCredentialsPath
+    ) throws IOException {
         if (!FirebaseApp.getApps().isEmpty()) {
             return FirebaseApp.getInstance();
         }
 
-        String serviceAccountPath = System.getenv("FIREBASE_SERVICE_ACCOUNT_FILE");
+        String serviceAccountPath = firebaseServiceAccount;
         if (serviceAccountPath == null || serviceAccountPath.isBlank()) {
-            serviceAccountPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+            serviceAccountPath = googleCredentialsPath;
         }
 
         if (serviceAccountPath == null || serviceAccountPath.isBlank()) {

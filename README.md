@@ -40,6 +40,9 @@ export FIREBASE_SERVICE_ACCOUNT_FILE=/path/to/serviceAccountKey.json
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/serviceAccountKey.json
 ```
 
+These variables can also be defined in a `.env` file because the backend loads
+environment entries via `spring-dotenv` when `dotenv.enabled=true`.
+
 
 If neither variable is set, the backend won't start because Firebase cannot
 locate credentials.
