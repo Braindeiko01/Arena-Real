@@ -12,9 +12,15 @@ export default function MatchTable() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    get<GameResult[]>('/api/admin/games/results')
-      .then(setResults)
-      .catch(err => setError(err.message));
+    get<{ results?: GameResult[] }>('/api/admin/games/results')
+      .then((data) => {
+        console.log('📦 Respuesta de la API /games/results:', data);
+        setResults(data.results ?? []); // ✅ asegura que nunca sea undefined
+      })
+      .catch(err => {
+        console.error('❌ Error en GET /games/results:', err);
+        setError(err.message);
+      });
   }, []);
 
   const distribute = async (id: string) => {
@@ -22,7 +28,7 @@ export default function MatchTable() {
       await post(`/api/admin/games/${id}/distribute`);
       setResults(prev => prev.map(r => (r.id === id ? { ...r, distributed: true } : r)));
     } catch (err) {
-      console.error('distribute failed', err);
+      console.error('❌ Distribute failed:', err);
       setError('No se pudo distribuir el premio');
     }
   };
@@ -40,6 +46,13 @@ export default function MatchTable() {
           </tr>
         </thead>
         <tbody>
+          {results.length === 0 && (
+            <tr>
+              <td colSpan={4} className="text-center text-gray-500 py-4">
+                No hay partidas registradas.
+              </td>
+            </tr>
+          )}
           {results.map(r => (
             <tr key={r.id} className="text-center">
               <td className="border px-2 py-1">{r.id}</td>
