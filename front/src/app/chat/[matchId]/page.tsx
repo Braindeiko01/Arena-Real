@@ -215,15 +215,13 @@ const ChatPageContent = () => {
       })
     }
 
-    let validPartidaId = partidaId
+    const validPartidaId = await fetchMatchIdByChat(validChatId)
     if (!validPartidaId) {
-      validPartidaId = await fetchMatchIdByChat(validChatId)
-      if (validPartidaId) {
-        setPartidaId(validPartidaId)
-      } else {
-        toast({ title: 'Error', description: 'No se encontró la partida asociada al chat.', variant: 'destructive' })
-        return
-      }
+      toast({ title: 'Error', description: 'No se encontró la partida asociada al chat.', variant: 'destructive' })
+      return
+    }
+    if (!partidaId) {
+      setPartidaId(validPartidaId)
     }
 
     const response = await submitMatchResultAction(
