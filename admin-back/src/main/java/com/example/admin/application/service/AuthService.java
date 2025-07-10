@@ -34,7 +34,7 @@ public class AuthService {
                     .subject(username)
                     .issuedAt(Instant.now())
                     .expiresAt(Instant.now().plus(1, ChronoUnit.HOURS))
-                    .claim("scope", "ROLE_ADMIN")
+                    .claim("scope", "ADMIN")
                     .build();
             JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
             String token = encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
