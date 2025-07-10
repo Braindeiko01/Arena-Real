@@ -25,6 +25,11 @@
             <artifactId>shared-core</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>me.paulschwarz</groupId>
+            <artifactId>dotenv-spring-boot</artifactId>
+            <version>3.0.0</version>
+        </dependency>
         <!-- Validación -->
         <dependency>
             <groupId>jakarta.validation</groupId>
