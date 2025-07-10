@@ -86,7 +86,7 @@ ADMIN_CREDENTIALS_USER=admin
 ADMIN_CREDENTIALS_PASSWORD=admin
 ```
 The application reads this `.env` file automatically at startup thanks to the
-`dotenv-spring-boot` dependency, so no manual `export` is required. Administrative
+`spring-dotenv` dependency, so no manual `export` is required. Administrative
 operations like approving transactions or validating game results are no longer
 available in the main backend. Use the admin API instead.
 Default values are provided in `admin-back/src/main/resources/application.properties`.
