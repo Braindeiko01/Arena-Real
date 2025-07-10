@@ -74,6 +74,18 @@ cd admin-back
 mvn spring-boot:run
 ```
 
+
+Before running, configure a database connection. Create `admin-back/.env` (you can copy from `.env.example`) and set:
+
+```env
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/arena_real
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=postgres
+ADMIN_SECURITY_JWT_SECRET=changeMe
+ADMIN_CREDENTIALS_USER=admin
+ADMIN_CREDENTIALS_PASSWORD=admin
+```
+Then export these variables or use a tool like `direnv` so that `mvn spring-boot:run` can read them.
 Administrative operations like approving transactions or validating game results
 are no longer available in the main backend. Use the admin API instead.
 The admin backend uses a JWT secret and credentials that can be overridden via environment variables:
@@ -101,11 +113,29 @@ npm install
 npm run dev
 ```
 
-Create `admin/.env.local` with:
+Copy `admin/.env.example` to `admin/.env.local` and set the API URL:
 
 ```env
 NEXT_PUBLIC_ADMIN_API_URL=http://localhost:8081
 ```
+
+### Troubleshooting 401 errors
+
+If you receive `401` responses from the admin API after logging in, verify:
+
+1. The backend is running with the environment variables from `admin-back/.env`.
+   You can load them with:
+
+   ```bash
+   export $(grep -v '^#' admin-back/.env | xargs)
+   mvn spring-boot:run
+   ```
+
+2. The login request returns a token and it is stored as `adminToken` in
+   `localStorage`. Use the browser dev tools to inspect this value.
+3. Subsequent requests must include `Authorization: Bearer <token>` in the
+   headers. If the token is missing or expired, remove it with
+   `localStorage.removeItem('adminToken')` and log in again.
 
 ## Maven troubleshooting
 
