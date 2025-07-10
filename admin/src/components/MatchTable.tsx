@@ -11,16 +11,20 @@ export default function MatchTable() {
   const [results, setResults] = useState<GameResult[]>([]);
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  const loadResults = () => {
     get<{ results?: GameResult[] }>('/api/admin/games/results')
       .then((data) => {
         console.log('📦 Respuesta de la API /games/results:', data);
-        setResults(data.results ?? []); // ✅ asegura que nunca sea undefined
+        setResults(data.results ?? []);
       })
       .catch(err => {
         console.error('❌ Error en GET /games/results:', err);
         setError(err.message);
       });
+  };
+
+  useEffect(() => {
+    loadResults();
   }, []);
 
   const distribute = async (id: string) => {
@@ -36,6 +40,12 @@ export default function MatchTable() {
   return (
     <div className="space-y-4">
       {error && <p className="text-red-500">{error}</p>}
+      <button
+        className="px-2 py-1 bg-gray-700 rounded"
+        onClick={loadResults}
+      >
+        Actualizar
+      </button>
       <table className="min-w-full bg-[#1e1e1e] text-white border border-gray-700 text-sm">
         <thead>
           <tr>
