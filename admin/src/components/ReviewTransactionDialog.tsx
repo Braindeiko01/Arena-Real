@@ -1,6 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import Image from 'next/image'
 import { post } from '@/lib/api'
 import Toast from './Toast'
 
@@ -95,7 +94,11 @@ export default function ReviewTransactionDialog({
                 )}
                 {transaction?.type === 'DEPOSITO' && transaction.proofOfPayment && (
                   <div className="mt-2">
-                    <Image src={transaction.proofOfPayment} alt="Comprobante" width={300} height={200} className="rounded" />
+                    <img
+                      src={transaction.proofOfPayment}
+                      alt="Comprobante"
+                      className="w-full max-h-60 object-contain rounded"
+                    />
                   </div>
                 )}
                 <div className="flex justify-end gap-2 pt-4">
