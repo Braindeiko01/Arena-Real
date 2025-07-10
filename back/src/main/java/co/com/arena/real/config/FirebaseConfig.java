@@ -24,10 +24,11 @@ public class FirebaseConfig {
         }
 
         if (serviceAccountPath == null || serviceAccountPath.isBlank()) {
-            throw new IllegalStateException("❌ No se encontró la ruta del archivo de credenciales de Firebase. Asegúrate de definir FIREBASE_SERVICE_ACCOUNT_FILE o GOOGLE_APPLICATION_CREDENTIALS como variable de entorno.");
+            throw new IllegalStateException(
+                    "Firebase credentials file not found. Set FIREBASE_SERVICE_ACCOUNT_FILE or GOOGLE_APPLICATION_CREDENTIALS.");
         }
 
-        System.out.println("✅ Ruta del archivo de servicio Firebase: " + serviceAccountPath);
+        System.out.println("Firebase service file path: " + serviceAccountPath);
 
         GoogleCredentials credentials;
         try (FileInputStream serviceAccount = new FileInputStream(serviceAccountPath)) {
