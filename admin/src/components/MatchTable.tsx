@@ -1,15 +1,21 @@
-import { useEffect, useState } from 'react';
-import { get, post } from '@/lib/api';
+import { useEffect, useState } from 'react'
+import { get, post } from '@/lib/api'
+import Modal from './Modal'
 
 interface GameResult {
-  id: string;
-  winnerId?: string | null;
-  distributed: boolean;
+  id: string
+  jugadorA?: string
+  jugadorB?: string
+  capturaA?: string | null
+  capturaB?: string | null
+  winnerId?: string | null
+  distributed: boolean
 }
 
 export default function MatchTable() {
   const [results, setResults] = useState<GameResult[]>([]);
   const [error, setError] = useState('');
+  const [image, setImage] = useState<string | null>(null)
 
   const loadResults = () => {
     get<{ results?: GameResult[] }>('/api/admin/games/results')
@@ -37,6 +43,16 @@ export default function MatchTable() {
     }
   };
 
+  const assignWinner = async (id: string, player: string) => {
+    try {
+      await post(`/api/admin/games/${id}/winner/${player}`);
+      setResults(prev => prev.map(r => (r.id === id ? { ...r, winnerId: player } : r)));
+    } catch (err) {
+      console.error('❌ Assign winner failed:', err);
+      setError('No se pudo asignar el ganador');
+    }
+  };
+
   return (
     <div className="space-y-4">
       {error && <p className="text-red-500">{error}</p>}
@@ -50,6 +66,10 @@ export default function MatchTable() {
         <thead>
           <tr>
             <th className="border px-2 py-1">Partida</th>
+            <th className="border px-2 py-1">Jugador A</th>
+            <th className="border px-2 py-1">Captura A</th>
+            <th className="border px-2 py-1">Jugador B</th>
+            <th className="border px-2 py-1">Captura B</th>
             <th className="border px-2 py-1">Ganador</th>
             <th className="border px-2 py-1">Estado</th>
             <th className="border px-2 py-1">Acción</th>
@@ -58,7 +78,7 @@ export default function MatchTable() {
         <tbody>
           {results.length === 0 && (
             <tr>
-              <td colSpan={4} className="text-center text-gray-500 py-4">
+              <td colSpan={8} className="text-center text-gray-500 py-4">
                 No hay partidas registradas.
               </td>
             </tr>
@@ -66,6 +86,28 @@ export default function MatchTable() {
           {results.map(r => (
             <tr key={r.id} className="text-center">
               <td className="border px-2 py-1">{r.id}</td>
+              <td className="border px-2 py-1">{r.jugadorA || '-'}</td>
+              <td className="border px-2 py-1">
+                {r.capturaA && (
+                  <img
+                    src={r.capturaA}
+                    alt="captura A"
+                    className="h-12 mx-auto cursor-pointer"
+                    onClick={() => setImage(r.capturaA!)}
+                  />
+                )}
+              </td>
+              <td className="border px-2 py-1">{r.jugadorB || '-'}</td>
+              <td className="border px-2 py-1">
+                {r.capturaB && (
+                  <img
+                    src={r.capturaB}
+                    alt="captura B"
+                    className="h-12 mx-auto cursor-pointer"
+                    onClick={() => setImage(r.capturaB!)}
+                  />
+                )}
+              </td>
               <td className="border px-2 py-1">{r.winnerId || '-'}</td>
               <td className="border px-2 py-1">
                 {r.distributed ? (
@@ -74,8 +116,28 @@ export default function MatchTable() {
                   <span className="px-2 py-1 rounded bg-yellow-600 text-white">Pendiente</span>
                 )}
               </td>
-              <td className="border px-2 py-1">
-                {!r.distributed && (
+              <td className="border px-2 py-1 space-y-1">
+                {!r.winnerId && (
+                  <div className="flex flex-col gap-1">
+                    {r.jugadorA && (
+                      <button
+                        className="px-2 py-1 bg-gray-700 rounded"
+                        onClick={() => assignWinner(r.id, r.jugadorA!)}
+                      >
+                        Ganador A
+                      </button>
+                    )}
+                    {r.jugadorB && (
+                      <button
+                        className="px-2 py-1 bg-gray-700 rounded"
+                        onClick={() => assignWinner(r.id, r.jugadorB!)}
+                      >
+                        Ganador B
+                      </button>
+                    )}
+                  </div>
+                )}
+                {r.winnerId && !r.distributed && (
                   <button
                     className="px-2 py-1 bg-blue-600 rounded"
                     onClick={() => distribute(r.id)}
@@ -88,6 +150,11 @@ export default function MatchTable() {
           ))}
         </tbody>
       </table>
+      <Modal open={!!image} onClose={() => setImage(null)}>
+        {image && (
+          <img src={image} alt="captura" className="max-h-[80vh]" />
+        )}
+      </Modal>
     </div>
   );
 }
