@@ -85,6 +85,7 @@ public class MatchmakingService {
         partidaEnEsperaRepository.deleteByJugador(jugador);
     }
 
+    @Transactional
     public void cancelarSolicitudes(String jugadorId) {
         partidaEnEsperaRepository.deleteByJugador(new Jugador(jugadorId));
     }
