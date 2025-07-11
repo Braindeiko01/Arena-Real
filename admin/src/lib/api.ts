@@ -32,10 +32,16 @@ export async function post<T = void>(path: string, body?: unknown): Promise<T> {
     credentials: 'include',
   });
 
+  const text = await res.text();
+
   if (!res.ok) {
     console.error(`❌ POST ${path} → ${res.status}`);
-    throw new Error(await res.text());
+    throw new Error(text);
   }
 
-  return res.status === 204 ? (undefined as T) : res.json();
+  if (!text) {
+    return undefined as T;
+  }
+
+  return JSON.parse(text) as T;
 }
