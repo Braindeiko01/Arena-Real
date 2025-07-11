@@ -69,6 +69,7 @@ public class AdminService {
                     dto.setStatus(estado);
                     dto.setCreatedAt(t.getCreadoEn());
                     dto.setReceipt(t.getComprobante());
+                    dto.setPhone(t.getJugador().getTelefono());
                     return dto;
                 })
                 .toList();

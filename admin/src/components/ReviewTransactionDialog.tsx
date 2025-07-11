@@ -6,6 +6,7 @@ import Toast from './Toast'
 export interface ReviewTransaction {
   id: string
   origin: string
+  phone: string
   type: 'DEPOSITO' | 'RETIRO' | 'APUESTA'
   amount: number
   date: string
@@ -84,6 +85,12 @@ export default function ReviewTransactionDialog({
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <span className="font-semibold">Usuario:</span>
                     <span>{transaction.origin}</span>
+                    {transaction.type === 'DEPOSITO' && (
+                      <>
+                        <span className="font-semibold">Teléfono:</span>
+                        <span>{transaction.phone}</span>
+                      </>
+                    )}
                     <span className="font-semibold">Monto:</span>
                     <span>${"" + transaction.amount}</span>
                     <span className="font-semibold">Fecha:</span>

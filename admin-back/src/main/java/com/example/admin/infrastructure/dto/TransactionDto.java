@@ -15,4 +15,5 @@ public class TransactionDto {
     private String status;
     private LocalDateTime createdAt;
     private String receipt;
+    private String phone;
 }
