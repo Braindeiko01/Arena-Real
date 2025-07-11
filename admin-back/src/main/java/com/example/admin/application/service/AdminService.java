@@ -27,6 +27,7 @@ public class AdminService {
     private final ApuestaRepository apuestaRepository;
     private final JugadorRepository jugadorRepository;
 
+    @Transactional(readOnly = true)
     public List<ImageDto> listPendingImages() {
         return partidaRepository.findByEstado(EstadoPartida.POR_APROBAR).stream()
                 .flatMap(p -> java.util.stream.Stream.of(p.getCapturaJugador1(), p.getCapturaJugador2())
@@ -50,6 +51,7 @@ public class AdminService {
         });
     }
 
+    @Transactional(readOnly = true)
     public List<TransactionDto> listTransactions() {
         return transaccionRepository.findAll().stream()
                 .map(t -> {
@@ -96,6 +98,7 @@ public class AdminService {
         });
     }
 
+    @Transactional(readOnly = true)
     public List<GameResultDto> listGameResults() {
         return partidaRepository.findByEstado(EstadoPartida.POR_APROBAR).stream()
                 .map(p -> {
