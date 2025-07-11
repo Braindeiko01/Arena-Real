@@ -155,10 +155,13 @@ public class AdminService {
 
     @Transactional
     public void assignWinner(UUID gameId, String playerId) {
-        partidaRepository.findById(gameId).ifPresent(p -> {
-            p.setGanador(new co.com.arena.real.domain.entity.Jugador(playerId));
-            partidaRepository.save(p);
-        });
+        Partida partida = partidaRepository.findById(gameId)
+                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
+        co.com.arena.real.domain.entity.Jugador ganador = jugadorRepository.findById(playerId)
+                .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
+
+        partida.setGanador(ganador);
+        partidaRepository.save(partida);
     }
 
     @Transactional
