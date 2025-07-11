@@ -50,8 +50,8 @@ public class AdminController {
     }
 
     @GetMapping("/games/results")
-    public ResponseEntity<List<GameResultDto>> gameResults() {
-        return ResponseEntity.ok(adminService.listGameResults());
+    public ResponseEntity<Map<String, List<GameResultDto>>> gameResults() {
+        return ResponseEntity.ok(Map.of("results", adminService.listGameResults()));
     }
 
     @PostMapping("/games/{id}/distribute")
