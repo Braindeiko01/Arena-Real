@@ -6,6 +6,7 @@ import Toast from './Toast';
 interface Transaction {
   id: string;
   playerId: string;
+  phone: string;
   amount: number;
   type: string;
   status: string;
@@ -102,6 +103,7 @@ export default function TransactionTable() {
         <thead>
           <tr>
             <th className="border px-2 py-1">Usuario</th>
+            <th className="border px-2 py-1">Teléfono</th>
             <th className="border px-2 py-1">Tipo</th>
             <th className="border px-2 py-1">Monto</th>
             <th className="border px-2 py-1">Fecha</th>
@@ -113,6 +115,7 @@ export default function TransactionTable() {
           {filtered.map(t => (
             <tr key={t.id} className="text-center">
               <td className="border px-2 py-1">{t.playerId}</td>
+              <td className="border px-2 py-1">{t.type === 'DEPOSITO' ? t.phone : '-'}</td>
               <td className="border px-2 py-1">{t.type}</td>
               <td className="border px-2 py-1">${'' + t.amount}</td>
               <td className="border px-2 py-1">{new Date(t.createdAt).toLocaleString()}</td>
@@ -133,6 +136,7 @@ export default function TransactionTable() {
                       setReviewTx({
                         id: t.id,
                         origin: t.playerId,
+                        phone: t.phone,
                         type: t.type as any,
                         amount: t.amount,
                         date: t.createdAt,
