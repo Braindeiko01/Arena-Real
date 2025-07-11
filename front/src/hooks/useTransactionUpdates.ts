@@ -18,8 +18,6 @@ export default function useTransactionUpdates() {
     if (!user?.id) return;
 
     const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
-    const es = new EventSource(url);
-    eventSourceRef.current = es;
 
     const handler = async (event: MessageEvent) => {
       try {
@@ -34,11 +32,20 @@ export default function useTransactionUpdates() {
       }
     };
 
-    es.addEventListener('transaccion-aprobada', handler as unknown as EventListener);
+    const connect = () => {
+      const es = new EventSource(url, { withCredentials: true });
+      eventSourceRef.current = es;
 
-    es.onerror = (err) => {
-      console.error('SSE error:', err);
+      es.addEventListener('transaccion-aprobada', handler as unknown as EventListener);
+
+      es.onerror = (err) => {
+        console.error('SSE error:', err);
+        es.close();
+        setTimeout(connect, 3000);
+      };
     };
+
+    connect();
 
     return () => {
       if (eventSourceRef.current) {
