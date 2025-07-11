@@ -94,9 +94,32 @@ public class AdminService {
             } else {
                 newStatus = EstadoTransaccion.valueOf(status);
             }
+
+            if (newStatus == EstadoTransaccion.APROBADA
+                    && !EstadoTransaccion.APROBADA.equals(t.getEstado())) {
+                modificarSaldoJugador(t);
+            }
+
             t.setEstado(newStatus);
             transaccionRepository.save(t);
         });
+    }
+
+    private void modificarSaldoJugador(co.com.arena.real.domain.entity.Transaccion transaccion) {
+        co.com.arena.real.domain.entity.Jugador jugador = jugadorRepository.findById(transaccion.getJugador().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
+
+        switch (transaccion.getTipo()) {
+            case DEPOSITO, PREMIO, REEMBOLSO -> jugador.setSaldo(jugador.getSaldo().add(transaccion.getMonto()));
+            case RETIRO, APUESTA -> {
+                if (!(jugador.getSaldo().compareTo(transaccion.getMonto()) >= 0)) {
+                    throw new IllegalArgumentException("Saldo insuficiente para realizar la transacción");
+                }
+                jugador.setSaldo(jugador.getSaldo().subtract(transaccion.getMonto()));
+            }
+        }
+
+        jugadorRepository.save(jugador);
     }
 
     @Transactional(readOnly = true)
