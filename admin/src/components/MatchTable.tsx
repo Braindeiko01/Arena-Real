@@ -4,7 +4,9 @@ import Modal from './Modal'
 
 interface GameResult {
   id: string
+  jugadorAId?: string
   jugadorA?: string
+  jugadorBId?: string
   jugadorB?: string
   capturaA?: string | null
   capturaB?: string | null
@@ -43,10 +45,10 @@ export default function MatchTable() {
     }
   };
 
-  const assignWinner = async (id: string, player: string) => {
+  const assignWinner = async (id: string, playerId: string) => {
     try {
-      await post(`/api/admin/games/${id}/winner/${player}`);
-      setResults(prev => prev.map(r => (r.id === id ? { ...r, winnerId: player } : r)));
+      await post(`/api/admin/games/${id}/winner/${playerId}`);
+      setResults(prev => prev.map(r => (r.id === id ? { ...r, winnerId: playerId } : r)));
     } catch (err) {
       console.error('❌ Assign winner failed:', err);
       setError('No se pudo asignar el ganador');
@@ -119,18 +121,18 @@ export default function MatchTable() {
               <td className="border px-2 py-1 space-y-1">
                 {!r.winnerId && (
                   <div className="flex flex-col gap-1">
-                    {r.jugadorA && (
+                    {r.jugadorAId && (
                       <button
                         className="px-2 py-1 bg-gray-700 rounded"
-                        onClick={() => assignWinner(r.id, r.jugadorA!)}
+                        onClick={() => assignWinner(r.id, r.jugadorAId!)}
                       >
                         Ganador A
                       </button>
                     )}
-                    {r.jugadorB && (
+                    {r.jugadorBId && (
                       <button
                         className="px-2 py-1 bg-gray-700 rounded"
-                        onClick={() => assignWinner(r.id, r.jugadorB!)}
+                        onClick={() => assignWinner(r.id, r.jugadorBId!)}
                       >
                         Ganador B
                       </button>

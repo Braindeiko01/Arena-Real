@@ -129,9 +129,11 @@ public class AdminService {
                     GameResultDto dto = new GameResultDto();
                     dto.setId(p.getId());
                     if (p.getJugador1() != null) {
+                        dto.setJugadorAId(p.getJugador1().getId());
                         dto.setJugadorA(p.getJugador1().getNombre());
                     }
                     if (p.getJugador2() != null) {
+                        dto.setJugadorBId(p.getJugador2().getId());
                         dto.setJugadorB(p.getJugador2().getNombre());
                     }
                     dto.setEstado(p.getEstado() != null ? p.getEstado().name() : null);
