@@ -7,7 +7,9 @@ import java.util.UUID;
 @Data
 public class GameResultDto {
     private UUID id;
+    private String jugadorAId;
     private String jugadorA;
+    private String jugadorBId;
     private String jugadorB;
     private String estado;
     private String capturaA;
