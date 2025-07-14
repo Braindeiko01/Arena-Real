@@ -32,6 +32,11 @@
       <artifactId>spring-dotenv</artifactId>
       <version>4.0.0</version>
     </dependency>
+    <dependency>
+      <groupId>co.com.arena.real</groupId>
+      <artifactId>arena-real</artifactId>
+      <version>1.0.3</version>
+    </dependency>
 
     <!-- Replace default logback with log4j2 -->
     <dependency>
