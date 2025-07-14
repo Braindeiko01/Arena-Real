@@ -6,11 +6,11 @@ import com.example.admin.infrastructure.dto.TransactionDto;
 import co.com.arena.real.domain.entity.EstadoApuesta;
 import co.com.arena.real.domain.entity.EstadoTransaccion;
 import co.com.arena.real.domain.entity.partida.EstadoPartida;
-import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.infrastructure.repository.ApuestaRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
+import co.com.arena.real.application.service.PartidaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +26,7 @@ public class AdminService {
     private final TransaccionRepository transaccionRepository;
     private final ApuestaRepository apuestaRepository;
     private final JugadorRepository jugadorRepository;
+    private final PartidaService partidaService;
 
     @Transactional(readOnly = true)
     public List<ImageDto> listPendingImages() {
@@ -148,22 +149,12 @@ public class AdminService {
 
     @Transactional
     public void distributePrize(UUID gameId) {
-        partidaRepository.findById(gameId).ifPresent(p -> {
-            p.setValidada(true);
-            p.setEstado(EstadoPartida.FINALIZADA);
-            partidaRepository.save(p);
-        });
+        partidaService.marcarComoValidada(gameId);
     }
 
     @Transactional
     public void assignWinner(UUID gameId, String playerId) {
-        Partida partida = partidaRepository.findById(gameId)
-                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
-        co.com.arena.real.domain.entity.Jugador ganador = jugadorRepository.findById(playerId)
-                .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
-
-        partida.setGanador(ganador);
-        partidaRepository.save(partida);
+        partidaService.asignarGanador(gameId, playerId);
     }
 
     @Transactional
