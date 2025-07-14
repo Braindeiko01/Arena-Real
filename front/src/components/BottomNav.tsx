@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import useFirestoreChats from "@/hooks/useFirestoreChats";
 import {
@@ -24,7 +24,7 @@ const navItems = [
 ];
 
 const BottomNav = () => {
-  const [active, setActive] = useState("jugar");
+  const pathname = usePathname();
   const { user } = useAuth();
   const { chats } = useFirestoreChats(user?.id);
   const hasActiveChat = chats.some(c => c.activo);
@@ -33,17 +33,16 @@ const BottomNav = () => {
     <nav className="md:hidden fixed bottom-0 w-full z-50 bg-gradient-to-r from-blue-500 via-blue-700 to-blue-900 border-t border-blue-800 h-16 animate-gradient-x">
       <ul className="flex h-full items-center justify-around">
         {navItems.map(({ id, label, href, icon: Icon }) => {
-          const isActive = active === id;
+          const isActive = pathname === href || pathname.startsWith(`${href}/`);
           return (
             <li key={id}>
               <Link
                 href={href}
-                onClick={() => setActive(id)}
                 className={cn(
                   "flex flex-col items-center text-xs transition-all ease-in-out",
                   isActive
                     ? "text-[#FFD600] scale-110 font-bold"
-                    : "text-white opacity-70"
+                    : "text-white opacity-70 hover:text-blue-300"
                 )}
               >
                 <span className="relative">

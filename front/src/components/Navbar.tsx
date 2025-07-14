@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ActiveLink from './ActiveLink';
 
 // Simple auth hook to access user data
 import { useAuth } from '@/hooks/useAuth';
@@ -61,20 +62,14 @@ const Navbar = () => {
 
         {/* Navigation links */}
         <nav className="hidden gap-4 md:flex">
-          {navItems.map(({ href, label, icon: Icon }) => (
-            <Link
+          {navItems.map(({ href, label, icon }) => (
+            <ActiveLink
               key={href}
               href={href}
-              className="flex items-center gap-1 rounded-full px-3 py-1 text-white hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white active:bg-white/30"
-            >
-              <span className="relative">
-                <Icon className="h-4 w-4" />
-                {href === '/chat' && hasActiveChat && (
-                  <span className="absolute -top-1 -right-1 block w-3 h-3 bg-red-500 rounded-full" />
-                )}
-              </span>
-              {label}
-            </Link>
+              label={label}
+              icon={icon}
+              badge={href === '/chat' && hasActiveChat}
+            />
           ))}
         </nav>
 
@@ -115,20 +110,15 @@ const Navbar = () => {
       {mobileOpen && (
         <div className="border-t border-white/20 pb-4 md:hidden">
           <nav className="container mx-auto flex flex-col gap-2 pt-4">
-            {navItems.map(({ href, label, icon: Icon }) => (
-              <Link
+            {navItems.map(({ href, label, icon }) => (
+              <ActiveLink
                 key={href}
                 href={href}
-                className="flex items-center gap-2 rounded-full px-3 py-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-              >
-                <span className="relative">
-                  <Icon className="h-5 w-5" />
-                  {href === '/chat' && hasActiveChat && (
-                    <span className="absolute -top-1 -right-1 block w-3 h-3 bg-red-500 rounded-full" />
-                  )}
-                </span>
-                {label}
-              </Link>
+                label={label}
+                icon={icon}
+                badge={href === '/chat' && hasActiveChat}
+                className="gap-2 px-3 py-2"
+              />
             ))}
             {isAuthenticated && user && (
               <div className="flex items-center gap-3 pt-2">
