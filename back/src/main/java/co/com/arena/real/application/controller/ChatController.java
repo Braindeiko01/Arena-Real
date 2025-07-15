@@ -1,7 +1,7 @@
 package co.com.arena.real.application.controller;
 
 import co.com.arena.real.application.service.ChatService;
-import co.com.arena.shared.application.service.PartidaService;
+import co.com.arena.real.application.service.PartidaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
