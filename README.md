@@ -30,6 +30,13 @@ cd shared-core
 mvn install
 ```
 
+Before starting the admin backend, build the main backend first:
+
+```bash
+cd back
+mvn install
+```
+
 Before starting the backend, set the path to your Firebase service account
 credentials using either the custom `FIREBASE_SERVICE_ACCOUNT_FILE` variable or
 the standard `GOOGLE_APPLICATION_CREDENTIALS`:
