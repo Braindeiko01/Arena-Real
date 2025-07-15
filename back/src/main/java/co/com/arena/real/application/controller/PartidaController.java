@@ -1,6 +1,6 @@
 package co.com.arena.real.application.controller;
 
-import co.com.arena.real.application.service.PartidaService;
+import co.com.arena.shared.application.service.PartidaService;
 import co.com.arena.real.infrastructure.dto.rq.PartidaResultadoRequest;
 import co.com.arena.real.infrastructure.dto.rs.PartidaResponse;
 import io.swagger.v3.oas.annotations.Operation;

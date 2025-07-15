@@ -1,4 +1,4 @@
-package co.com.arena.real.application.service;
+package co.com.arena.shared.application.service;
 
 import co.com.arena.real.domain.entity.Apuesta;
 import co.com.arena.real.domain.entity.EstadoTransaccion;
