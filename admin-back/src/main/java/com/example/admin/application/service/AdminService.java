@@ -10,6 +10,7 @@ import co.com.arena.real.infrastructure.repository.ApuestaRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
+import co.com.arena.real.application.service.ChatService;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.Apuesta;
 import co.com.arena.real.domain.entity.Transaccion;
@@ -31,6 +32,7 @@ public class AdminService {
     private final TransaccionRepository transaccionRepository;
     private final ApuestaRepository apuestaRepository;
     private final JugadorRepository jugadorRepository;
+    private final ChatService chatService;
 
     @Transactional(readOnly = true)
     public List<ImageDto> listPendingImages() {
@@ -176,6 +178,8 @@ public class AdminService {
                     });
                 }
             }
+
+            chatService.cerrarChat(partida.getChatId());
 
             partidaRepository.save(partida);
         });
