@@ -149,11 +149,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-log4j2</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.crduels</groupId>
-      <artifactId>crduels-backend</artifactId>
-      <version>1.0.3</version>
-    </dependency>
   </dependencies>
 
   <build>
