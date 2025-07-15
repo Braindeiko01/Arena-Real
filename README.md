@@ -15,35 +15,23 @@ npm install
 npm run dev
 ```
 
-The backend uses Maven (Java 17):
+The backend uses Maven (Java 17). A root `pom.xml` aggregates all Java modules:
 
 ```bash
 cd back
 mvn spring-boot:run
 ```
 
-If Maven cannot resolve `co.com.arena.shared:shared-core:1.0.0`, build and
-install the shared library first:
+Build all Java modules in one step:
 
 ```bash
-cd shared-core
 mvn install
 ```
 
-Before starting the admin backend, build the main backend first:
-
-```bash
-cd back
-mvn install
-```
-
-If the admin backend fails with errors like `package co.com.arena.real.application.service does not exist`,
-verify that the main backend was installed locally:
-
-```bash
-cd back
-mvn install -DskipTests
-```
+This installs `shared-core`, the main backend and `admin-back` into your local
+Maven repository. If the admin backend fails with errors like `package
+co.com.arena.real.application.service does not exist`, verify that the install
+command completed successfully.
 
 Before starting the backend, set the path to your Firebase service account
 credentials using either the custom `FIREBASE_SERVICE_ACCOUNT_FILE` variable or
