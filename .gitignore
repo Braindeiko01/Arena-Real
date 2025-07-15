@@ -35,3 +35,6 @@ admin-back/.idea/workspace.xml
 # Editor and OS artefacts
 # -----------------------------------------------------
 .DS_Store
+
+# Temporary Maven error logs
+back/\[Help*
