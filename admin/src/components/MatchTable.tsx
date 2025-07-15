@@ -6,10 +6,15 @@ interface GameResult {
   id: string
   jugadorAId?: string
   jugadorA?: string
+  jugadorATag?: string
   jugadorBId?: string
   jugadorB?: string
+  jugadorBTag?: string
   capturaA?: string | null
   capturaB?: string | null
+  resultadoA?: string | null
+  resultadoB?: string | null
+  monto?: number
   winnerId?: string | null
   distributed: boolean
 }
@@ -70,8 +75,11 @@ export default function MatchTable() {
             <th className="border px-2 py-1">Partida</th>
             <th className="border px-2 py-1">Jugador A</th>
             <th className="border px-2 py-1">Captura A</th>
+            <th className="border px-2 py-1">Resultado A</th>
             <th className="border px-2 py-1">Jugador B</th>
             <th className="border px-2 py-1">Captura B</th>
+            <th className="border px-2 py-1">Resultado B</th>
+            <th className="border px-2 py-1">Apuesta</th>
             <th className="border px-2 py-1">Ganador</th>
             <th className="border px-2 py-1">Estado</th>
             <th className="border px-2 py-1">Acción</th>
@@ -88,7 +96,12 @@ export default function MatchTable() {
           {results.map(r => (
             <tr key={r.id} className="text-center">
               <td className="border px-2 py-1">{r.id}</td>
-              <td className="border px-2 py-1">{r.jugadorA || '-'}</td>
+              <td className="border px-2 py-1">
+                <div>{r.jugadorA || '-'}</div>
+                {r.jugadorATag && (
+                  <div className="text-xs text-gray-400">{r.jugadorATag}</div>
+                )}
+              </td>
               <td className="border px-2 py-1">
                 {r.capturaA && (
                   <img
@@ -99,7 +112,13 @@ export default function MatchTable() {
                   />
                 )}
               </td>
-              <td className="border px-2 py-1">{r.jugadorB || '-'}</td>
+              <td className="border px-2 py-1">{r.resultadoA || '-'}</td>
+              <td className="border px-2 py-1">
+                <div>{r.jugadorB || '-'}</div>
+                {r.jugadorBTag && (
+                  <div className="text-xs text-gray-400">{r.jugadorBTag}</div>
+                )}
+              </td>
               <td className="border px-2 py-1">
                 {r.capturaB && (
                   <img
@@ -109,6 +128,10 @@ export default function MatchTable() {
                     onClick={() => setImage(r.capturaB!)}
                   />
                 )}
+              </td>
+              <td className="border px-2 py-1">{r.resultadoB || '-'}</td>
+              <td className="border px-2 py-1">
+                {r.monto !== undefined ? `$${r.monto}` : '-'}
               </td>
               <td className="border px-2 py-1">{r.winnerId || '-'}</td>
               <td className="border px-2 py-1">
