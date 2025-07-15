@@ -136,14 +136,19 @@ public class AdminService {
                     if (p.getJugador1() != null) {
                         dto.setJugadorAId(p.getJugador1().getId());
                         dto.setJugadorA(p.getJugador1().getNombre());
+                        dto.setJugadorATag(p.getJugador1().getTagClash());
+                        dto.setResultadoA(p.getResultadoJugador1() != null ? p.getResultadoJugador1().name() : null);
                     }
                     if (p.getJugador2() != null) {
                         dto.setJugadorBId(p.getJugador2().getId());
                         dto.setJugadorB(p.getJugador2().getNombre());
+                        dto.setJugadorBTag(p.getJugador2().getTagClash());
+                        dto.setResultadoB(p.getResultadoJugador2() != null ? p.getResultadoJugador2().name() : null);
                     }
                     dto.setEstado(p.getEstado() != null ? p.getEstado().name() : null);
                     dto.setCapturaA(p.getCapturaJugador1());
                     dto.setCapturaB(p.getCapturaJugador2());
+                    dto.setMonto(p.getMonto());
                     dto.setWinnerId(p.getGanador() != null ? UUID.fromString(p.getGanador().getId()) : null);
                     dto.setDistributed(p.isValidada());
                     return dto;
