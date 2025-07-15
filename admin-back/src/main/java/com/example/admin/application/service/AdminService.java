@@ -10,7 +10,12 @@ import co.com.arena.real.infrastructure.repository.ApuestaRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
-import co.com.arena.real.application.service.PartidaService;
+import co.com.arena.real.domain.entity.Jugador;
+import co.com.arena.real.domain.entity.Apuesta;
+import co.com.arena.real.domain.entity.Transaccion;
+import co.com.arena.real.domain.entity.TipoTransaccion;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +31,6 @@ public class AdminService {
     private final TransaccionRepository transaccionRepository;
     private final ApuestaRepository apuestaRepository;
     private final JugadorRepository jugadorRepository;
-    private final PartidaService partidaService;
 
     @Transactional(readOnly = true)
     public List<ImageDto> listPendingImages() {
@@ -149,12 +153,43 @@ public class AdminService {
 
     @Transactional
     public void distributePrize(UUID gameId) {
-        partidaService.marcarComoValidada(gameId);
+        partidaRepository.findByIdForUpdate(gameId).ifPresent(partida -> {
+            partida.setValidada(true);
+            partida.setValidadaEn(LocalDateTime.now());
+            partida.setEstado(EstadoPartida.FINALIZADA);
+
+            if (partida.getGanador() != null && partida.getApuesta() != null) {
+                Apuesta apuesta = apuestaRepository.findById(partida.getApuesta().getId())
+                        .orElse(null);
+                if (apuesta != null) {
+                    Transaccion premio = new Transaccion();
+                    premio.setJugador(partida.getGanador());
+                    premio.setMonto(apuesta.getMonto().multiply(BigDecimal.valueOf(2)));
+                    premio.setTipo(TipoTransaccion.PREMIO);
+                    premio.setEstado(EstadoTransaccion.APROBADA);
+                    premio.setCreadoEn(LocalDateTime.now());
+                    transaccionRepository.save(premio);
+
+                    jugadorRepository.findById(partida.getGanador().getId()).ifPresent(j -> {
+                        j.setSaldo(j.getSaldo().add(premio.getMonto()));
+                        jugadorRepository.save(j);
+                    });
+                }
+            }
+
+            partidaRepository.save(partida);
+        });
     }
 
     @Transactional
     public void assignWinner(UUID gameId, String playerId) {
-        partidaService.asignarGanador(gameId, playerId);
+        partidaRepository.findByIdForUpdate(gameId).ifPresent(partida -> {
+            Jugador jugador = jugadorRepository.findById(playerId)
+                    .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
+            partida.setGanador(jugador);
+            partida.setEstado(EstadoPartida.FINALIZADA);
+            partidaRepository.save(partida);
+        });
     }
 
     @Transactional
