@@ -35,7 +35,7 @@ const Navbar = () => {
   const navItems = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/history', label: 'Historial', icon: ScrollText },
-    { href: activeChatId ? `/chat/${activeChatId}` : '/chat', label: 'Chats', icon: MessageCircle },
+    { href: '/chat', label: 'Chats', icon: MessageCircle },
     { href: '/torneos', label: 'Torneos', icon: Trophy },
   ];
 
