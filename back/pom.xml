@@ -208,6 +208,7 @@
                     <mainClass>co.com.arena.real.Application</mainClass>
                 </configuration>
                 <executions>
+                    <!-- Skip the fat JAR to allow other modules to depend on this one -->
                     <execution>
                         <goals>
                             <goal>repackage</goal>
