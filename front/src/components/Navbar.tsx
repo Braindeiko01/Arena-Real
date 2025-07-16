@@ -30,12 +30,13 @@ const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { chats } = useFirestoreChats(user?.id);
-  const hasActiveChat = chats.some(c => c.activo);
+  const activeChat = chats.find(c => c.activo);
+  const hasActiveChat = Boolean(activeChat);
 
   const navItems = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/history', label: 'Historial', icon: ScrollText },
-    { href: '/chat', label: 'Chats', icon: MessageCircle },
+    { href: activeChat ? `/chat/${activeChat.id}` : '/chat', label: 'Chats', icon: MessageCircle },
     { href: '/torneos', label: 'Torneos', icon: Trophy },
   ];
 
