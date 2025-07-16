@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { BACKEND_URL } from '@/lib/config';
 
@@ -16,8 +16,7 @@ export default function useMatchmakingSse(
   onMatchFound: (data: MatchEventData) => void,
   onChatReady: (data: MatchEventData) => void,
   onOpponentAccepted?: (data: MatchEventData) => void,
-  onMatchCancelled?: (data: MatchEventData) => void,
-  connectSignal?: unknown
+  onMatchCancelled?: (data: MatchEventData) => void
 ) {
   const { toast } = useToast();
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -29,6 +28,15 @@ export default function useMatchmakingSse(
   const readyHandlerRef = useRef<(event: MessageEvent) => void>();
   const acceptedHandlerRef = useRef<(event: MessageEvent) => void>();
   const cancelledHandlerRef = useRef<(event: MessageEvent) => void>();
+  const [connectKey, setConnectKey] = useState(0);
+  const connectResolveRef = useRef<(() => void) | null>(null);
+
+  const reconnect = () => {
+    return new Promise<void>((resolve) => {
+      connectResolveRef.current = resolve;
+      setConnectKey((k) => k + 1);
+    });
+  };
 
   // Mantener la referencia a la función onMatch sin provocar que el efecto se reinicie
   useEffect(() => {
@@ -100,6 +108,13 @@ export default function useMatchmakingSse(
       const es = new EventSource(url, { withCredentials: true });
       eventSourceRef.current = es;
 
+      es.onopen = () => {
+        if (connectResolveRef.current) {
+          connectResolveRef.current();
+          connectResolveRef.current = null;
+        }
+      };
+
       if (matchHandlerRef.current) {
         es.addEventListener('match-found', matchHandlerRef.current as EventListener);
       }
@@ -142,5 +157,7 @@ export default function useMatchmakingSse(
       }
 
     };
-  }, [playerId, toast, connectSignal]);
+  }, [playerId, toast, connectKey]);
+
+  return { reconnect };
 }
