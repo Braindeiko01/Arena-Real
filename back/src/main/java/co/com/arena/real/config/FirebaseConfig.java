@@ -4,6 +4,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,6 +15,7 @@ import java.io.IOException;
 public class FirebaseConfig {
 
     @Bean
+    @ConditionalOnProperty(prefix = "firebase", name = "enabled", havingValue = "true")
     public FirebaseApp firebaseApp(
             @Value("${FIREBASE_SERVICE_ACCOUNT_FILE:}") String firebaseServiceAccount,
             @Value("${GOOGLE_APPLICATION_CREDENTIALS:}") String googleCredentialsPath
