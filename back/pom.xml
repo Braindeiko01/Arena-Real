@@ -209,6 +209,15 @@
                     <!-- Avoid creating a fat jar so this module can be used as a dependency -->
                     <skip>true</skip>
                 </configuration>
+                <executions>
+                    <!-- Skip the fat JAR to allow other modules to depend on this one -->
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
