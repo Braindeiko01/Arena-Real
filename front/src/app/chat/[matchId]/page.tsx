@@ -39,40 +39,52 @@ const ChatPageContent = () => {
       ? partidaIdParam
       : null;
 
-  const paramsLoaded =
-    chatId !== undefined &&
+  const tagParamValid =
     opponentTagParam !== null &&
-    opponentGoogleIdParam !== null;
-  const hasValidParams =
-    paramsLoaded &&
     opponentTagParam !== 'null' &&
-    opponentTagParam !== 'undefined' &&
+    opponentTagParam !== 'undefined';
+  const idParamValid =
+    opponentGoogleIdParam !== null &&
     opponentGoogleIdParam !== 'null' &&
     opponentGoogleIdParam !== 'undefined';
 
-  const incompleteData = !hasValidParams;
+  const [opponentData, setOpponentData] = useState<
+    { tag: string; googleId: string } | null
+  >(null);
+
+  const opponentTag = tagParamValid
+    ? opponentTagParam!
+    : opponentData?.tag;
+  const opponentGoogleId = idParamValid
+    ? opponentGoogleIdParam!
+    : opponentData?.googleId;
+
+  const paramsLoaded = chatId !== undefined;
+  const incompleteData = !opponentTag || !opponentGoogleId;
 
   useEffect(() => {
     console.log('router.query', { chatId, opponentTag: opponentTagParam, opponentGoogleId: opponentGoogleIdParam });
     if (!paramsLoaded) {
       console.warn('Faltan parámetros para cargar el chat', { chatId, opponentTag: opponentTagParam, opponentGoogleId: opponentGoogleIdParam });
-    } else if (!hasValidParams) {
+    } else if (!tagParamValid || !idParamValid) {
       console.warn('Parámetros inválidos', { chatId, opponentTag: opponentTagParam, opponentGoogleId: opponentGoogleIdParam });
     }
-  }, [chatId, opponentTagParam, opponentGoogleIdParam, paramsLoaded, hasValidParams]);
+  }, [chatId, opponentTagParam, opponentGoogleIdParam, paramsLoaded, tagParamValid, idParamValid]);
 
   const { toast } = useToast();
-  const { messages, sendMessage, isLoading, chatActive } = useFirestoreChat(hasValidParams ? chatId : undefined);
-  const opponentTag = hasValidParams ? opponentTagParam! : undefined;
-  const opponentGoogleId = hasValidParams ? opponentGoogleIdParam! : undefined;
-  const opponentAvatar = hasValidParams ? (searchParams.get('opponentAvatar') || `https://placehold.co/40x40.png?text=${opponentTag![0]}`) : undefined;
+  const { messages, sendMessage, isLoading, chatActive } = useFirestoreChat(chatId);
+  const opponentAvatar = opponentTag ? (searchParams.get('opponentAvatar') || `https://placehold.co/40x40.png?text=${opponentTag[0]}`) : undefined;
   const validChatId = chatId as string;
-  const validOpponentTag = opponentTag as string;
-  const validOpponentGoogleId = opponentGoogleId as string;
+  const validOpponentTag = opponentTag || 'Oponente';
+  const validOpponentGoogleId = opponentGoogleId || '';
   const [partidaId, setPartidaId] = useState<string | null>(initialPartidaId);
   const [opponentProfile, setOpponentProfile] = useState<User | null>(null);
   const opponentDisplayName = opponentProfile?.username || validOpponentTag;
   const sendMessageSafely = (msg: Omit<ChatMessage, 'id'>) => {
+    if (!chatActive) {
+      console.warn('Chat inactivo. No se pueden enviar mensajes.');
+      return;
+    }
     if (!opponentTag || !opponentGoogleId) {
       console.error('❌ Datos incompletos para iniciar chat');
       return;
@@ -117,10 +129,44 @@ const ChatPageContent = () => {
   }, [chatId, partidaId, BACKEND_URL]);
 
   useEffect(() => {
-    const fetchOpponent = async () => {
-      if (!hasValidParams) return;
+    const fetchInfo = async () => {
+      if (!paramsLoaded || opponentTag || opponentGoogleId || !user || !chatId) return;
       try {
-        const res = await fetch(`${BACKEND_URL}/api/jugadores/${validOpponentGoogleId}`);
+        const res = await fetch(`${BACKEND_URL}/api/partidas/chat/${encodeURIComponent(chatId)}`);
+        if (!res.ok) return;
+        const duel = await res.json();
+        const opponentId = duel.jugador1Id === user.id ? duel.jugador2Id : duel.jugador1Id;
+        if (!opponentId) return;
+        const resOpp = await fetch(`${BACKEND_URL}/api/jugadores/${opponentId}`);
+        if (!resOpp.ok) return;
+        const opp = await resOpp.json();
+        const tag = opp.tagClash || opp.nombre || 'Oponente';
+        setOpponentData({ tag, googleId: opp.id });
+        const profile: User = {
+          id: opp.id,
+          username: opp.nombre,
+          email: opp.email,
+          phone: opp.telefono,
+          clashTag: opp.tagClash,
+          nequiAccount: opp.telefono,
+          avatarUrl: `https://placehold.co/40x40.png?text=${opp.nombre?.[0] ?? 'O'}`,
+          balance: opp.saldo ?? 0,
+          friendLink: opp.linkAmistad,
+          reputacion: opp.reputacion ?? 0,
+        };
+        setOpponentProfile(profile);
+      } catch (err) {
+        console.error('Error al obtener datos del chat', err);
+      }
+    };
+    fetchInfo();
+  }, [paramsLoaded, opponentTag, opponentGoogleId, user, chatId, BACKEND_URL]);
+
+  useEffect(() => {
+    const fetchOpponent = async () => {
+      if (!opponentGoogleId) return;
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/jugadores/${opponentGoogleId}`);
         if (res.ok) {
           const data = await res.json();
           const profile: User = {
@@ -144,7 +190,7 @@ const ChatPageContent = () => {
       }
     };
     fetchOpponent();
-  }, [hasValidParams, validOpponentGoogleId, BACKEND_URL]);
+  }, [opponentGoogleId, BACKEND_URL]);
 
   useEffect(() => {
     if (incompleteData || isLoading || !user || !opponentProfile || startMessageSentRef.current) return;
@@ -261,7 +307,7 @@ const ChatPageContent = () => {
 
   if (!user) return <p>Cargando chat...</p>;
   if (!paramsLoaded) return <p>Cargando datos del chat...</p>;
-  if (!hasValidParams) return <p>Datos de la partida incompletos.</p>;
+  if (incompleteData) return <p>Datos de la partida incompletos.</p>;
 
 
   return (
