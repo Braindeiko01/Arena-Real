@@ -1,4 +1,4 @@
-package co.com.arena.real.application.service;
+package com.example.admin.application.service;
 
 import co.com.arena.real.domain.entity.Chat;
 import co.com.arena.real.infrastructure.repository.ChatRepository;
