@@ -37,7 +37,7 @@ public class PartidaService {
     }
 
     public java.util.List<PartidaResponse> listarHistorial(String jugadorId) {
-        return partidaRepository.findByJugadorAndEstado(jugadorId, EstadoPartida.FINALIZADA)
+        return partidaRepository.findByJugador(jugadorId)
                 .stream()
                 .map(partidaMapper::toDto)
                 .toList();

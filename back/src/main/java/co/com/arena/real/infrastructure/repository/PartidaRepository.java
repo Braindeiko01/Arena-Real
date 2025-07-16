@@ -19,4 +19,7 @@ public interface PartidaRepository extends JpaRepository<Partida, UUID> {
     @Query("SELECT p FROM Partida p WHERE (p.jugador1.id = :jugadorId OR p.jugador2.id = :jugadorId) AND p.estado = :estado ORDER BY p.creada DESC")
     java.util.List<Partida> findByJugadorAndEstado(@Param("jugadorId") String jugadorId, @Param("estado") EstadoPartida estado);
 
+    @Query("SELECT p FROM Partida p WHERE p.jugador1.id = :jugadorId OR p.jugador2.id = :jugadorId ORDER BY p.creada DESC")
+    java.util.List<Partida> findByJugador(@Param("jugadorId") String jugadorId);
+
 }
