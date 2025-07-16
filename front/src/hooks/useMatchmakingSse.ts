@@ -32,6 +32,9 @@ export default function useMatchmakingSse(
   const connectResolveRef = useRef<(() => void) | null>(null);
 
   const reconnect = () => {
+    if (!playerId) {
+      return Promise.resolve();
+    }
     return new Promise<void>((resolve) => {
       connectResolveRef.current = resolve;
       setConnectKey((k) => k + 1);
