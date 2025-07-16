@@ -42,7 +42,6 @@ const HomePageContent = () => {
 
   const [isModeModalOpen, setIsModeModalOpen] = useState(false);
 
-  const [matchmakingKey, setMatchmakingKey] = useState(0);
 
   const [isSearching, setIsSearching] = useState(false);
   const [pendingMatch, setPendingMatch] = useState<{ apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; jugadorOponenteNombre: string; chatId?: string; } | null>(null);
@@ -93,13 +92,12 @@ const HomePageContent = () => {
     }
   };
 
-  useMatchmakingSse(
+  const { reconnect: reconnectMatchmaking } = useMatchmakingSse(
     user?.id,
     handleMatchFound,
     handleChatReady,
     handleOpponentAccepted,
-    handleMatchCancelled,
-    matchmakingKey
+    handleMatchCancelled
   );
 
   useEffect(() => {
@@ -149,7 +147,7 @@ const HomePageContent = () => {
   }
 
   const handleFindMatch = async (mode: 'CLASICO' | 'TRIPLE_ELECCION') => {
-    setMatchmakingKey((k) => k + 1);
+    await reconnectMatchmaking();
     if (!user.id) {
       toast({
         title: "Error de Usuario",
