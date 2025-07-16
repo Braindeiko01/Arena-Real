@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import useFirestoreChats from "@/hooks/useFirestoreChats";
+import useActiveChat from "@/hooks/useActiveChat";
 import {
   Home,
   Bell,
@@ -17,15 +17,14 @@ import { cn } from "@/lib/utils";
 const BottomNav = () => {
   const pathname = usePathname();
   const { user } = useAuth();
-  const { chats } = useFirestoreChats(user?.id);
-  const activeChat = chats.find(c => c.activo);
-  const hasActiveChat = Boolean(activeChat);
+  const { activeChatId } = useActiveChat(user?.id);
+  const hasActiveChat = Boolean(activeChatId);
   const navItems = [
     { id: "inicio", label: "Inicio", href: "/", icon: Home },
     { id: "notificaciones", label: "Notificaciones", href: "/notifications", icon: Bell },
     { id: "jugar", label: "Jugar", href: "/play", icon: Gamepad2 },
     { id: "usuario", label: "Usuario", href: "/profile", icon: User },
-    { id: "chat", label: "Chat", href: activeChat ? `/chat/${activeChat.id}` : "/chat", icon: MessageCircle },
+    { id: "chat", label: "Chat", href: activeChatId ? `/chat/${activeChatId}` : "/chat", icon: MessageCircle },
     { id: "menu", label: "Menú", href: "/menu", icon: MenuIcon },
   ];
 
