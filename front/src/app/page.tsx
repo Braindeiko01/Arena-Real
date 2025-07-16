@@ -381,7 +381,7 @@ const HomePageContent = () => {
             </Avatar>
             <div>
               <CardTitle className="text-3xl font-headline text-primary">{user.username}</CardTitle>
-              <CardDescription className="text-muted-foreground text-lg">¡Bienvenido de nuevo, Duelista!</CardDescription>
+              <CardDescription className="text-muted-foreground text-lg">¡Bienvenido de nuevo, Gladiador!</CardDescription>
             </div>
           </div>
           <div className="text-right">
@@ -425,7 +425,7 @@ const HomePageContent = () => {
             Buscar Duelo
           </CardTitle>
           <CardDescription className="text-center text-muted-foreground">
-            Elige tu modo de juego preferido. ¡La apuesta es de $6,000 COP! El ganador se lleva $11,000 COP (después de una comisión de $1,000 COP).
+            Elige tu modo de juego preferido. ¡La inscripción es de $6,000 COP! El ganador se lleva $10,800 COP.
             <br /> Necesitas tener al menos $6,000 COP de saldo.
           </CardDescription>
         </CardHeader>
