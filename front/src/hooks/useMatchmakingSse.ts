@@ -16,7 +16,8 @@ export default function useMatchmakingSse(
   onMatchFound: (data: MatchEventData) => void,
   onChatReady: (data: MatchEventData) => void,
   onOpponentAccepted?: (data: MatchEventData) => void,
-  onMatchCancelled?: (data: MatchEventData) => void
+  onMatchCancelled?: (data: MatchEventData) => void,
+  connectSignal?: unknown
 ) {
   const { toast } = useToast();
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -141,5 +142,5 @@ export default function useMatchmakingSse(
       }
 
     };
-  }, [playerId, toast]);
+  }, [playerId, toast, connectSignal]);
 }

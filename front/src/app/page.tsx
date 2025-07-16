@@ -42,6 +42,8 @@ const HomePageContent = () => {
 
   const [isModeModalOpen, setIsModeModalOpen] = useState(false);
 
+  const [matchmakingKey, setMatchmakingKey] = useState(0);
+
   const [isSearching, setIsSearching] = useState(false);
   const [pendingMatch, setPendingMatch] = useState<{ apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; jugadorOponenteNombre: string; chatId?: string; } | null>(null);
   const [hasAccepted, setHasAccepted] = useState(false);
@@ -91,7 +93,14 @@ const HomePageContent = () => {
     }
   };
 
-  useMatchmakingSse(user?.id, handleMatchFound, handleChatReady, handleOpponentAccepted, handleMatchCancelled);
+  useMatchmakingSse(
+    user?.id,
+    handleMatchFound,
+    handleChatReady,
+    handleOpponentAccepted,
+    handleMatchCancelled,
+    matchmakingKey
+  );
 
   useEffect(() => {
     console.log("¡La página de inicio se ha cargado en el frontend! Puedes ver este mensaje en la consola del navegador.");
@@ -140,6 +149,7 @@ const HomePageContent = () => {
   }
 
   const handleFindMatch = async (mode: 'CLASICO' | 'TRIPLE_ELECCION') => {
+    setMatchmakingKey((k) => k + 1);
     if (!user.id) {
       toast({
         title: "Error de Usuario",
