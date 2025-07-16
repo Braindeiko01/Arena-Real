@@ -16,8 +16,7 @@ export default function useMatchmakingSse(
   onMatchFound: (data: MatchEventData) => void,
   onChatReady: (data: MatchEventData) => void,
   onOpponentAccepted?: (data: MatchEventData) => void,
-  onMatchCancelled?: (data: MatchEventData) => void,
-  connectSignal?: unknown
+  onMatchCancelled?: (data: MatchEventData) => void
 ) {
   const { toast } = useToast();
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -29,6 +28,55 @@ export default function useMatchmakingSse(
   const readyHandlerRef = useRef<(event: MessageEvent) => void>();
   const acceptedHandlerRef = useRef<(event: MessageEvent) => void>();
   const cancelledHandlerRef = useRef<(event: MessageEvent) => void>();
+
+  const disconnect = () => {
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+  };
+
+  const connect = (onOpen?: () => void) => {
+    if (!playerId) {
+      onOpen?.();
+      return;
+    }
+    const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
+    console.log('Abriendo conexión SSE de matchmaking:', url);
+    const es = new EventSource(url, { withCredentials: true });
+    eventSourceRef.current = es;
+
+    es.onopen = () => {
+      onOpen?.();
+    };
+
+    if (matchHandlerRef.current) {
+      es.addEventListener('match-found', matchHandlerRef.current as EventListener);
+    }
+    if (readyHandlerRef.current) {
+      es.addEventListener('chat-ready', readyHandlerRef.current as EventListener);
+    }
+    if (acceptedHandlerRef.current) {
+      es.addEventListener('opponent-accepted', acceptedHandlerRef.current as EventListener);
+    }
+    if (cancelledHandlerRef.current) {
+      es.addEventListener('match-cancelled', cancelledHandlerRef.current as EventListener);
+    }
+
+    es.onerror = (err) => {
+      console.error('Error en la conexión SSE de matchmaking:', err);
+      toast({ title: 'Error de Matchmaking', description: 'La conexión se interrumpió. Reintentando...' });
+      es.close();
+      setTimeout(() => connect(), 3000);
+    };
+  };
+
+  const reconnect = () => {
+    return new Promise<void>((resolve) => {
+      disconnect();
+      connect(() => resolve());
+    });
+  };
 
   // Mantener la referencia a la función onMatch sin provocar que el efecto se reinicie
   useEffect(() => {
@@ -94,33 +142,6 @@ export default function useMatchmakingSse(
     };
     cancelledHandlerRef.current = cancelledHandler;
 
-    const connect = () => {
-      const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
-      console.log('Abriendo conexión SSE de matchmaking:', url);
-      const es = new EventSource(url, { withCredentials: true });
-      eventSourceRef.current = es;
-
-      if (matchHandlerRef.current) {
-        es.addEventListener('match-found', matchHandlerRef.current as EventListener);
-      }
-      if (readyHandlerRef.current) {
-        es.addEventListener('chat-ready', readyHandlerRef.current as EventListener);
-      }
-      if (acceptedHandlerRef.current) {
-        es.addEventListener('opponent-accepted', acceptedHandlerRef.current as EventListener);
-      }
-      if (cancelledHandlerRef.current) {
-        es.addEventListener('match-cancelled', cancelledHandlerRef.current as EventListener);
-      }
-
-      es.onerror = (err) => {
-        console.error('Error en la conexión SSE de matchmaking:', err);
-        toast({ title: 'Error de Matchmaking', description: 'La conexión se interrumpió. Reintentando...' });
-        es.close();
-        setTimeout(connect, 3000);
-      };
-    };
-
     connect();
 
     return () => {
@@ -142,5 +163,7 @@ export default function useMatchmakingSse(
       }
 
     };
-  }, [playerId, toast, connectSignal]);
+  }, [playerId, toast]);
+
+  return { reconnect };
 }
