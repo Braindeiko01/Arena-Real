@@ -339,7 +339,9 @@ const HomePageContent = () => {
   };
 
   // Matchmaking Modal Logic
-  const handleOpenModeModal = async () => {
+  const reconnectPromiseRef = React.useRef<Promise<void> | null>(null);
+
+  const handleOpenModeModal = () => {
     if (user.balance < 6000) {
       toast({
         title: "Saldo Insuficiente",
@@ -348,11 +350,15 @@ const HomePageContent = () => {
       });
       return;
     }
-    await reconnectMatchmaking();
     setIsModeModalOpen(true);
+    reconnectPromiseRef.current = reconnectMatchmaking();
   };
 
   const handleModeSelect = async (mode: 'CLASICO' | 'TRIPLE_ELECCION') => {
+    if (reconnectPromiseRef.current) {
+      await reconnectPromiseRef.current;
+      reconnectPromiseRef.current = null;
+    }
     setIsModeModalOpen(false);
     await handleFindMatch(mode);
   };
