@@ -54,9 +54,9 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/serviceAccountKey.json
 These variables can also be defined in a `.env` file because the backend loads
 environment entries via `spring-dotenv` when `dotenv.enabled=true`.
 
-
-If neither variable is set, the backend won't start because Firebase cannot
-locate credentials.
+If you do not provide credentials, disable Firebase by setting `firebase.enabled=false`
+(for example in `application.properties` or as `FIREBASE_ENABLED=false`). When
+disabled, chat features will skip Firestore operations.
 
 Este proyecto usa Firebase en el front-end. Las credenciales deben declararse en un archivo `.env.local` en la carpeta `front`.
 
