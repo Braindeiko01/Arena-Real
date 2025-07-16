@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import co.com.arena.real.config.FirebaseConfig;
 import co.com.arena.real.config.FirestoreConfig;
 
-@SpringBootApplication(scanBasePackages = "com.example.admin")
+@SpringBootApplication(
+        scanBasePackages = {"com.example.admin", "co.com.arena.real"}
+)
 @EnableJpaRepositories("co.com.arena.real.infrastructure.repository")
 @EntityScan("co.com.arena.real.domain.entity")
 @Import({FirebaseConfig.class, FirestoreConfig.class})
