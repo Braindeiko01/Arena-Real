@@ -33,6 +33,14 @@ Maven repository. If the admin backend fails with errors like `package
 co.com.arena.real.application.service does not exist`, verify that the install
 command completed successfully.
 
+If the admin backend fails with errors like `package co.com.arena.real.application.service does not exist`,
+verify that the main backend was installed locally:
+
+```bash
+cd back
+mvn install -DskipTests
+```
+
 Before starting the backend, set the path to your Firebase service account
 credentials using either the custom `FIREBASE_SERVICE_ACCOUNT_FILE` variable or
 the standard `GOOGLE_APPLICATION_CREDENTIALS`:
