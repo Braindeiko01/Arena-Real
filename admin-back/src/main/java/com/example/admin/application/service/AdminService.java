@@ -10,7 +10,7 @@ import co.com.arena.real.infrastructure.repository.ApuestaRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
-import com.example.admin.application.service.ChatService;
+import co.com.arena.real.application.service.ChatService;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.Apuesta;
 import co.com.arena.real.domain.entity.Transaccion;
