@@ -112,8 +112,8 @@ public class AdminService {
         });
     }
 
-    private void modificarSaldoJugador(co.com.arena.real.domain.entity.Transaccion transaccion) {
-        co.com.arena.real.domain.entity.Jugador jugador = jugadorRepository.findById(transaccion.getJugador().getId())
+    private void modificarSaldoJugador(Transaccion transaccion) {
+        Jugador jugador = jugadorRepository.findById(transaccion.getJugador().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
 
         switch (transaccion.getTipo()) {
