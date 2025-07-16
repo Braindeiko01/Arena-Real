@@ -24,7 +24,7 @@ const BottomNav = () => {
     { id: "notificaciones", label: "Notificaciones", href: "/notifications", icon: Bell },
     { id: "jugar", label: "Jugar", href: "/play", icon: Gamepad2 },
     { id: "usuario", label: "Usuario", href: "/profile", icon: User },
-    { id: "chat", label: "Chat", href: activeChatId ? `/chat/${activeChatId}` : "/chat", icon: MessageCircle },
+    { id: "chat", label: "Chat", href: "/chat", icon: MessageCircle },
     { id: "menu", label: "Menú", href: "/menu", icon: MenuIcon },
   ];
 

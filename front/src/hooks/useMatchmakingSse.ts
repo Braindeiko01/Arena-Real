@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { BACKEND_URL } from '@/lib/config';
 
@@ -28,6 +28,18 @@ export default function useMatchmakingSse(
   const readyHandlerRef = useRef<(event: MessageEvent) => void>();
   const acceptedHandlerRef = useRef<(event: MessageEvent) => void>();
   const cancelledHandlerRef = useRef<(event: MessageEvent) => void>();
+  const [connectKey, setConnectKey] = useState(0);
+  const connectResolveRef = useRef<(() => void) | null>(null);
+
+  const reconnect = () => {
+    if (!playerId) {
+      return Promise.resolve();
+    }
+    return new Promise<void>((resolve) => {
+      connectResolveRef.current = resolve;
+      setConnectKey((k) => k + 1);
+    });
+  };
 
   const disconnect = () => {
     if (eventSourceRef.current) {
@@ -141,7 +153,6 @@ export default function useMatchmakingSse(
       }
     };
     cancelledHandlerRef.current = cancelledHandler;
-
     connect();
 
     return () => {
