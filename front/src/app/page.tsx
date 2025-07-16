@@ -147,7 +147,6 @@ const HomePageContent = () => {
   }
 
   const handleFindMatch = async (mode: 'CLASICO' | 'TRIPLE_ELECCION') => {
-    await reconnectMatchmaking();
     if (!user.id) {
       toast({
         title: "Error de Usuario",
@@ -340,7 +339,7 @@ const HomePageContent = () => {
   };
 
   // Matchmaking Modal Logic
-  const handleOpenModeModal = () => {
+  const handleOpenModeModal = async () => {
     if (user.balance < 6000) {
       toast({
         title: "Saldo Insuficiente",
@@ -349,6 +348,7 @@ const HomePageContent = () => {
       });
       return;
     }
+    await reconnectMatchmaking();
     setIsModeModalOpen(true);
   };
 
