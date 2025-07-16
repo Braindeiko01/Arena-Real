@@ -206,6 +206,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>co.com.arena.real.Application</mainClass>
+                    <!-- Avoid creating a fat jar so this module can be used as a dependency -->
+                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <!-- Skip the fat JAR to allow other modules to depend on this one -->
