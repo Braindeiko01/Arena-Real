@@ -15,6 +15,11 @@ npm install
 npm run dev
 ```
 
+3. The `/chat` page shows all your conversations. When a chat is active, both
+   the top and bottom navigation bars include a chat icon that links directly to
+   that conversation. The icon displays a small red badge while the chat is
+   active.
+
 The backend uses Maven (Java 17). A root `pom.xml` aggregates all Java modules:
 
 ```bash
