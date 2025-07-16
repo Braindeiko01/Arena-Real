@@ -24,19 +24,18 @@ import ActiveLink from './ActiveLink';
 
 // Simple auth hook to access user data
 import { useAuth } from '@/hooks/useAuth';
-import useFirestoreChats from '@/hooks/useFirestoreChats';
+import useActiveChat from '@/hooks/useActiveChat';
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { chats } = useFirestoreChats(user?.id);
-  const activeChat = chats.find(c => c.activo);
-  const hasActiveChat = Boolean(activeChat);
+  const { activeChatId } = useActiveChat(user?.id);
+  const hasActiveChat = Boolean(activeChatId);
 
   const navItems = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/history', label: 'Historial', icon: ScrollText },
-    { href: activeChat ? `/chat/${activeChat.id}` : '/chat', label: 'Chats', icon: MessageCircle },
+    { href: activeChatId ? `/chat/${activeChatId}` : '/chat', label: 'Chats', icon: MessageCircle },
     { href: '/torneos', label: 'Torneos', icon: Trophy },
   ];
 

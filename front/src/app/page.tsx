@@ -16,6 +16,8 @@ import { Coins, UploadCloud, Swords, Layers, Banknote, Loader2 } from 'lucide-re
 import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction, declineMatchAction, acceptMatchAction } from '@/lib/actions';
 import useTransactionUpdates from '@/hooks/useTransactionUpdates';
 import useMatchmakingSse, { MatchEventData } from '@/hooks/useMatchmakingSse';
+import { setLocalStorageItem } from '@/lib/storage';
+import { ACTIVE_CHAT_KEY } from '@/hooks/useActiveChat';
 
 
 const HomePageContent = () => {
@@ -60,6 +62,7 @@ const HomePageContent = () => {
     if (hasAccepted && pendingMatch && pendingMatch.partidaId === data.partidaId) {
       if (data.chatId) {
         toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
+        setLocalStorageItem(ACTIVE_CHAT_KEY, data.chatId);
         router.push(
           `/chat/${data.chatId}?partidaId=${data.partidaId}&opponentTag=${encodeURIComponent(data.jugadorOponenteNombre)}&opponentGoogleId=${encodeURIComponent(data.jugadorOponenteId)}`
         );
@@ -188,6 +191,7 @@ const HomePageContent = () => {
     const result = await acceptMatchAction(pendingMatch.partidaId, user.id);
     if (result.duel && result.duel.chatId) {
       toast({ title: 'Duelo encontrado', description: 'Abriendo chat con tu oponente...' });
+      setLocalStorageItem(ACTIVE_CHAT_KEY, result.duel.chatId);
       router.push(
         `/chat/${result.duel.chatId}?partidaId=${result.duel.id}&opponentTag=${encodeURIComponent(pendingMatch.jugadorOponenteNombre)}&opponentGoogleId=${encodeURIComponent(pendingMatch.jugadorOponenteId)}`
       );
