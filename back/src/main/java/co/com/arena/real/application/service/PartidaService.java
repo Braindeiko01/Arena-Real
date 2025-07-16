@@ -151,7 +151,7 @@ public class PartidaService {
 
             Transaccion premio = new Transaccion();
             premio.setJugador(partida.getGanador());
-            premio.setMonto(apuesta.getMonto().multiply(java.math.BigDecimal.valueOf(2)));
+            premio.setMonto(apuesta.getPremio());
             premio.setTipo(TipoTransaccion.PREMIO);
             premio.setEstado(EstadoTransaccion.APROBADA);
             premio.setCreadoEn(LocalDateTime.now());

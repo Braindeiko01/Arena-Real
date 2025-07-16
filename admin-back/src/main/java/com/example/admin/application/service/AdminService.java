@@ -171,7 +171,7 @@ public class AdminService {
                 if (apuesta != null) {
                     Transaccion premio = new Transaccion();
                     premio.setJugador(partida.getGanador());
-                    premio.setMonto(apuesta.getMonto().multiply(BigDecimal.valueOf(2)));
+                    premio.setMonto(apuesta.getPremio());
                     premio.setTipo(TipoTransaccion.PREMIO);
                     premio.setEstado(EstadoTransaccion.APROBADA);
                     premio.setCreadoEn(LocalDateTime.now());
