@@ -20,6 +20,8 @@ import type { ChatMessage, User } from '@/types';
 import { submitMatchResultAction, fetchMatchIdByChat } from '@/lib/actions';
 
 import { Label } from '@/components/ui/label';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 
 const ChatPageContent = () => {
@@ -61,6 +63,33 @@ const ChatPageContent = () => {
 
   const paramsLoaded = chatId !== undefined;
   const incompleteData = !opponentTag || !opponentGoogleId;
+
+  useEffect(() => {
+    if (!chatId || !user?.id || !opponentGoogleId) return;
+    const ref = doc(db, 'chats', chatId);
+    const ensure = async () => {
+      try {
+        const snap = await getDoc(ref);
+        if (!snap.exists()) {
+          await setDoc(ref, {
+            jugadores: [user.id, opponentGoogleId],
+            activo: true,
+          });
+        } else {
+          const data = snap.data() as any;
+          if (!Array.isArray(data.jugadores)) {
+            await updateDoc(ref, {
+              jugadores: [user.id, opponentGoogleId],
+              activo: true,
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Error asegurando documento de chat', err);
+      }
+    };
+    ensure();
+  }, [chatId, user?.id, opponentGoogleId]);
 
   useEffect(() => {
     console.log('router.query', { chatId, opponentTag: opponentTagParam, opponentGoogleId: opponentGoogleIdParam });
