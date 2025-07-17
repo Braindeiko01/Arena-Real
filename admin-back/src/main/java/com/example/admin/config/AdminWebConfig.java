@@ -13,8 +13,8 @@ public class AdminWebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOriginPatterns("*")
+                registry.addMapping("/api/**")
+                        .allowedOrigins("http://localhost:3001")
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization")
