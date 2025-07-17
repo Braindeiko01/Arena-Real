@@ -58,6 +58,55 @@ export default function useMatchmakingSse(
     });
   };
 
+  const disconnect = () => {
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+  };
+
+  const connect = (onOpen?: () => void) => {
+    if (!playerId) {
+      onOpen?.();
+      return;
+    }
+    const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
+    console.log('Abriendo conexión SSE de matchmaking:', url);
+    const es = new EventSource(url, { withCredentials: true });
+    eventSourceRef.current = es;
+
+    es.onopen = () => {
+      onOpen?.();
+    };
+
+    if (matchHandlerRef.current) {
+      es.addEventListener('match-found', matchHandlerRef.current as EventListener);
+    }
+    if (readyHandlerRef.current) {
+      es.addEventListener('chat-ready', readyHandlerRef.current as EventListener);
+    }
+    if (acceptedHandlerRef.current) {
+      es.addEventListener('opponent-accepted', acceptedHandlerRef.current as EventListener);
+    }
+    if (cancelledHandlerRef.current) {
+      es.addEventListener('match-cancelled', cancelledHandlerRef.current as EventListener);
+    }
+
+    es.onerror = (err) => {
+      console.error('Error en la conexión SSE de matchmaking:', err);
+      toast({ title: 'Error de Matchmaking', description: 'La conexión se interrumpió. Reintentando...' });
+      es.close();
+      setTimeout(() => connect(), 3000);
+    };
+  };
+
+  const reconnect = () => {
+    return new Promise<void>((resolve) => {
+      disconnect();
+      connect(() => resolve());
+    });
+  };
+
   // Mantener la referencia a la función onMatch sin provocar que el efecto se reinicie
   useEffect(() => {
     onMatchFoundRef.current = onMatchFound;
@@ -177,7 +226,7 @@ export default function useMatchmakingSse(
       disconnect();
 
     };
-  }, [playerId, toast, connectKey]);
+  }, [playerId, toast]);
 
   return { reconnect };
 }
