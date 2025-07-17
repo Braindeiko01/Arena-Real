@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { BACKEND_URL } from '@/lib/config';
 
@@ -29,52 +29,40 @@ export default function useMatchmakingSse(
   const readyHandlerRef = useRef<(event: MessageEvent) => void>();
   const acceptedHandlerRef = useRef<(event: MessageEvent) => void>();
   const cancelledHandlerRef = useRef<(event: MessageEvent) => void>();
+  const connectRef = useRef<(onOpen?: () => void) => void>();
+
+  const removeListeners = () => {
+    if (!eventSourceRef.current) return;
+    if (matchHandlerRef.current) {
+      eventSourceRef.current.removeEventListener('match-found', matchHandlerRef.current as EventListener);
+    }
+    if (readyHandlerRef.current) {
+      eventSourceRef.current.removeEventListener('chat-ready', readyHandlerRef.current as EventListener);
+    }
+    if (acceptedHandlerRef.current) {
+      eventSourceRef.current.removeEventListener('opponent-accepted', acceptedHandlerRef.current as EventListener);
+    }
+    if (cancelledHandlerRef.current) {
+      eventSourceRef.current.removeEventListener('match-cancelled', cancelledHandlerRef.current as EventListener);
+    }
+  };
+
   const disconnect = () => {
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
     if (eventSourceRef.current) {
+      removeListeners();
       eventSourceRef.current.close();
       eventSourceRef.current = null;
     }
   };
 
-  const connect = (onOpen?: () => void) => {
-    if (!playerId) {
-      onOpen?.();
-      return;
-    }
-    const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
-    console.log('Abriendo conexión SSE de matchmaking:', url);
-    const es = new EventSource(url, { withCredentials: true });
-    eventSourceRef.current = es;
-
-    es.onopen = () => {
-      onOpen?.();
-    };
-
-    if (matchHandlerRef.current) {
-      es.addEventListener('match-found', matchHandlerRef.current as EventListener);
-    }
-    if (readyHandlerRef.current) {
-      es.addEventListener('chat-ready', readyHandlerRef.current as EventListener);
-    }
-    if (acceptedHandlerRef.current) {
-      es.addEventListener('opponent-accepted', acceptedHandlerRef.current as EventListener);
-    }
-    if (cancelledHandlerRef.current) {
-      es.addEventListener('match-cancelled', cancelledHandlerRef.current as EventListener);
-    }
-
-    es.onerror = (err) => {
-      console.error('Error en la conexión SSE de matchmaking:', err);
-      toast({ title: 'Error de Matchmaking', description: 'La conexión se interrumpió. Reintentando...' });
-      es.close();
-      setTimeout(() => connect(), 3000);
-    };
-  };
-
   const reconnect = () => {
     return new Promise<void>((resolve) => {
       disconnect();
-      connect(() => resolve());
+      connectRef.current?.(() => resolve());
     });
   };
 
@@ -142,14 +130,14 @@ export default function useMatchmakingSse(
     };
     cancelledHandlerRef.current = cancelledHandler;
 
-    const connect = () => {
+    const connect = (onOpen?: () => void) => {
       const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
       console.log('Abriendo conexión SSE de matchmaking:', url);
       const es = new EventSource(url, { withCredentials: true });
       eventSourceRef.current = es;
 
       es.onopen = () => {
-        // Conexión abierta
+        onOpen?.();
       };
 
       if (matchHandlerRef.current) {
@@ -169,28 +157,14 @@ export default function useMatchmakingSse(
         console.error('Error en la conexión SSE de matchmaking:', err);
         toast({ title: 'Error de Matchmaking', description: 'La conexión se interrumpió. Reintentando...' });
         es.close();
-        reconnectTimeoutRef.current = setTimeout(connect, 3000);
+        reconnectTimeoutRef.current = setTimeout(() => connect(), 3000);
       };
     };
-
+    connectRef.current = connect;
     connect();
 
     return () => {
       console.log('Cerrando conexión SSE de matchmaking');
-      if (eventSourceRef.current) {
-        if (matchHandlerRef.current) {
-          eventSourceRef.current.removeEventListener('match-found', matchHandlerRef.current as EventListener);
-        }
-        if (readyHandlerRef.current) {
-          eventSourceRef.current.removeEventListener('chat-ready', readyHandlerRef.current as EventListener);
-        }
-        if (acceptedHandlerRef.current) {
-          eventSourceRef.current.removeEventListener('opponent-accepted', acceptedHandlerRef.current as EventListener);
-        }
-        if (cancelledHandlerRef.current) {
-          eventSourceRef.current.removeEventListener('match-cancelled', cancelledHandlerRef.current as EventListener);
-        }
-      }
       disconnect();
 
     };

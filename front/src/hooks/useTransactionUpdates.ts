@@ -20,7 +20,7 @@ export default function useTransactionUpdates() {
 
     const connect = () => {
       const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
-      const es = new EventSource(url);
+      const es = new EventSource(url, { withCredentials: true });
       eventSourceRef.current = es;
 
       const handler = async (event: MessageEvent) => {
