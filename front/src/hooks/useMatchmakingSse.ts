@@ -29,35 +29,6 @@ export default function useMatchmakingSse(
   const readyHandlerRef = useRef<(event: MessageEvent) => void>();
   const acceptedHandlerRef = useRef<(event: MessageEvent) => void>();
   const cancelledHandlerRef = useRef<(event: MessageEvent) => void>();
-  const [connectKey, setConnectKey] = useState(0);
-  const connectResolveRef = useRef<(() => void) | null>(null);
-
-  const disconnect = () => {
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-      reconnectTimeoutRef.current = null;
-    }
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
-    }
-  };
-
-  const reconnect = () => {
-    if (!playerId) {
-      return Promise.resolve();
-    }
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-      reconnectTimeoutRef.current = null;
-    }
-    disconnect();
-    return new Promise<void>((resolve) => {
-      connectResolveRef.current = resolve;
-      setConnectKey((k) => k + 1);
-    });
-  };
-
   const disconnect = () => {
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
@@ -178,10 +149,7 @@ export default function useMatchmakingSse(
       eventSourceRef.current = es;
 
       es.onopen = () => {
-        if (connectResolveRef.current) {
-          connectResolveRef.current();
-          connectResolveRef.current = null;
-        }
+        // Conexión abierta
       };
 
       if (matchHandlerRef.current) {
