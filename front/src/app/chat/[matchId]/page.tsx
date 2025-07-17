@@ -393,7 +393,7 @@ const ChatPageContent = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <Label htmlFor="screenshot" className="text-lg text-foreground mb-2 block flex items-center">
+                <Label htmlFor="screenshot" className="text-lg text-foreground mb-2 flex items-center">
                   <UploadCloud className="mr-2 h-5 w-5 text-primary" /> Subir Captura (Opcional)
                 </Label>
                 <Input 
