@@ -170,5 +170,18 @@ export default function useMatchmakingSse(
     };
   }, [playerId, toast]);
 
+  useEffect(() => {
+    if (!playerId) return;
+    const handleResume = () => {
+      reconnect();
+    };
+    document.addEventListener('visibilitychange', handleResume);
+    window.addEventListener('online', handleResume);
+    return () => {
+      document.removeEventListener('visibilitychange', handleResume);
+      window.removeEventListener('online', handleResume);
+    };
+  }, [playerId, reconnect]);
+
   return { reconnect };
 }
