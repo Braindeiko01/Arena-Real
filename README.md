@@ -157,3 +157,17 @@ mvn -U clean install
 
 If your environment lacks internet access, configure a mirror in `settings.xml`
 that points to an accessible Maven repository.
+
+## Firestore chat migration
+
+Some early deployments stored chats under `chats/{chatId}/chats/{subId}`. The frontend only looks at the `chats/` collection, so these documents need to be copied to the root collection. A helper script is available in `front/scripts/migrateChats.ts`.
+
+Run it once with your Firebase service account credentials:
+
+```bash
+cd front
+npm install
+FIREBASE_SERVICE_ACCOUNT_FILE=/path/to/serviceAccount.json npx ts-node scripts/migrateChats.ts
+```
+
+It will replicate all nested chat documents and their messages at `chats/` and print each migrated path.
