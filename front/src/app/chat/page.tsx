@@ -17,7 +17,7 @@ interface OpponentInfo { id: string; name: string; }
 
 const ChatListPageContent = () => {
   const { user } = useAuth();
-  const { chats } = useFirestoreChats(user?.id);
+  const { chats, error } = useFirestoreChats(user?.id);
   const [opponents, setOpponents] = useState<Record<string, OpponentInfo>>({});
 
   const handleDeleteChat = async (chatId: string) => {
@@ -33,24 +33,32 @@ const ChatListPageContent = () => {
   useEffect(() => {
     const loadOpponents = async () => {
       if (!user) return;
-      const ids = Array.from(new Set(chats.map(c => c.jugadores.find(j => j !== user.id)).filter(Boolean))) as string[];
-      await Promise.all(ids.map(async id => {
-        if (opponents[id]) return;
-        try {
-          const res = await fetch(`${BACKEND_URL}/api/jugadores/${id}`);
-          if (res.ok) {
-            const data = await res.json();
-            setOpponents(prev => ({ ...prev, [id]: { id: data.id, name: data.nombre } }));
+      const ids = Array.from(new Set(
+        chats.map(c => c.jugadores.find(j => j !== user.id)).filter(Boolean)
+      )) as string[];
+      await Promise.all(
+        ids.map(async id => {
+          if (opponents[id]) return;
+          try {
+            const res = await fetch(`${BACKEND_URL}/api/jugadores/${id}`);
+            if (res.ok) {
+              const data = await res.json();
+              setOpponents(prev => ({
+                ...prev,
+                [id]: { id: data.id, name: data.nombre },
+              }));
+            }
+          } catch (err) {
+            console.error('Error fetching opponent', err);
           }
-        } catch (err) {
-          console.error('Error fetching opponent', err);
-        }
-      }));
+        })
+      );
     };
     loadOpponents();
-  }, [chats, user, opponents]);
+  }, [chats, user]);
 
   if (!user) return <p>Cargando chats...</p>;
+  if (error) return <p>Error al cargar chats.</p>;
 
   const activeChats = chats.filter(c => c.activo);
   const pastChats = chats.filter(c => !c.activo);
@@ -64,7 +72,9 @@ const ChatListPageContent = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4 space-y-6">
-        {activeChats.length === 0 && pastChats.length === 0 ? (
+        {error ? (
+          <p className="text-center text-destructive">Ocurrió un error al cargar los chats.</p>
+        ) : activeChats.length === 0 && pastChats.length === 0 ? (
           <p className="text-center text-muted-foreground py-8">No tienes chats todavía.</p>
         ) : (
           <>
