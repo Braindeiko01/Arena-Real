@@ -115,7 +115,7 @@ export default function TransactionTable() {
           {filtered.map(t => (
             <tr key={t.id} className="text-center">
               <td className="border px-2 py-1">{t.playerId}</td>
-              <td className="border px-2 py-1">{t.type === 'DEPOSITO' ? t.phone : '-'}</td>
+              <td className="border px-2 py-1">{t.type === 'DEPOSITO' || t.type === 'RETIRO' ? t.phone : '-'}</td>
               <td className="border px-2 py-1">{t.type}</td>
               <td className="border px-2 py-1">${'' + t.amount}</td>
               <td className="border px-2 py-1">{new Date(t.createdAt).toLocaleString()}</td>

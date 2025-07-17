@@ -85,7 +85,7 @@ export default function ReviewTransactionDialog({
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <span className="font-semibold">Usuario:</span>
                     <span>{transaction.origin}</span>
-                    {transaction.type === 'DEPOSITO' && (
+                    {['DEPOSITO', 'RETIRO'].includes(transaction.type) && (
                       <>
                         <span className="font-semibold">Teléfono:</span>
                         <span>{transaction.phone}</span>
