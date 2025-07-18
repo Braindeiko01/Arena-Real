@@ -107,6 +107,11 @@ public class MatchSseService {
         sendMatchCancelled(receptor.getId(), partidaId, declinante);
     }
 
+    public void notifyMatchValidated(co.com.arena.real.infrastructure.dto.rs.PartidaResponse partida) {
+        sendMatchValidated(partida.getJugador1Id(), partida);
+        sendMatchValidated(partida.getJugador2Id(), partida);
+    }
+
     private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, Jugador oponente) {
         String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
         String nombre = oponente.getNombre() != null ? oponente.getNombre() : tag;
@@ -210,6 +215,32 @@ public class MatchSseService {
         try {
             wrapper.emitter.send(SseEmitter.event()
                     .name("match-cancelled")
+                    .data(dto));
+            wrapper.lastAccess = System.currentTimeMillis();
+            latestEvents.remove(receptorId);
+        } catch (IOException e) {
+            removeEmitter(receptorId);
+            wrapper.emitter.completeWithError(e);
+        }
+    }
+
+    private void sendMatchValidated(String receptorId, co.com.arena.real.infrastructure.dto.rs.PartidaResponse partida) {
+        if (receptorId == null) {
+            return;
+        }
+        MatchSseDto dto = MatchSseDto.builder()
+                .apuestaId(partida.getApuestaId())
+                .partidaId(partida.getId())
+                .build();
+        latestEvents.put(receptorId, new LatestEvent("match-validated", dto));
+
+        EmitterWrapper wrapper = emitters.get(receptorId);
+        if (wrapper == null) {
+            return;
+        }
+        try {
+            wrapper.emitter.send(SseEmitter.event()
+                    .name("match-validated")
                     .data(dto));
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);

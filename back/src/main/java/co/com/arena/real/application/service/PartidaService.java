@@ -25,6 +25,8 @@ import co.com.arena.real.application.service.ApuestaService;
 import co.com.arena.real.application.service.TransaccionService;
 import co.com.arena.real.application.service.MatchProposalService;
 import co.com.arena.real.application.service.MatchService;
+import co.com.arena.real.application.events.PartidaValidadaEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,7 @@ public class PartidaService {
     private final TransaccionService transaccionService;
     private final MatchProposalService matchProposalService;
     private final MatchService matchService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private static final Logger log = LoggerFactory.getLogger(PartidaService.class);
 
@@ -166,7 +169,9 @@ public class PartidaService {
         chatService.cerrarChat(partida.getChatId());
 
         Partida saved = partidaRepository.save(partida);
-        return partidaMapper.toDto(saved);
+        PartidaResponse dto = partidaMapper.toDto(saved);
+        eventPublisher.publishEvent(new PartidaValidadaEvent(dto));
+        return dto;
     }
   
     @Transactional

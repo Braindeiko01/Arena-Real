@@ -92,12 +92,18 @@ const HomePageContent = () => {
     }
   };
 
+  const handleMatchValidated = (data: MatchEventData) => {
+    toast({ title: 'Partida validada', description: 'Revisa tu historial para ver el resultado.' });
+    refreshUser();
+  };
+
   useMatchmakingSse(
     user?.id,
     handleMatchFound,
     handleChatReady,
     handleOpponentAccepted,
-    handleMatchCancelled
+    handleMatchCancelled,
+    handleMatchValidated
   );
 
   useEffect(() => {
