@@ -11,11 +11,10 @@ import co.com.arena.real.infrastructure.repository.TransaccionRepository;
 import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import co.com.arena.real.application.service.ChatService;
+import co.com.arena.real.application.service.PartidaService;
+import co.com.arena.real.application.service.TransaccionService;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.Apuesta;
-import co.com.arena.real.domain.entity.Transaccion;
-import co.com.arena.real.domain.entity.TipoTransaccion;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +32,8 @@ public class AdminService {
     private final ApuestaRepository apuestaRepository;
     private final JugadorRepository jugadorRepository;
     private final ChatService chatService;
+    private final PartidaService partidaService;
+    private final TransaccionService transaccionService;
 
     @Transactional(readOnly = true)
     public List<ImageDto> listPendingImages() {
@@ -84,10 +85,7 @@ public class AdminService {
 
     @Transactional
     public void approveTransaction(UUID id) {
-        transaccionRepository.findById(id).ifPresent(t -> {
-            t.setEstado(EstadoTransaccion.APROBADA);
-            transaccionRepository.save(t);
-        });
+        transaccionService.aprobarTransaccion(id);
     }
 
     @Transactional
@@ -104,7 +102,8 @@ public class AdminService {
 
             if (newStatus == EstadoTransaccion.APROBADA
                     && !EstadoTransaccion.APROBADA.equals(t.getEstado())) {
-                modificarSaldoJugador(t);
+                transaccionService.aprobarTransaccion(id);
+                return;
             }
 
             t.setEstado(newStatus);
@@ -112,22 +111,6 @@ public class AdminService {
         });
     }
 
-    private void modificarSaldoJugador(Transaccion transaccion) {
-        Jugador jugador = jugadorRepository.findById(transaccion.getJugador().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
-
-        switch (transaccion.getTipo()) {
-            case DEPOSITO, PREMIO, REEMBOLSO -> jugador.setSaldo(jugador.getSaldo().add(transaccion.getMonto()));
-            case RETIRO, APUESTA -> {
-                if (!(jugador.getSaldo().compareTo(transaccion.getMonto()) >= 0)) {
-                    throw new IllegalArgumentException("Saldo insuficiente para realizar la transacción");
-                }
-                jugador.setSaldo(jugador.getSaldo().subtract(transaccion.getMonto()));
-            }
-        }
-
-        jugadorRepository.save(jugador);
-    }
 
     @Transactional(readOnly = true)
     public List<GameResultDto> listGameResults() {
@@ -160,34 +143,7 @@ public class AdminService {
 
     @Transactional
     public void distributePrize(UUID gameId) {
-        partidaRepository.findByIdForUpdate(gameId).ifPresent(partida -> {
-            partida.setValidada(true);
-            partida.setValidadaEn(LocalDateTime.now());
-            partida.setEstado(EstadoPartida.FINALIZADA);
-
-            if (partida.getGanador() != null && partida.getApuesta() != null) {
-                Apuesta apuesta = apuestaRepository.findById(partida.getApuesta().getId())
-                        .orElse(null);
-                if (apuesta != null) {
-                    Transaccion premio = new Transaccion();
-                    premio.setJugador(partida.getGanador());
-                    premio.setMonto(apuesta.getPremio());
-                    premio.setTipo(TipoTransaccion.PREMIO);
-                    premio.setEstado(EstadoTransaccion.APROBADA);
-                    premio.setCreadoEn(LocalDateTime.now());
-                    transaccionRepository.save(premio);
-
-                    jugadorRepository.findById(partida.getGanador().getId()).ifPresent(j -> {
-                        j.setSaldo(j.getSaldo().add(premio.getMonto()));
-                        jugadorRepository.save(j);
-                    });
-                }
-            }
-
-            chatService.cerrarChat(partida.getChatId());
-
-            partidaRepository.save(partida);
-        });
+        partidaService.marcarComoValidada(gameId);
     }
 
     @Transactional
