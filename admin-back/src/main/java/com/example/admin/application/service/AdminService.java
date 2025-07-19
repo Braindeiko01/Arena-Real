@@ -15,6 +15,7 @@ import co.com.arena.real.application.service.PartidaService;
 import co.com.arena.real.application.service.TransaccionService;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.Apuesta;
+import com.example.admin.infrastructure.client.UsersBackendClient;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class AdminService {
     private final ChatService chatService;
     private final PartidaService partidaService;
     private final TransaccionService transaccionService;
+    private final UsersBackendClient usersBackendClient;
 
     @Transactional(readOnly = true)
     public List<ImageDto> listPendingImages() {
@@ -85,7 +87,8 @@ public class AdminService {
 
     @Transactional
     public void approveTransaction(UUID id) {
-        transaccionService.aprobarTransaccion(id);
+        co.com.arena.real.infrastructure.dto.rs.TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
+        usersBackendClient.notifySaldoUpdate(resp.getJugadorId());
     }
 
     @Transactional
@@ -102,7 +105,8 @@ public class AdminService {
 
             if (newStatus == EstadoTransaccion.APROBADA
                     && !EstadoTransaccion.APROBADA.equals(t.getEstado())) {
-                transaccionService.aprobarTransaccion(id);
+                co.com.arena.real.infrastructure.dto.rs.TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
+                usersBackendClient.notifySaldoUpdate(resp.getJugadorId());
                 return;
             }
 

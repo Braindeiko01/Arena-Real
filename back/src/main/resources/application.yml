@@ -22,3 +22,7 @@ logging:
   level:
     root: DEBUG
     co.com: DEBUG
+
+service:
+  auth:
+    token: ${SERVICE_AUTH_TOKEN:changeme}
