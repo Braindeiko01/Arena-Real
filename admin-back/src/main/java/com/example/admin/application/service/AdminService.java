@@ -157,6 +157,7 @@ public class AdminService {
                     .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
             partida.setGanador(jugador);
             partida.setEstado(EstadoPartida.FINALIZADA);
+            chatService.cerrarChat(partida.getChatId());
             partidaRepository.save(partida);
         });
     }
