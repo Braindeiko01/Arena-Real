@@ -1,3 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/crduels?connectTimeout=10&sslmode=prefer
+
+service:
+  auth:
+    token: ${SERVICE_AUTH_TOKEN:changeme}

@@ -3,3 +3,7 @@ spring:
     url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}?connectTimeout=10&sslmode=prefer
     username: ${PGUSER}
     password: ${PGPASSWORD}
+
+service:
+  auth:
+    token: ${SERVICE_AUTH_TOKEN:changeme}

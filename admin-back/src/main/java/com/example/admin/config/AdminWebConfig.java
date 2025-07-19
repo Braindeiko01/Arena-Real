@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 public class AdminWebConfig {
@@ -21,5 +22,18 @@ public class AdminWebConfig {
                         .allowCredentials(true);
             }
         };
+    }
+
+    @Bean
+    public org.springframework.web.client.RestTemplate restTemplate() {
+        return new org.springframework.web.client.RestTemplate();
+    }
+
+    @Bean
+    public RetryTemplate retryTemplate() {
+        return RetryTemplate.builder()
+                .maxAttempts(3)
+                .fixedBackoff(1000)
+                .build();
     }
 }

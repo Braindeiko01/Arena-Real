@@ -37,6 +37,9 @@ export default function useTransactionUpdates() {
       };
 
       es.addEventListener('transaccion-aprobada', handler as unknown as EventListener);
+      es.addEventListener('saldo-actualizar', async () => {
+        await refreshUser();
+      });
 
       es.onerror = err => {
         console.error('SSE error:', err);

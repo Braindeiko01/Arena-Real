@@ -94,6 +94,23 @@ public class SseService {
         }
     }
 
+    public void sendEvent(String jugadorId, String eventName, Object data) {
+        EmitterWrapper wrapper = emitters.get(jugadorId);
+        if (wrapper == null) {
+            return;
+        }
+
+        try {
+            wrapper.emitter.send(SseEmitter.event()
+                    .name(eventName)
+                    .data(data));
+            wrapper.lastAccess = System.currentTimeMillis();
+        } catch (IOException e) {
+            removeEmitter(jugadorId);
+            wrapper.emitter.completeWithError(e);
+        }
+    }
+
     private void removeEmitter(String jugadorId) {
         emitters.remove(jugadorId);
         log.info("Desconectado SSE jugador: {}", jugadorId);

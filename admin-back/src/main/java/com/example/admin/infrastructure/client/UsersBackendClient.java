@@ -1,0 +1,43 @@
+package com.example.admin.infrastructure.client;
+
+import com.example.admin.infrastructure.dto.SaldoUpdateRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.support.RetryTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class UsersBackendClient {
+
+    private final RestTemplate restTemplate;
+    private final RetryTemplate retryTemplate;
+
+    @Value("${users.backend.url:http://localhost:8080}")
+    private String backendUrl;
+
+    @Value("${users.backend.token:}")
+    private String backendToken;
+
+    public void notifySaldoUpdate(String userId) {
+        SaldoUpdateRequest request = new SaldoUpdateRequest();
+        request.setUserId(userId);
+        String url = backendUrl + "/api/actualizar-saldo";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Service-Auth", backendToken);
+        HttpEntity<SaldoUpdateRequest> entity = new HttpEntity<>(request, headers);
+
+        retryTemplate.execute(ctx -> {
+            log.debug("Sending saldo update for {} to {}", userId, url);
+            restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+            return null;
+        });
+    }
+}

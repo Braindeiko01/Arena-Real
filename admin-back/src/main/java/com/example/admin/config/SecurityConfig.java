@@ -18,6 +18,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 import javax.crypto.SecretKey;
@@ -26,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 
 @Configuration
 @EnableMethodSecurity
+@Slf4j
 public class SecurityConfig {
 
     @Bean
@@ -70,7 +72,7 @@ public class SecurityConfig {
     @Bean
     @Primary
     public JwtEncoder jwtEncoder(@Value("${admin.security.jwt-secret}") String secret) {
-        System.out.println("SECRET => " + secret);
+        log.debug("Initializing JWT encoder");
         SecretKey key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         return new NimbusJwtEncoder(new ImmutableSecret<>(key));
     }
