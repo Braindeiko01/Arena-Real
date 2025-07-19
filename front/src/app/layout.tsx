@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ReduxProvider } from '@/store/ReduxProvider';
+import TransactionUpdatesListener from '@/components/TransactionUpdatesListener';
 
 export const metadata: Metadata = {
   title: 'Arena Real - Torneos CR Colombia',
@@ -22,6 +23,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <ReduxProvider>
+          <TransactionUpdatesListener />
           {children}
           <Toaster />
         </ReduxProvider>
