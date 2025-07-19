@@ -22,6 +22,7 @@ import { submitMatchResultAction, fetchMatchIdByChat } from '@/lib/actions';
 import { Label } from '@/components/ui/label';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import Link from 'next/link';
 
 
 const ChatPageContent = () => {
@@ -355,14 +356,19 @@ const ChatPageContent = () => {
               <Badge className="text-sm sm:text-xs flex-none">En curso</Badge>
             )}
           </div>
-          <CartoonButton
-            size="small"
-            variant="destructive"
-            onClick={() => setIsSubmittingResult(true)}
-            disabled={resultSubmitted || !chatActive}
-          >
-            {resultSubmitted ? 'Resultado Enviado' : 'Enviar Resultado'}
-          </CartoonButton>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link href="/chat">Chats</Link>
+            </Button>
+            <CartoonButton
+              size="small"
+              variant="destructive"
+              onClick={() => setIsSubmittingResult(true)}
+              disabled={resultSubmitted || !chatActive}
+            >
+              {resultSubmitted ? 'Resultado Enviado' : 'Enviar Resultado'}
+            </CartoonButton>
+          </div>
         </CardHeader>
         {!chatActive && (
           <p className="text-center text-sm text-muted-foreground py-2">Chat finalizado. No puedes enviar nuevos mensajes.</p>
