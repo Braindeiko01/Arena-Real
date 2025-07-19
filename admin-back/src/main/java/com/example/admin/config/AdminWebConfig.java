@@ -14,7 +14,7 @@ public class AdminWebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:3001")
+                        .allowedOrigins("http://localhost:3000", "http://localhost:3001")
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization")
