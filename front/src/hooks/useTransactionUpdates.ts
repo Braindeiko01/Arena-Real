@@ -14,6 +14,7 @@ export default function useTransactionUpdates() {
   const { toast } = useToast();
   const eventSourceRef = useRef<EventSource | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const connectedRef = useRef(false);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -22,6 +23,10 @@ export default function useTransactionUpdates() {
       const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
       const es = new EventSource(url, { withCredentials: true });
       eventSourceRef.current = es;
+
+      es.onopen = () => {
+        connectedRef.current = true;
+      };
 
       const handler = async (event: MessageEvent) => {
         try {
@@ -43,10 +48,12 @@ export default function useTransactionUpdates() {
 
       es.onerror = err => {
         console.error('SSE error:', err);
-        toast({
-          title: 'Error de Transacciones',
-          description: 'Conexión interrumpida. Reintentando...',
-        });
+        if (connectedRef.current) {
+          toast({
+            title: 'Error de Transacciones',
+            description: 'Conexión interrumpida. Reintentando...',
+          });
+        }
         es.close();
         reconnectTimeoutRef.current = setTimeout(connect, 3000);
       };
@@ -54,13 +61,14 @@ export default function useTransactionUpdates() {
 
     connect();
 
-    return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-    };
+      return () => {
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close();
+        }
+        connectedRef.current = false;
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current);
+        }
+      };
   }, [user, refreshUser, toast]);
 }
