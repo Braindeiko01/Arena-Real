@@ -5,3 +5,6 @@ spring:
 service:
   auth:
     token: ${SERVICE_AUTH_TOKEN:changeme}
+  admin:
+    secret:
+      token: ${ADMIN_SECRET_TOKEN:changeme}

@@ -89,6 +89,7 @@ public class AdminService {
     public void approveTransaction(UUID id) {
         co.com.arena.real.infrastructure.dto.rs.TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
         usersBackendClient.notifySaldoUpdate(resp.getJugadorId());
+        usersBackendClient.notifyTransactionApproved(resp);
     }
 
     @Transactional
@@ -107,6 +108,7 @@ public class AdminService {
                     && !EstadoTransaccion.APROBADA.equals(t.getEstado())) {
                 co.com.arena.real.infrastructure.dto.rs.TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
                 usersBackendClient.notifySaldoUpdate(resp.getJugadorId());
+                usersBackendClient.notifyTransactionApproved(resp);
                 return;
             }
 

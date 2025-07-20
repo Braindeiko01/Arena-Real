@@ -1,6 +1,7 @@
 package com.example.admin.infrastructure.client;
 
 import com.example.admin.infrastructure.dto.SaldoUpdateRequest;
+import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,20 @@ public class UsersBackendClient {
 
         retryTemplate.execute(ctx -> {
             log.debug("Sending saldo update for {} to {}", userId, url);
+            restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+            return null;
+        });
+    }
+
+    public void notifyTransactionApproved(TransaccionResponse dto) {
+        String url = backendUrl + "/api/internal/notify-transaction-approved";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Admin-Secret", backendToken);
+        HttpEntity<TransaccionResponse> entity = new HttpEntity<>(dto, headers);
+
+        retryTemplate.execute(ctx -> {
+            log.debug("Sending transaction {} approved to {}", dto.getId(), url);
             restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
             return null;
         });
