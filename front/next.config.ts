@@ -17,23 +17,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async headers() {
-    return [
-      {
-        source: '/(login|register|)',
-        headers: [
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin-allow-popups',
-          },
-          {
-            key: 'Cross-Origin-Embedder-Policy',
-            value: 'unsafe-none',
-          },
-        ],
-      },
-    ];
-  },
+  // The previous configuration attempted to set a custom
+  // Cross-Origin-Opener-Policy header for authentication pages.
+  // This interfered with Firebase Auth popups, causing errors like:
+  // "Cross-Origin-Opener-Policy policy would block the window.close call.".
+  // Removing the header configuration allows Firebase to manage the popup
+  // lifecycle without being blocked by browser policies.
 };
 
 export default nextConfig;
