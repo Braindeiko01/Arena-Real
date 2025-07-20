@@ -17,6 +17,10 @@ export async function get<T>(path: string): Promise<T> {
   });
 
   if (!res.ok) {
+    if (res.status === 401 && typeof window !== 'undefined') {
+      localStorage.removeItem('adminToken');
+      window.location.href = '/login';
+    }
     console.error(`❌ GET ${path} → ${res.status}`);
     throw new Error(await res.text());
   }
@@ -35,6 +39,10 @@ export async function post<T = void>(path: string, body?: unknown): Promise<T> {
   const text = await res.text();
 
   if (!res.ok) {
+    if (res.status === 401 && typeof window !== 'undefined') {
+      localStorage.removeItem('adminToken');
+      window.location.href = '/login';
+    }
     console.error(`❌ POST ${path} → ${res.status}`);
     throw new Error(text);
   }
