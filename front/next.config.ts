@@ -1,4 +1,4 @@
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   typescript: {
@@ -18,26 +18,9 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
-    if (process.env.NODE_ENV !== 'production') {
-      return [
-        {
-          source: '/:path*',
-          headers: [
-            {
-              key: 'Cross-Origin-Opener-Policy',
-              value: 'same-origin-allow-popups',
-            },
-            {
-              key: 'Cross-Origin-Embedder-Policy',
-              value: 'unsafe-none',
-            },
-          ],
-        },
-      ]
-    }
     return [
       {
-        source: '/login',
+        source: '/(login|register|)',
         headers: [
           {
             key: 'Cross-Origin-Opener-Policy',
@@ -45,11 +28,11 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Cross-Origin-Embedder-Policy',
-            value: 'require-corp',
+            value: 'unsafe-none',
           },
         ],
       },
-    ]
+    ];
   },
 };
 
