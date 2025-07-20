@@ -14,7 +14,6 @@ import { SaldoIcon, FindMatchIcon } from '@/components/icons/ClashRoyaleIcons';
 import { useToast } from "@/hooks/use-toast";
 import { Coins, UploadCloud, Swords, Layers, Banknote, Loader2 } from 'lucide-react';
 import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction, declineMatchAction, acceptMatchAction } from '@/lib/actions';
-import useTransactionUpdates from '@/hooks/useTransactionUpdates';
 import useMatchmakingSse, { MatchEventData } from '@/hooks/useMatchmakingSse';
 import { setLocalStorageItem } from '@/lib/storage';
 import { ACTIVE_CHAT_KEY } from '@/hooks/useActiveChat';
@@ -24,7 +23,6 @@ const HomePageContent = () => {
   const { user, refreshUser } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
-  useTransactionUpdates();
 
   const storedUserId =
     typeof window !== 'undefined'
