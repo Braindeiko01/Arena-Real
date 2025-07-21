@@ -11,6 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClientException;
 
 @Slf4j
 @Service
@@ -35,11 +36,15 @@ public class UsersBackendClient {
         headers.set("X-Service-Auth", backendToken);
         HttpEntity<SaldoUpdateRequest> entity = new HttpEntity<>(request, headers);
 
-        retryTemplate.execute(ctx -> {
-            log.debug("Sending saldo update for {} to {}", userId, url);
-            restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
-            return null;
-        });
+        try {
+            retryTemplate.execute(ctx -> {
+                log.debug("Sending saldo update for {} to {}", userId, url);
+                restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+                return null;
+            });
+        } catch (RestClientException ex) {
+            log.error("Failed to notify saldo update for {}: {}", userId, ex.getMessage());
+        }
     }
 
     public void notifyTransactionApproved(TransaccionResponse dto) {
@@ -49,10 +54,14 @@ public class UsersBackendClient {
         headers.set("X-Admin-Secret", backendToken);
         HttpEntity<TransaccionResponse> entity = new HttpEntity<>(dto, headers);
 
-        retryTemplate.execute(ctx -> {
-            log.debug("Sending transaction {} approved to {}", dto.getId(), url);
-            restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
-            return null;
-        });
+        try {
+            retryTemplate.execute(ctx -> {
+                log.debug("Sending transaction {} approved to {}", dto.getId(), url);
+                restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+                return null;
+            });
+        } catch (RestClientException ex) {
+            log.error("Failed to notify transaction {} approved: {}", dto.getId(), ex.getMessage());
+        }
     }
 }
