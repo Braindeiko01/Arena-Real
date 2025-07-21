@@ -24,3 +24,27 @@ service cloud.firestore {
     }
   }
 }
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId)
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    match /public/{fileName} {
+      allow read;
+      allow write: if signedIn() && request.resource.size < 5 * 1024 * 1024;
+    }
+  }
+}
