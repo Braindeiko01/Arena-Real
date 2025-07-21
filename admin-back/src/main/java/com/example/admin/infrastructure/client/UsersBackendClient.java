@@ -35,11 +35,15 @@ public class UsersBackendClient {
         headers.set("X-Service-Auth", backendToken);
         HttpEntity<SaldoUpdateRequest> entity = new HttpEntity<>(request, headers);
 
-        retryTemplate.execute(ctx -> {
-            log.debug("Sending saldo update for {} to {}", userId, url);
-            restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
-            return null;
-        });
+        try {
+            retryTemplate.execute(ctx -> {
+                log.debug("Sending saldo update for {} to {}", userId, url);
+                restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+                return null;
+            });
+        } catch (org.springframework.web.client.RestClientException e) {
+            log.error("Failed to notify saldo update for {}: {}", userId, e.getMessage());
+        }
     }
 
     public void notifyTransactionApproved(TransaccionResponse dto) {
@@ -49,10 +53,14 @@ public class UsersBackendClient {
         headers.set("X-Admin-Secret", backendToken);
         HttpEntity<TransaccionResponse> entity = new HttpEntity<>(dto, headers);
 
-        retryTemplate.execute(ctx -> {
-            log.debug("Sending transaction {} approved to {}", dto.getId(), url);
-            restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
-            return null;
-        });
+        try {
+            retryTemplate.execute(ctx -> {
+                log.debug("Sending transaction {} approved to {}", dto.getId(), url);
+                restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+                return null;
+            });
+        } catch (org.springframework.web.client.RestClientException e) {
+            log.error("Failed to notify transaction {} approved: {}", dto.getId(), e.getMessage());
+        }
     }
 }
