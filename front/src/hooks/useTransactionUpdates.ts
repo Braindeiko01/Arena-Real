@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import useNotifications from '@/hooks/useNotifications';
 import { BACKEND_URL } from '@/lib/config';
 
 
@@ -12,6 +13,7 @@ import { BACKEND_URL } from '@/lib/config';
 export default function useTransactionUpdates() {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
+  const { addNotification } = useNotifications();
   const eventSourceRef = useRef<EventSource | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const connectedRef = useRef(false);
@@ -31,10 +33,9 @@ export default function useTransactionUpdates() {
       const handler = async (event: MessageEvent) => {
         try {
           const data = JSON.parse(event.data);
-          toast({
-            title: 'Actualización de Transacción',
-            description: `Tu transacción ${data.id} está ahora ${data.estado}.`,
-          });
+          const msg = `Tu transacción ${data.id} ha sido aprobada.`;
+          toast({ title: 'Actualización de Transacción', description: msg });
+          addNotification(msg);
           await refreshUser();
         } catch (err) {
           console.error('Error procesando evento SSE', err);
