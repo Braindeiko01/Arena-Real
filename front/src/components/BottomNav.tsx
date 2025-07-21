@@ -6,10 +6,9 @@ import { useAuth } from "@/hooks/useAuth";
 import useActiveChat from "@/hooks/useActiveChat";
 import {
   Home,
-  Bell,
-  Gamepad2,
-  User,
   MessageCircle,
+  ScrollText,
+  Trophy,
   Menu as MenuIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,10 +20,9 @@ const BottomNav = () => {
   const hasActiveChat = Boolean(activeChatId);
   const navItems = [
     { id: "inicio", label: "Inicio", href: "/", icon: Home },
-    { id: "notificaciones", label: "Notificaciones", href: "/notifications", icon: Bell },
-    { id: "jugar", label: "Jugar", href: "/play", icon: Gamepad2 },
-    { id: "usuario", label: "Usuario", href: "/profile", icon: User },
     { id: "chat", label: "Chat", href: "/chat", icon: MessageCircle },
+    { id: "historial", label: "Historial", href: "/history", icon: ScrollText },
+    { id: "torneo", label: "Torneo", href: "/torneos", icon: Trophy },
     { id: "menu", label: "Menú", href: "/menu", icon: MenuIcon },
   ];
 
