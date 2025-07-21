@@ -6,6 +6,7 @@ import co.com.arena.real.infrastructure.dto.rs.JugadorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,14 @@ public class JugadorController {
     @Operation(summary = "Obtener jugador", description = "Obtiene un jugador por su identificador")
     public ResponseEntity<JugadorResponse> obtener(@PathVariable String id) {
         return jugadorService.obtenerPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/saldo")
+    @Operation(summary = "Obtener saldo", description = "Devuelve el saldo actual del jugador")
+    public ResponseEntity<BigDecimal> saldo(@PathVariable String id) {
+        return jugadorService.obtenerSaldo(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

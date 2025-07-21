@@ -158,6 +158,17 @@ mvn -U clean install
 If your environment lacks internet access, configure a mirror in `settings.xml`
 that points to an accessible Maven repository.
 
+
+## Transaction approval flow
+
+When an admin marks a transaction as **ENTREGADA** in the admin console:
+
+1. `AdminService` calls `TransaccionService.aprobarTransaccion` in the admin backend.
+2. The admin backend sends two requests to the main backend:
+   - `/api/actualizar-saldo` triggers a balance refresh via SSE.
+   - `/api/internal/notify-transaction-approved` emits a `transaccion-aprobada` SSE event.
+3. The user client listens to these events with `useTransactionUpdates` to update its balance and show a toast.
+   If the connection was lost, the hook refreshes data when the page becomes visible or after reconnecting.
 ## Firestore chat migration
 
 Some early deployments stored chats under `chats/{chatId}/chats/{subId}`. The frontend only looks at the `chats/` collection, so these documents need to be copied to the root collection. A helper script is available in `front/scripts/migrateChats.ts`.

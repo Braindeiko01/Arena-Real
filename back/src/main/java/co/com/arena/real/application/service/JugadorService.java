@@ -9,6 +9,7 @@ import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -35,6 +36,11 @@ public class JugadorService {
     public Optional<JugadorResponse> obtenerPorId(String id) {
         return jugadorRepository.findById(id)
                 .map(jugadorMapper::toDto);
+    }
+
+    public Optional<BigDecimal> obtenerSaldo(String id) {
+        return jugadorRepository.findById(id)
+                .map(Jugador::getSaldo);
     }
 
 }

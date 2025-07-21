@@ -11,15 +11,25 @@ import { BACKEND_URL } from '@/lib/config';
  * transaction changes status (e.g., deposit approved).
  */
 export default function useTransactionUpdates() {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, updateUser } = useAuth();
   const { toast } = useToast();
   const { addNotification } = useNotifications();
   const eventSourceRef = useRef<EventSource | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const connectedRef = useRef(false);
+  const disconnectedRef = useRef(false);
+  const lastBalanceRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!user?.id) return;
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible' && disconnectedRef.current) {
+        refreshUser();
+        disconnectedRef.current = false;
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
 
     const connect = () => {
       const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
@@ -28,6 +38,10 @@ export default function useTransactionUpdates() {
 
       es.onopen = () => {
         connectedRef.current = true;
+        if (disconnectedRef.current) {
+          refreshUser();
+          disconnectedRef.current = false;
+        }
       };
 
       const handler = async (event: MessageEvent) => {
@@ -43,7 +57,19 @@ export default function useTransactionUpdates() {
       };
 
       es.addEventListener('transaccion-aprobada', handler as unknown as EventListener);
-      es.addEventListener('saldo-actualizar', async () => {
+      es.addEventListener('saldo-actualizar', async (e: MessageEvent) => {
+        if (e.data) {
+          try {
+            const saldo = JSON.parse(e.data);
+            if (saldo !== lastBalanceRef.current) {
+              lastBalanceRef.current = saldo;
+              await updateUser({ balance: saldo });
+            }
+            return;
+          } catch (err) {
+            console.error('Error actualizando saldo desde SSE', err);
+          }
+        }
         await refreshUser();
       });
 
@@ -55,6 +81,7 @@ export default function useTransactionUpdates() {
             description: 'Conexión interrumpida. Reintentando...',
           });
         }
+        disconnectedRef.current = true;
         es.close();
         reconnectTimeoutRef.current = setTimeout(connect, 3000);
       };
@@ -62,7 +89,7 @@ export default function useTransactionUpdates() {
 
     connect();
 
-      return () => {
+    return () => {
         if (eventSourceRef.current) {
           eventSourceRef.current.close();
         }
@@ -70,6 +97,7 @@ export default function useTransactionUpdates() {
         if (reconnectTimeoutRef.current) {
           clearTimeout(reconnectTimeoutRef.current);
         }
+        document.removeEventListener('visibilitychange', onVisibility);
       };
-  }, [user, refreshUser, toast]);
+  }, [user, refreshUser, updateUser, toast]);
 }
