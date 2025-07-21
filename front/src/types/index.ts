@@ -174,3 +174,10 @@ export interface BackendMatchDeclineRequestDto {
   jugadorId: string;
   oponenteId: string;
 }
+
+export interface Notification {
+  id: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}

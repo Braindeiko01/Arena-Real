@@ -8,12 +8,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/hooks/useAuth";
+import useNotifications from "@/hooks/useNotifications";
 
 const TopNavbar = () => {
   const { user, logout } = useAuth();
+  const { notifications, unreadCount, markAsRead, markAllRead } =
+    useNotifications();
   const avatarSrc = (user as any)?.image || user?.avatarUrl;
-  const notifications = 0;
 
   return (
     <header className="md:hidden fixed top-0 w-full z-50 shadow-sm bg-gradient-to-r from-blue-500 via-blue-700 to-blue-900 h-16 px-4 py-3 flex justify-between items-center animate-gradient-x">
@@ -23,12 +26,36 @@ const TopNavbar = () => {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="relative">
-          <Bell className="h-5 w-5 text-white" />
-          {notifications > 0 && (
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
-          )}
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button aria-label="Notificaciones" className="relative">
+              <Bell className="h-5 w-5 text-white" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64">
+            <DropdownMenuItem onSelect={markAllRead} className="text-xs justify-center text-blue-600">
+              Marcar todas como leídas
+            </DropdownMenuItem>
+            <ScrollArea className="h-40">
+              {notifications.length === 0 ? (
+                <div className="p-2 text-sm text-center text-muted-foreground">Sin notificaciones</div>
+              ) : (
+                notifications.map(n => (
+                  <DropdownMenuItem
+                    key={n.id}
+                    onSelect={() => markAsRead(n.id)}
+                    className={n.read ? '' : 'font-bold'}
+                  >
+                    {n.message}
+                  </DropdownMenuItem>
+                ))
+              )}
+            </ScrollArea>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 focus-visible:outline-none transition-transform hover:scale-105">
