@@ -5,6 +5,7 @@ import co.com.arena.real.infrastructure.dto.rq.SaldoUpdateRequest;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
+import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class SaldoController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         var jugadorOpt = jugadorRepository.findById(request.getUserId());
-        Object data = jugadorOpt.map(j -> j.getSaldo()).orElse("");
+        BigDecimal data = jugadorOpt.map(j -> j.getSaldo()).orElse(BigDecimal.ZERO);
         log.info("\uD83D\uDCE4 Enviando evento de saldo actualizado al jugador {}", request.getUserId());
         sseService.sendEvent(request.getUserId(), "saldo-actualizar", data);
         return ResponseEntity.ok().build();
