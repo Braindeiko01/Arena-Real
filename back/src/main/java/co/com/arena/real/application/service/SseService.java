@@ -84,11 +84,13 @@ public class SseService {
         }
 
         try {
+            log.info("\uD83D\uDCE1 Enviando evento SSE 'transaccion-aprobada' al jugador {}", dto.getJugadorId());
             wrapper.emitter.send(SseEmitter.event()
                     .name("transaccion-aprobada")
                     .data(dto));
             wrapper.lastAccess = System.currentTimeMillis();
         } catch (IOException e) {
+            log.error("\u274C Error al enviar evento SSE al jugador {}", dto.getJugadorId(), e);
             removeEmitter(jugadorId);
             wrapper.emitter.completeWithError(e);
         }
