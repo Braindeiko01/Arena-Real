@@ -89,7 +89,7 @@ const HistoryPageContent = () => {
           <div>
             <CardTitle className="text-xl text-primary">Duelo: {bet.modoJuego}</CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
-              Apuesta ID: {bet.id} <br />
+              Partida ID: {bet.matchId} <br />
               Fecha: {new Date(bet.matchDate).toLocaleDateString()}
             </CardDescription>
           </div>
