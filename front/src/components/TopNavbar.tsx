@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, Crown, MessageCircle } from "lucide-react";
+import { Bell, Crown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,12 +9,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
-import useFirestoreChats from "@/hooks/useFirestoreChats";
 
 const TopNavbar = () => {
   const { user, logout } = useAuth();
-  const { chats } = useFirestoreChats(user?.id);
-  const activeChat = chats.find(c => c.activo);
   const avatarSrc = (user as any)?.image || user?.avatarUrl;
   const notifications = 0;
 
@@ -29,17 +26,6 @@ const TopNavbar = () => {
         <div className="relative">
           <Bell className="h-5 w-5 text-white" />
           {notifications > 0 && (
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
-          )}
-        </div>
-        <div className="relative">
-          <Link
-            href={activeChat ? `/chat/${activeChat.id}` : "/chat"}
-            aria-label="Chat"
-          >
-            <MessageCircle className="h-5 w-5 text-white" />
-          </Link>
-          {activeChat && (
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
           )}
         </div>
