@@ -11,8 +11,12 @@ service cloud.firestore {
         get(/databases/$(database)/documents/chats/$(chatId)).data.jugadores;
     }
 
+    function isParticipantFromDoc() {
+      return request.auth.uid in resource.data.jugadores;
+    }
+
     match /chats/{chatId} {
-      allow read, write: if signedIn() && isParticipant(chatId);
+      allow read, write: if signedIn() && isParticipantFromDoc();
 
       match /messages/{messageId} {
         allow read, write: if signedIn() && isParticipant(chatId);
