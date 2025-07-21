@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import useNotifications from '@/hooks/useNotifications';
 import { BACKEND_URL } from '@/lib/config';
 
 export interface ApprovedTransaction {
@@ -15,6 +16,7 @@ export interface ApprovedTransaction {
 export default function useApprovedTransactionsSse() {
   const [transactions, setTransactions] = useState<ApprovedTransaction[]>([]);
   const { user } = useAuth();
+  const { addNotification } = useNotifications();
   const eventSourceRef = useRef<EventSource | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -30,6 +32,13 @@ export default function useApprovedTransactionsSse() {
         try {
           const data = JSON.parse(event.data) as ApprovedTransaction;
           setTransactions(prev => [data, ...prev]);
+          addNotification(
+            `Tu transacción ${data.id} ha sido aprobada por ${new Intl.NumberFormat('es-CO', {
+              style: 'currency',
+              currency: 'COP',
+              minimumFractionDigits: 0,
+            }).format(data.monto)}`,
+          );
         } catch (err) {
           console.error('Error parsing SSE event', err);
         }
