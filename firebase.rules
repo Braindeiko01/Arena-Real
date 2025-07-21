@@ -11,12 +11,40 @@ service cloud.firestore {
         get(/databases/$(database)/documents/chats/$(chatId)).data.jugadores;
     }
 
+    function isParticipantFromDoc() {
+      return request.auth.uid in resource.data.jugadores;
+    }
+
     match /chats/{chatId} {
-      allow read, write: if signedIn() && isParticipant(chatId);
+      allow read, write: if signedIn() && isParticipantFromDoc();
 
       match /messages/{messageId} {
         allow read, write: if signedIn() && isParticipant(chatId);
       }
+    }
+  }
+}
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId)
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    match /public/{fileName} {
+      allow read;
+      allow write: if signedIn() && request.resource.size < 5 * 1024 * 1024;
     }
   }
 }
