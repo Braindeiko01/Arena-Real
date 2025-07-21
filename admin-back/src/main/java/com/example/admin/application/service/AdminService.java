@@ -3,6 +3,7 @@ package com.example.admin.application.service;
 import com.example.admin.infrastructure.dto.GameResultDto;
 import com.example.admin.infrastructure.dto.ImageDto;
 import com.example.admin.infrastructure.dto.TransactionDto;
+import lombok.extern.slf4j.Slf4j;
 import co.com.arena.real.domain.entity.EstadoApuesta;
 import co.com.arena.real.domain.entity.EstadoTransaccion;
 import co.com.arena.real.domain.entity.partida.EstadoPartida;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -88,6 +90,7 @@ public class AdminService {
     @Transactional
     public void approveTransaction(UUID id) {
         co.com.arena.real.infrastructure.dto.rs.TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
+        log.info("\uD83D\uDD04 Solicitando actualizaci\u00f3n de saldo para jugador {}", resp.getJugadorId());
         usersBackendClient.notifySaldoUpdate(resp.getJugadorId());
         usersBackendClient.notifyTransactionApproved(resp);
     }
@@ -107,7 +110,9 @@ public class AdminService {
             if (newStatus == EstadoTransaccion.APROBADA
                     && !EstadoTransaccion.APROBADA.equals(t.getEstado())) {
                 co.com.arena.real.infrastructure.dto.rs.TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
+                log.info("\uD83D\uDD04 Solicitando actualizaci\u00f3n de saldo para jugador {}", resp.getJugadorId());
                 usersBackendClient.notifySaldoUpdate(resp.getJugadorId());
+                log.info("➡️ Transacción aprobada. Notificando al backend principal... Jugador ID: {}, Transacción ID: {}", resp.getJugadorId(), resp.getId());
                 usersBackendClient.notifyTransactionApproved(resp);
                 return;
             }

@@ -37,12 +37,13 @@ public class UsersBackendClient {
 
         try {
             retryTemplate.execute(ctx -> {
-                log.debug("Sending saldo update for {} to {}", userId, url);
+                log.info("\uD83D\uDD04 Enviando actualizaci\u00f3n de saldo al backend: {} -> {}", userId, url);
                 restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+                log.info("\u2705 Actualizaci\u00f3n de saldo enviada correctamente para jugador {}", userId);
                 return null;
             });
-        } catch (org.springframework.web.client.RestClientException e) {
-            log.error("Failed to notify saldo update for {}: {}", userId, e.getMessage());
+        } catch (Exception e) {
+            log.error("\u274C Error al notificar actualizaci\u00f3n de saldo", e);
         }
     }
 
@@ -55,12 +56,13 @@ public class UsersBackendClient {
 
         try {
             retryTemplate.execute(ctx -> {
-                log.debug("Sending transaction {} approved to {}", dto.getId(), url);
+                log.info("\uD83D\uDCE4 Enviando notificación de transacción aprobada al backend: {} -> {}", dto.getId(), url);
                 restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+                log.info("\u2705 Notificación enviada correctamente para transacción {}", dto.getId());
                 return null;
             });
-        } catch (org.springframework.web.client.RestClientException e) {
-            log.error("Failed to notify transaction {} approved: {}", dto.getId(), e.getMessage());
+        } catch (Exception e) {
+            log.error("\u274C Error al enviar notificación al backend principal", e);
         }
     }
 }
