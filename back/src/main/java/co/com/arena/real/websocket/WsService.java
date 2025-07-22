@@ -34,7 +34,13 @@ public class WsService {
     private final Map<String, SessionWrapper> sessions = new ConcurrentHashMap<>();
 
     public void register(String jugadorId, WebSocketSession session) {
-        sessions.put(jugadorId, new SessionWrapper(session));
+        SessionWrapper previous = sessions.put(jugadorId, new SessionWrapper(session));
+        if (previous != null && previous.session.isOpen()) {
+            try {
+                previous.session.close(new CloseStatus(1001, "nueva conexion"));
+            } catch (IOException ignored) {
+            }
+        }
         log.info("Nueva conexión WS para jugador: {}", jugadorId);
     }
 

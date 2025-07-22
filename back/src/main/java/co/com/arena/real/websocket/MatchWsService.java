@@ -47,7 +47,13 @@ public class MatchWsService {
 
     public void register(String jugadorId, WebSocketSession session) {
         SessionWrapper wrapper = new SessionWrapper(session);
-        sessions.put(jugadorId, wrapper);
+        SessionWrapper previous = sessions.put(jugadorId, wrapper);
+        if (previous != null && previous.session.isOpen()) {
+            try {
+                previous.session.close(new CloseStatus(1001, "nueva conexion"));
+            } catch (IOException ignored) {
+            }
+        }
         LatestEvent last = latestEvents.remove(jugadorId);
         if (last != null) {
             sendEvent(jugadorId, last.name, last.dto);
@@ -56,7 +62,8 @@ public class MatchWsService {
     }
 
     public void remove(String jugadorId, WebSocketSession session) {
-        sessions.remove(jugadorId, new SessionWrapper(session));
+        sessions.computeIfPresent(jugadorId, (id, wrapper) ->
+                wrapper.session.equals(session) ? null : wrapper);
         log.info("Desconectado WS jugador: {}", jugadorId);
     }
 
