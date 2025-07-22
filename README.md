@@ -69,7 +69,8 @@ environment entries via `spring-dotenv` when `dotenv.enabled=true`.
 
 If you do not provide credentials, disable Firebase by setting `firebase.enabled=false`
 (for example in `application.properties` or as `FIREBASE_ENABLED=false`). When
-disabled, chat features will skip Firestore operations.
+disabled, chat features and push notifications will skip all Firebase operations,
+and the push token endpoint will not be available.
 
 Este proyecto usa Firebase en el front-end. Las credenciales deben declararse en un archivo `.env.local` en la carpeta `front`.
 
