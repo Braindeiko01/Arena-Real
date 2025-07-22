@@ -16,21 +16,23 @@ export default function usePushNotifications() {
 
     navigator.serviceWorker
       .register('/firebase-messaging-sw.js', { scope: '/' })
+      .then(async reg => {
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') return;
+        try {
+          const token = await getToken(messaging!, {
+            serviceWorkerRegistration: reg
+          });
+          await fetch(`${BACKEND_URL}/api/push/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jugadorId: user.id, token })
+          });
+        } catch (err) {
+          console.error('FCM registration failed', err);
+        }
+      })
       .catch(err => console.error('SW registration failed', err));
-
-    Notification.requestPermission().then(async perm => {
-      if (perm !== 'granted') return;
-      try {
-        const token = await getToken(messaging!);
-        await fetch(`${BACKEND_URL}/api/push/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jugadorId: user.id, token }),
-        });
-      } catch (err) {
-        console.error('FCM registration failed', err);
-      }
-    });
 
     const unsub = onMessage(messaging!, payload => {
       const { title, body } = payload.notification || {};
