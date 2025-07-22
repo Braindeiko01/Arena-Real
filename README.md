@@ -169,6 +169,19 @@ When an admin marks a transaction as **ENTREGADA** in the admin console:
    - `/api/internal/notify-transaction-approved` emits a `transaccion-aprobada` SSE event.
 3. The user client listens to these events with `useTransactionUpdates` to update its balance and show a toast.
    If the connection was lost, the hook refreshes data when the page becomes visible or after reconnecting.
+
+## Referral system
+
+Two new endpoints implement a simple referral program:
+
+```http
+POST /api/register
+GET  /api/referrals/earnings/{userId}
+```
+
+Registering accepts an optional `referralCode`. When a referred player finishes a duel,
+the inviter automatically earns COP 1000. Rewards are credited after the admin
+backend validates the duel. The frontend includes a **Referidos** page at `/referrals` showing your code and total earned.
 ## Firestore chat migration
 
 Some early deployments stored chats under `chats/{chatId}/chats/{subId}`. The frontend only looks at the `chats/` collection, so these documents need to be copied to the root collection. A helper script is available in `front/scripts/migrateChats.ts`.

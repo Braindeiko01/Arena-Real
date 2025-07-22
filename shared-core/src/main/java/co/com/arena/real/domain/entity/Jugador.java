@@ -43,6 +43,16 @@ public class Jugador {
     @Builder.Default
     private Integer reputacion = 100;
 
+    @Column(name = "referral_code", unique = true)
+    private String referralCode;
+
+    @Column(name = "referred_by")
+    private String referredBy;
+
+    @Builder.Default
+    @Column(name = "has_played")
+    private boolean hasPlayed = false;
+
     public Jugador(String id) {
         this.id = id;
     }

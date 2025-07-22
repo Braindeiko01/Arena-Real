@@ -41,4 +41,6 @@ public class JugadorRequest implements Serializable {
     )
     private String linkAmistad;
 
+    private String referralCode;
+
 }

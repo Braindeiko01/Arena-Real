@@ -24,6 +24,7 @@ public class JugadorMapper {
                 .telefono(jugador.getTelefono())
                 .tagClash(jugador.getTagClash())
                 .linkAmistad(jugador.getLinkAmistad())
+                .referralCode(jugador.getReferralCode())
                 .saldo(jugador.getSaldo())
                 .reputacion(jugador.getReputacion())
                 .build();

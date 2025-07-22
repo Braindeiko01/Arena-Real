@@ -29,6 +29,12 @@ public class JugadorService {
         }
         // Mapeo de DTO A entidad
         Jugador jugador = jugadorMapper.toEntity(dto);
+        jugador.setReferralCode(java.util.UUID.randomUUID().toString());
+        if (dto.getReferralCode() != null && !dto.getReferralCode().isBlank()) {
+            jugadorRepository.findByReferralCode(dto.getReferralCode())
+                    .filter(Jugador::isHasPlayed)
+                    .ifPresent(inviter -> jugador.setReferredBy(inviter.getId()));
+        }
         Jugador saved = jugadorRepository.save(jugador);
         return jugadorMapper.toDto(saved);
     }
