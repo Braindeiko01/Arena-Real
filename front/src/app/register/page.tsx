@@ -32,6 +32,7 @@ const completeProfileSchema = z.object({
     .refine(link => link.startsWith("https://link.clashroyale.com/"), {
         message: "El link debe ser de Clash Royale (link.clashroyale.com)"
     }),
+  referralCode: z.string().optional(),
 });
 
 export default function RegisterPage() {
@@ -48,6 +49,7 @@ export default function RegisterPage() {
       username: '',
       phone: '',
       friendLink: '',
+      referralCode: '',
     },
   });
 
@@ -80,6 +82,7 @@ export default function RegisterPage() {
         username: googleAuthData.username || '',
         phone: '',
         friendLink: '',
+        referralCode: '',
       });
     }
   }, [step, googleAuthData, form]);
@@ -142,6 +145,7 @@ export default function RegisterPage() {
       avatarUrl: googleAuthData.avatarUrl,
       phone: profileData.phone,
       friendLink: profileData.friendLink,
+      referralCode: profileData.referralCode || undefined,
     };
 
     console.log(fullRegistrationData)
@@ -170,10 +174,10 @@ export default function RegisterPage() {
   };
   
   const handleCancelAndGoBack = () => {
-    setStep(1); 
-    setGoogleAuthData(null); 
+    setStep(1);
+    setGoogleAuthData(null);
     sessionStorage.removeItem('pendingGoogleAuthData');
-    form.reset({ username: '', phone: '', friendLink: '' });
+    form.reset({ username: '', phone: '', friendLink: '', referralCode: '' });
   }
 
   return (
@@ -242,6 +246,19 @@ export default function RegisterPage() {
                       </FormControl>
                       <FormMessage />
                       <p className="text-xs text-muted-foreground mt-1">Tu Tag de jugador (ej. #P01Y2G3R) se extraerá automáticamente de este link.</p>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="referralCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg text-foreground">Código de referido (opcional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="ABCD1234" {...field} className="text-base py-5 border-2 focus:border-primary" />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
