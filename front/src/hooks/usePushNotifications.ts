@@ -11,6 +11,7 @@ export default function usePushNotifications() {
 
   useEffect(() => {
     if (!user?.id) return;
+    if (!messaging) return;
     if (!('Notification' in window)) return;
 
     navigator.serviceWorker
@@ -20,7 +21,7 @@ export default function usePushNotifications() {
     Notification.requestPermission().then(async perm => {
       if (perm !== 'granted') return;
       try {
-        const token = await getToken(messaging);
+        const token = await getToken(messaging!);
         await fetch(`${BACKEND_URL}/api/push/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -31,7 +32,7 @@ export default function usePushNotifications() {
       }
     });
 
-    const unsub = onMessage(messaging, payload => {
+    const unsub = onMessage(messaging!, payload => {
       const { title, body } = payload.notification || {};
       if (title) new Notification(title, { body });
     });
