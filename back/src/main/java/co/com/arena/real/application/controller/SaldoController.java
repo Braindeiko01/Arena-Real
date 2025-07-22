@@ -1,6 +1,7 @@
 package co.com.arena.real.application.controller;
 
 import co.com.arena.real.application.service.SseService;
+import co.com.arena.real.websocket.WsService;
 import co.com.arena.real.infrastructure.dto.rq.SaldoUpdateRequest;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SaldoController {
 
     private final SseService sseService;
+    private final WsService wsService;
     private final JugadorRepository jugadorRepository;
     @Value("${service.auth.token:}")
     private String serviceToken;
@@ -37,6 +39,7 @@ public class SaldoController {
         BigDecimal data = jugadorOpt.map(j -> j.getSaldo()).orElse(BigDecimal.ZERO);
         log.info("\uD83D\uDCE4 Enviando evento de saldo actualizado al jugador {}", request.getUserId());
         sseService.sendEvent(request.getUserId(), "saldo-actualizar", data);
+        wsService.sendEvent(request.getUserId(), "saldo-actualizar", data);
         return ResponseEntity.ok().build();
     }
 }

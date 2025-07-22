@@ -3,6 +3,7 @@ package co.com.arena.real.application.controller;
 import co.com.arena.real.application.service.MatchmakingService;
 import co.com.arena.real.application.service.MatchDeclineService;
 import co.com.arena.real.application.service.MatchSseService;
+import co.com.arena.real.websocket.MatchWsService;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import co.com.arena.real.infrastructure.dto.rq.CancelarMatchmakingRequest;
 import co.com.arena.real.infrastructure.dto.rq.MatchDeclineRequest;
@@ -27,6 +28,7 @@ public class MatchmakingController {
     private final MatchmakingService matchmakingService;
     private final MatchDeclineService matchDeclineService;
     private final MatchSseService matchSseService;
+    private final MatchWsService matchWsService;
     private final JugadorRepository jugadorRepository;
 
     @PostMapping("/ejecutar")
@@ -68,9 +70,10 @@ public class MatchmakingController {
     public ResponseEntity<?> declinarPareja(@RequestBody MatchDeclineRequest request) {
         matchDeclineService.recordDecline(request.getJugadorId(), request.getOponenteId());
         jugadorRepository.findById(request.getJugadorId()).ifPresent(declinante ->
-                jugadorRepository.findById(request.getOponenteId()).ifPresent(oponente ->
-                        matchSseService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente)
-                )
+                jugadorRepository.findById(request.getOponenteId()).ifPresent(oponente -> {
+                        matchSseService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente);
+                        matchWsService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente);
+                })
         );
         Map<String, Object> resp = new HashMap<>();
         resp.put("status", "registrado");

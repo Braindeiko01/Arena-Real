@@ -6,6 +6,7 @@ import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.infrastructure.dto.rq.ApuestaRequest;
 import co.com.arena.real.infrastructure.dto.rq.TransaccionRequest;
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
+import co.com.arena.real.websocket.MatchWsService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ public class MatchService {
     private final ApuestaService apuestaService;
     private final TransaccionService transaccionService;
     private final MatchSseService matchSseService;
+    private final MatchWsService matchWsService;
 
     public void aceptar(Partida partida, String jugadorId) {
         if (partida.getJugador1() != null && jugadorId.equals(partida.getJugador1().getId())) {
@@ -32,9 +34,19 @@ public class MatchService {
                     partida.getId(),
                     partida.getJugador1(),
                     partida.getJugador2());
+            matchWsService.notifyOpponentAccepted(
+                    partida.getApuesta() != null ? partida.getApuesta().getId() : null,
+                    partida.getId(),
+                    partida.getJugador1(),
+                    partida.getJugador2());
         } else if (partida.getJugador2() != null && jugadorId.equals(partida.getJugador2().getId())) {
             partida.setAceptadoJugador2(true);
             matchSseService.notifyOpponentAccepted(
+                    partida.getApuesta() != null ? partida.getApuesta().getId() : null,
+                    partida.getId(),
+                    partida.getJugador2(),
+                    partida.getJugador1());
+            matchWsService.notifyOpponentAccepted(
                     partida.getApuesta() != null ? partida.getApuesta().getId() : null,
                     partida.getId(),
                     partida.getJugador2(),
@@ -63,6 +75,7 @@ public class MatchService {
             partida.setEstado(EstadoPartida.EN_CURSO);
             log.info("Notificando chat listo para partida {}", partida.getId());
             matchSseService.notifyChatReady(partida);
+            matchWsService.notifyChatReady(partida);
         }
     }
 
