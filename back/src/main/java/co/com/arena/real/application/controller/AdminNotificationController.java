@@ -1,6 +1,7 @@
 package co.com.arena.real.application.controller;
 
 import co.com.arena.real.application.service.SseService;
+import co.com.arena.real.websocket.WsService;
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminNotificationController {
 
     private final SseService sseService;
+    private final WsService wsService;
 
     @Value("${admin.secret.token:}")
     private String adminToken;
@@ -34,6 +36,7 @@ public class AdminNotificationController {
         }
         log.info("\uD83D\uDCE5 Backend recibió notificación de transacción aprobada. Transacción ID: {}, Jugador ID: {}", dto.getId(), dto.getJugadorId());
         sseService.notificarTransaccionAprobada(dto);
+        wsService.notificarTransaccionAprobada(dto);
         return ResponseEntity.ok().build();
     }
 }
