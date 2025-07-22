@@ -166,7 +166,7 @@ export interface ChatMessage {
   matchId: string; // Este es el ID de la apuesta del backend (UUID)
   senderId: string;
   text: string;
-  timestamp: string;
+  timestamp: string | import('firebase/firestore').FieldValue;
   isSystemMessage?: boolean;
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { collection, addDoc, onSnapshot, query, orderBy, Timestamp, doc } from 'firebase/firestore';
+import { collection, addDoc, onSnapshot, query, orderBy, Timestamp, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { ChatMessage } from '@/types';
 
@@ -62,7 +62,7 @@ export default function useFirestoreChat(chatId: string | undefined) {
       await addDoc(collection(db, 'chats', chatId, 'messages'), {
         senderId: message.senderId,
         text: message.text,
-        timestamp: Timestamp.now(),
+        timestamp: serverTimestamp(),
         isSystemMessage: message.isSystemMessage || false,
       });
     } catch (err) {
