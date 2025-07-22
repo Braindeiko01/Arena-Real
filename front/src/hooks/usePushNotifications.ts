@@ -15,7 +15,7 @@ export default function usePushNotifications() {
     if (!('Notification' in window)) return;
 
     navigator.serviceWorker
-      .register('/firebase-messaging-sw.js')
+      .register('/firebase-messaging-sw.js', { scope: '/' })
       .catch(err => console.error('SW registration failed', err));
 
     Notification.requestPermission().then(async perm => {
