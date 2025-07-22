@@ -1,6 +1,6 @@
 package co.com.arena.real.config;
 
-import co.com.arena.real.websocket.MatchWsHandler;
+import co.com.arena.real.websocket.MatchmakingHandler;
 import co.com.arena.real.websocket.TransaccionWsHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -12,11 +12,11 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
 
     private final TransaccionWsHandler transaccionWsHandler;
-    private final MatchWsHandler matchWsHandler;
+    private final MatchmakingHandler matchmakingHandler;
 
-    public WebSocketConfig(TransaccionWsHandler transaccionWsHandler, MatchWsHandler matchWsHandler) {
+    public WebSocketConfig(TransaccionWsHandler transaccionWsHandler, MatchmakingHandler matchmakingHandler) {
         this.transaccionWsHandler = transaccionWsHandler;
-        this.matchWsHandler = matchWsHandler;
+        this.matchmakingHandler = matchmakingHandler;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
         registry.addHandler(transaccionWsHandler, "/ws/transacciones/{jugadorId}")
                 .setAllowedOrigins("http://localhost:3000", "http://localhost:3001")
                 .addInterceptors(new PlayerIdHandshakeInterceptor());
-        registry.addHandler(matchWsHandler, "/ws/matchmaking/{jugadorId}")
+        registry.addHandler(matchmakingHandler, "/ws/matchmaking/{jugadorId}")
                 .setAllowedOrigins("http://localhost:3000", "http://localhost:3001")
                 .addInterceptors(new PlayerIdHandshakeInterceptor());
     }
