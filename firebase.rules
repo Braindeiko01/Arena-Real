@@ -2,13 +2,25 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function signedIn() {
+    // --- Helper functions ---
+    function isSignedIn() {
       return request.auth != null;
     }
 
+    // Checks Firestore directly if the user is part of the chat
     function isParticipant(chatId) {
-      return request.auth.uid in
-        get(/databases/$(database)/documents/chats/$(chatId)).data.jugadores;
+      return isSignedIn() &&
+        request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.jugadores;
+    }
+
+    // Checks current document data
+    function isParticipantInResource() {
+      return isSignedIn() && request.auth.uid in resource.data.jugadores;
+    }
+
+    // Checks the document data being created
+    function isParticipantInRequest() {
+      return isSignedIn() && request.auth.uid in request.resource.data.jugadores;
     }
 
     function isParticipantFromDoc() {
@@ -16,10 +28,39 @@ service cloud.firestore {
     }
 
     match /chats/{chatId} {
-      allow read, write: if signedIn() && isParticipantFromDoc();
+      // A participant can read the chat
+      allow read: if isParticipantInResource();
+
+      // Creating a chat requires the creator to be part of the players list and
+      // enforces allowed fields and values
+      allow create: if isParticipantInRequest()
+                    && request.resource.data.jugadores.size() == 2
+                    && request.resource.data.activo == true
+                    && request.resource.data.keys().hasOnly(['jugadores', 'activo']);
+
+      // Chats can be updated by participants but players list is immutable
+      allow update: if isParticipantInResource()
+                    && request.resource.data.jugadores == resource.data.jugadores;
+
+      // Deleting chats is not allowed
+      allow delete: if false;
 
       match /messages/{messageId} {
-        allow read, write: if signedIn() && isParticipant(chatId);
+        // Participants can read messages
+        allow read: if isParticipant(chatId);
+
+        // Creating a message requires the sender to be the authenticated user
+        // and validates text length, timestamp and absence of system flag
+        allow create: if isParticipant(chatId)
+                      && request.resource.data.senderId == request.auth.uid
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() > 0
+                      && request.resource.data.text.size() < 500
+                      && request.resource.data.timestamp == request.time
+                      && (!('isSystemMessage' in request.resource.data) || request.resource.data.isSystemMessage == false);
+
+        // Messages cannot be modified or removed
+        allow update, delete: if false;
       }
     }
   }
@@ -43,7 +84,7 @@ service firebase.storage {
     }
 
     match /public/{fileName} {
-      allow read;
+      allow read: if signedIn();
       allow write: if signedIn() && request.resource.size < 5 * 1024 * 1024;
     }
   }

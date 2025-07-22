@@ -27,6 +27,7 @@ import co.com.arena.real.application.service.MatchProposalService;
 import co.com.arena.real.application.service.MatchService;
 import co.com.arena.real.application.service.MatchSseService;
 import co.com.arena.real.application.events.PartidaValidadaEvent;
+import co.com.arena.real.application.service.ReferralRewardService;
 import org.springframework.context.ApplicationEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -55,6 +56,7 @@ public class PartidaService {
     private final MatchService matchService;
     private final MatchSseService matchSseService;
     private final ApplicationEventPublisher eventPublisher;
+    private final ReferralRewardService referralRewardService;
 
     private static final Logger log = LoggerFactory.getLogger(PartidaService.class);
 

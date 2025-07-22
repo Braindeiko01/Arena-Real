@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ReduxProvider } from '@/store/ReduxProvider';
 import TransactionUpdatesListener from '@/components/TransactionUpdatesListener';
+import PushNotificationsInitializer from '@/components/PushNotificationsInitializer';
 
 export const metadata: Metadata = {
   title: 'Arena Real - Torneos CR Colombia',
@@ -23,6 +24,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <ReduxProvider>
+          <PushNotificationsInitializer />
           <TransactionUpdatesListener />
           {children}
           <Toaster />

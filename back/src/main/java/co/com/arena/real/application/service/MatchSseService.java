@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,9 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@RequiredArgsConstructor
 public class MatchSseService {
 
     private static final Logger log = LoggerFactory.getLogger(MatchSseService.class);
+
+    private final PushNotificationService pushNotificationService;
 
     private static class EmitterWrapper {
         final SseEmitter emitter;
