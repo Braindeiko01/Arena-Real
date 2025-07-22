@@ -23,7 +23,6 @@ public class MatchSseService {
 
     private static final Logger log = LoggerFactory.getLogger(MatchSseService.class);
 
-    private final PushNotificationService pushNotificationService;
 
     private static class EmitterWrapper {
         final SseEmitter emitter;
