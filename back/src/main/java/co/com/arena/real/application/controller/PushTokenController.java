@@ -4,6 +4,7 @@ import co.com.arena.real.application.service.PushNotificationService;
 import co.com.arena.real.infrastructure.dto.rq.PushTokenRequest;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/push")
 @RequiredArgsConstructor
+@ConditionalOnBean(PushNotificationService.class)
 public class PushTokenController {
 
     private final PushNotificationService pushNotificationService;
