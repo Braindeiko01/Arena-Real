@@ -35,4 +35,5 @@ public class PartidaResponse implements Serializable {
     private String capturaJugador2;
     private String resultadoJugador1;
     private String resultadoJugador2;
+    private int revanchaCount;
 }

@@ -94,4 +94,8 @@ public class Partida {
     @Lob
     @Column(name = "captura_jugador2", columnDefinition = "text")
     private String capturaJugador2;
+
+    @Builder.Default
+    @Column(name = "revancha_count")
+    private int revanchaCount = 0;
 }
