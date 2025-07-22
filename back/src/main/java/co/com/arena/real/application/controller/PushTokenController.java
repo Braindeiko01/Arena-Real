@@ -23,8 +23,8 @@ public class PushTokenController {
         return jugadorRepository.findById(request.getJugadorId())
                 .map(jugador -> {
                     pushNotificationService.registerToken(jugador, request.getToken());
-                    return ResponseEntity.ok().build();
+                    return ResponseEntity.ok().<Void>build();
                 })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.notFound().<Void>build());
     }
 }
