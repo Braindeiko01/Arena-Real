@@ -78,17 +78,23 @@ public class MatchSseService {
         }
     }
 
+    public void notifyMatchFound(UUID apuestaId, UUID partidaId, Jugador jugador1, Jugador jugador2, boolean revancha) {
+        sendMatchFound(jugador1.getId(), apuestaId, partidaId, jugador2, revancha);
+        sendMatchFound(jugador2.getId(), apuestaId, partidaId, jugador1, revancha);
+    }
+
     public void notifyMatchFound(UUID apuestaId, UUID partidaId, Jugador jugador1, Jugador jugador2) {
-        sendMatchFound(jugador1.getId(), apuestaId, partidaId, jugador2);
-        sendMatchFound(jugador2.getId(), apuestaId, partidaId, jugador1);
-        pushNotificationService.sendMatchFound(jugador1, jugador2.getNombre() != null ? jugador2.getNombre() : jugador2.getTagClash());
-        pushNotificationService.sendMatchFound(jugador2, jugador1.getNombre() != null ? jugador1.getNombre() : jugador1.getTagClash());
+        notifyMatchFound(apuestaId, partidaId, jugador1, jugador2, false);
     }
 
     public void notifyMatchFound(Partida partida) {
+        notifyMatchFound(partida, false);
+    }
+
+    public void notifyMatchFound(Partida partida, boolean revancha) {
         UUID apuestaId = partida.getApuesta() != null ? partida.getApuesta().getId() : null;
         UUID partidaId = partida.getId();
-        notifyMatchFound(apuestaId, partidaId, partida.getJugador1(), partida.getJugador2());
+        notifyMatchFound(apuestaId, partidaId, partida.getJugador1(), partida.getJugador2(), revancha);
     }
 
     public void notifyChatReady(Partida partida) {
@@ -118,7 +124,7 @@ public class MatchSseService {
         sendMatchValidated(partida.getJugador2Id(), partida);
     }
 
-    private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, Jugador oponente) {
+    private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, Jugador oponente, boolean revancha) {
         String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
         String nombre = oponente.getNombre() != null ? oponente.getNombre() : tag;
         MatchSseDto dto = MatchSseDto.builder()
@@ -127,6 +133,7 @@ public class MatchSseService {
                 .jugadorOponenteId(oponente.getId())
                 .jugadorOponenteTag(tag)
                 .jugadorOponenteNombre(nombre)
+                .revancha(revancha)
                 .build();
         latestEvents.put(receptorId, new LatestEvent("match-found", dto));
 
@@ -137,6 +144,38 @@ public class MatchSseService {
         try {
             wrapper.emitter.send(SseEmitter.event()
                     .name("match-found")
+                    .data(dto));
+            wrapper.lastAccess = System.currentTimeMillis();
+            latestEvents.remove(receptorId);
+        } catch (IOException e) {
+            removeEmitter(receptorId);
+            wrapper.emitter.completeWithError(e);
+        }
+    }
+
+    public void notifyResultSubmitted(Partida partida, String jugadorId) {
+        String receptorId = null;
+        if (partida.getJugador1() != null && partida.getJugador1().getId().equals(jugadorId)) {
+            receptorId = partida.getJugador2() != null ? partida.getJugador2().getId() : null;
+        } else if (partida.getJugador2() != null && partida.getJugador2().getId().equals(jugadorId)) {
+            receptorId = partida.getJugador1() != null ? partida.getJugador1().getId() : null;
+        }
+        if (receptorId == null) {
+            return;
+        }
+        MatchSseDto dto = MatchSseDto.builder()
+                .partidaId(partida.getId())
+                .jugadorOponenteId(jugadorId)
+                .build();
+        latestEvents.put(receptorId, new LatestEvent("player-voted", dto));
+
+        EmitterWrapper wrapper = emitters.get(receptorId);
+        if (wrapper == null) {
+            return;
+        }
+        try {
+            wrapper.emitter.send(SseEmitter.event()
+                    .name("player-voted")
                     .data(dto));
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);

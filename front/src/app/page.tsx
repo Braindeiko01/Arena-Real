@@ -42,7 +42,7 @@ const HomePageContent = () => {
 
 
   const [isSearching, setIsSearching] = useState(false);
-  const [pendingMatch, setPendingMatch] = useState<{ apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; jugadorOponenteNombre: string; chatId?: string; } | null>(null);
+  const [pendingMatch, setPendingMatch] = useState<{ apuestaId: string; partidaId: string; jugadorOponenteId: string; jugadorOponenteTag: string; jugadorOponenteNombre: string; chatId?: string; revancha?: boolean; } | null>(null);
   const [hasAccepted, setHasAccepted] = useState(false);
   const [opponentAccepted, setOpponentAccepted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(25);
@@ -101,7 +101,8 @@ const HomePageContent = () => {
     handleChatReady,
     handleOpponentAccepted,
     handleMatchCancelled,
-    handleMatchValidated
+    handleMatchValidated,
+    undefined
   );
 
   useEffect(() => {
@@ -499,8 +500,14 @@ const HomePageContent = () => {
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in-up">
           <Card className="w-full max-w-md shadow-xl border-2 border-accent">
             <CardHeader>
-              <CardTitle className="text-3xl font-headline text-accent text-center">¡Duelo encontrado!</CardTitle>
-              <CardDescription className="text-center text-muted-foreground">Contra {pendingMatch.jugadorOponenteNombre}</CardDescription>
+              <CardTitle className="text-3xl font-headline text-accent text-center">
+                {pendingMatch.revancha ? '¡Revancha!' : '¡Duelo encontrado!'}
+              </CardTitle>
+              <CardDescription className="text-center text-muted-foreground">
+                {pendingMatch.revancha
+                  ? `¿Quieres aceptar la revancha contra ${pendingMatch.jugadorOponenteNombre}?`
+                  : `Contra ${pendingMatch.jugadorOponenteNombre}`}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="h-3 w-full bg-secondary rounded">

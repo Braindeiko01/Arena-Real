@@ -25,6 +25,7 @@ import co.com.arena.real.application.service.ApuestaService;
 import co.com.arena.real.application.service.TransaccionService;
 import co.com.arena.real.application.service.MatchProposalService;
 import co.com.arena.real.application.service.MatchService;
+import co.com.arena.real.application.service.MatchSseService;
 import co.com.arena.real.application.events.PartidaValidadaEvent;
 import co.com.arena.real.application.service.ReferralRewardService;
 import org.springframework.context.ApplicationEventPublisher;
@@ -53,6 +54,7 @@ public class PartidaService {
     private final TransaccionService transaccionService;
     private final MatchProposalService matchProposalService;
     private final MatchService matchService;
+    private final MatchSseService matchSseService;
     private final ApplicationEventPublisher eventPublisher;
     private final ReferralRewardService referralRewardService;
 
@@ -122,9 +124,29 @@ public class PartidaService {
             throw new IllegalArgumentException("Jugador no pertenece a la partida");
         }
 
+        boolean ambosVotaron = partida.getResultadoJugador1() != null && partida.getResultadoJugador2() != null;
+        if (ambosVotaron) {
+            if (partida.getResultadoJugador1() == ResultadoJugador.EMPATE && partida.getResultadoJugador2() == ResultadoJugador.EMPATE) {
+                partida.setValidada(false);
+                partida.setEstado(EstadoPartida.PENDIENTE);
+                partida.setGanador(null);
+                partida.setResultadoJugador1(null);
+                partida.setResultadoJugador2(null);
+                partida.setCapturaJugador1(null);
+                partida.setCapturaJugador2(null);
+                partida.setAceptadoJugador1(false);
+                partida.setAceptadoJugador2(false);
+                partida.setRevanchaCount(partida.getRevanchaCount() + 1);
+
+                Partida saved = partidaRepository.save(partida);
+                matchSseService.notifyMatchFound(saved, true);
+                return partidaMapper.toDto(saved);
+            }
+        }
         partida.setEstado(EstadoPartida.POR_APROBAR);
 
         Partida saved = partidaRepository.save(partida);
+        matchSseService.notifyResultSubmitted(saved, dto.getJugadorId());
         return partidaMapper.toDto(saved);
     }
 
@@ -147,10 +169,12 @@ public class PartidaService {
     public PartidaResponse marcarComoValidada(UUID partidaId) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Partida no encontrada"));
-        partida.setValidada(true);
         partida.setValidadaEn(LocalDateTime.now());
-        partida.setEstado(EstadoPartida.FINALIZADA);
+
         if (partida.getGanador() != null && partida.getApuesta() != null) {
+            partida.setValidada(true);
+            partida.setEstado(EstadoPartida.FINALIZADA);
+
             Apuesta apuesta = apuestaRepository.findById(partida.getApuesta().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Apuesta no encontrada"));
 
@@ -166,15 +190,30 @@ public class PartidaService {
                 u.setSaldo(u.getSaldo().add(premio.getMonto()));
                 jugadorRepository.save(u);
             });
+
+            chatService.cerrarChat(partida.getChatId());
+
+            Partida saved = partidaRepository.save(partida);
+            PartidaResponse dto = partidaMapper.toDto(saved);
+            eventPublisher.publishEvent(new PartidaValidadaEvent(dto));
+            return dto;
         }
 
-        chatService.cerrarChat(partida.getChatId());
+        partida.setValidada(false);
+        partida.setEstado(EstadoPartida.PENDIENTE);
+        partida.setGanador(null);
+        partida.setResultadoJugador1(null);
+        partida.setResultadoJugador2(null);
+        partida.setCapturaJugador1(null);
+        partida.setCapturaJugador2(null);
+        partida.setAceptadoJugador1(false);
+        partida.setAceptadoJugador2(false);
+        partida.setRevanchaCount(partida.getRevanchaCount() + 1);
 
         Partida saved = partidaRepository.save(partida);
-        referralRewardService.processPartida(saved);
-        PartidaResponse dto = partidaMapper.toDto(saved);
-        eventPublisher.publishEvent(new PartidaValidadaEvent(dto));
-        return dto;
+        matchSseService.notifyMatchFound(saved, true);
+
+        return partidaMapper.toDto(saved);
     }
   
     @Transactional
@@ -201,6 +240,28 @@ public class PartidaService {
         chatService.cerrarChat(partida.getChatId());
 
         Partida saved = partidaRepository.save(partida);
+        return partidaMapper.toDto(saved);
+    }
+
+    @Transactional
+    public PartidaResponse forzarRevancha(UUID partidaId) {
+        Partida partida = partidaRepository.findByIdForUpdate(partidaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Partida no encontrada"));
+
+        partida.setValidada(false);
+        partida.setEstado(EstadoPartida.PENDIENTE);
+        partida.setGanador(null);
+        partida.setResultadoJugador1(null);
+        partida.setResultadoJugador2(null);
+        partida.setCapturaJugador1(null);
+        partida.setCapturaJugador2(null);
+        partida.setAceptadoJugador1(false);
+        partida.setAceptadoJugador2(false);
+        partida.setRevanchaCount(partida.getRevanchaCount() + 1);
+
+        Partida saved = partidaRepository.save(partida);
+        matchSseService.notifyMatchFound(saved, true);
+
         return partidaMapper.toDto(saved);
     }
 
