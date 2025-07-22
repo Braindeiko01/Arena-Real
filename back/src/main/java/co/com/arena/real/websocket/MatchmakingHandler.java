@@ -8,7 +8,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Component
 @RequiredArgsConstructor
-public class MatchWsHandler extends TextWebSocketHandler {
+public class MatchmakingHandler extends TextWebSocketHandler {
 
     private final MatchWsService matchWsService;
 
@@ -28,4 +28,3 @@ public class MatchWsHandler extends TextWebSocketHandler {
         }
     }
 }
-
