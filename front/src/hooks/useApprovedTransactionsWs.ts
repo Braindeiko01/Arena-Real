@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import useNotifications from '@/hooks/useNotifications';
-import { BACKEND_URL } from '@/lib/config';
+import { BACKEND_WS_URL } from '@/lib/config';
 
 export interface ApprovedTransaction {
   id: string;
@@ -12,25 +12,21 @@ export interface ApprovedTransaction {
   creadoEn: string;
 }
 
-/*
-export default function useApprovedTransactionsSse() {
+export default function useApprovedTransactionsWs() {
   const [transactions, setTransactions] = useState<ApprovedTransaction[]>([]);
   const { user } = useAuth();
   const { addNotification } = useNotifications();
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const socketRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!user?.id) return;
 
-    const connect = () => {
-      const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
-      const es = new EventSource(url, { withCredentials: true });
-      eventSourceRef.current = es;
-
-      const handler = (event: MessageEvent) => {
-        try {
-          const data = JSON.parse(event.data) as ApprovedTransaction;
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.event === 'transaccion-aprobada') {
+          const data = msg.data as ApprovedTransaction;
           setTransactions(prev => [data, ...prev]);
           addNotification(
             `Tu transacción ${data.id} ha sido aprobada por ${new Intl.NumberFormat('es-CO', {
@@ -39,32 +35,42 @@ export default function useApprovedTransactionsSse() {
               minimumFractionDigits: 0,
             }).format(data.monto)}`,
           );
-        } catch (err) {
-          console.error('Error parsing SSE event', err);
+        }
+      } catch (err) {
+        console.error('Error parsing WS event', err);
+      }
+    };
+
+    const connect = () => {
+      const url = `${BACKEND_WS_URL}/ws/transacciones/${encodeURIComponent(user.id)}`;
+      const ws = new WebSocket(url);
+      socketRef.current = ws;
+
+      ws.onmessage = handleMessage;
+      ws.onclose = () => {
+        if (socketRef.current === ws) {
+          reconnectTimeoutRef.current = setTimeout(connect, 3000);
         }
       };
-
-      es.addEventListener('transaccion-aprobada', handler as EventListener);
-
-      es.onerror = (err) => {
-        console.error('SSE error:', err);
-        es.close();
-        reconnectTimeoutRef.current = setTimeout(connect, 3000);
+      ws.onerror = (err) => {
+        console.error('WS error:', err);
       };
     };
 
     connect();
 
     return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
+      if (socketRef.current) {
+        socketRef.current.close();
+        socketRef.current = null;
       }
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
       }
     };
   }, [user]);
 
   return transactions;
 }
-*/
+

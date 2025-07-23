@@ -21,4 +21,5 @@ public class GameResultDto {
     private java.math.BigDecimal monto;
     private UUID winnerId;
     private boolean distributed;
+    private int revanchaCount;
 }

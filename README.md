@@ -28,6 +28,7 @@ cd back
 mvn spring-boot:run
 ```
 
+
 The backend exposes Server-Sent Event (SSE) endpoints for real-time
 notifications. When a match ends, a `rematch-available` event is sent so
 players can start a rematch quickly.
@@ -66,7 +67,8 @@ environment entries via `spring-dotenv` when `dotenv.enabled=true`.
 
 If you do not provide credentials, disable Firebase by setting `firebase.enabled=false`
 (for example in `application.properties` or as `FIREBASE_ENABLED=false`). When
-disabled, chat features will skip Firestore operations.
+disabled, chat features and push notifications will skip all Firebase operations,
+and the push token endpoint will not be available.
 
 Este proyecto usa Firebase en el front-end. Las credenciales deben declararse en un archivo `.env.local` en la carpeta `front`.
 
@@ -170,10 +172,23 @@ When an admin marks a transaction as **ENTREGADA** in the admin console:
 
 1. `AdminService` calls `TransaccionService.aprobarTransaccion` in the admin backend.
 2. The admin backend sends two requests to the main backend:
-   - `/api/actualizar-saldo` triggers a balance refresh via SSE.
-   - `/api/internal/notify-transaction-approved` emits a `transaccion-aprobada` SSE event.
-3. The user client listens to these events with `useTransactionUpdates` to update its balance and show a toast.
+   - `/api/actualizar-saldo` triggers a balance refresh and sends SSE/WebSocket events.
+   - `/api/internal/notify-transaction-approved` emits a `transaccion-aprobada` event over SSE and WebSocket.
+3. The user client now uses `useTransactionUpdatesWs` to receive these notifications in real time.
    If the connection was lost, the hook refreshes data when the page becomes visible or after reconnecting.
+
+## Referral system
+
+Two new endpoints implement a simple referral program:
+
+```http
+POST /api/register
+GET  /api/referrals/earnings/{userId}
+```
+
+Registering accepts an optional `referralCode`. When a referred player finishes a duel,
+the inviter automatically earns COP 1000. Rewards are credited after the admin
+backend validates the duel. The frontend includes a **Referidos** page at `/referrals` showing your code and total earned.
 ## Firestore chat migration
 
 Some early deployments stored chats under `chats/{chatId}/chats/{subId}`. The frontend only looks at the `chats/` collection, so these documents need to be copied to the root collection. A helper script is available in `front/scripts/migrateChats.ts`.

@@ -10,6 +10,7 @@ import {
   ScrollText,
   Trophy,
   Menu as MenuIcon,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,7 @@ const BottomNav = () => {
     { id: "chat", label: "Chat", href: "/chat", icon: MessageCircle },
     { id: "historial", label: "Historial", href: "/history", icon: ScrollText },
     { id: "torneo", label: "Torneo", href: "/torneos", icon: Trophy },
+    { id: "referidos", label: "Referidos", href: "/referrals", icon: Users },
     { id: "menu", label: "Menú", href: "/menu", icon: MenuIcon },
   ];
 

@@ -29,11 +29,12 @@ export async function registerUserAction(
     email: data.email,
     telefono: data.phone,
     linkAmistad: data.friendLink,
+    referralCode: data.referralCode,
   }
 
   try {
-    const response = await fetch(`${BACKEND_URL}/api/jugadores`, {
-      method: 'PUT',
+    const response = await fetch(`${BACKEND_URL}/api/register`, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(backendPayload),
     })
@@ -59,6 +60,7 @@ export async function registerUserAction(
       friendLink: registered.linkAmistad || '',
       avatarUrl: data.avatarUrl || `https://placehold.co/100x100.png?text=${registered.nombre?.[0] ?? 'U'}`,
       reputacion: registered.reputacion ?? 0,
+      referralCode: registered.referralCode,
     }
 
     return { user, error: null }
@@ -103,6 +105,7 @@ export async function getUserDataAction(userId: string): Promise<{ user: User | 
       friendLink: backendUser.linkAmistad,
       avatarUrl: `https://placehold.co/100x100.png?text=${backendUser.nombre?.[0] ?? 'U'}`,
       reputacion: backendUser.reputacion,
+      referralCode: backendUser.referralCode,
     }
 
     return { user, error: null }
@@ -352,7 +355,7 @@ export async function assignMatchWinnerAction(
 export async function submitMatchResultAction(
   matchId: string,
   jugadorId: string,
-  result: 'VICTORIA' | 'DERROTA',
+  result: 'VICTORIA' | 'DERROTA' | 'EMPATE',
   screenshot?: string,
 ): Promise<{ duel: BackendPartidaResponseDto | null; error: string | null }> {
   try {
@@ -384,5 +387,21 @@ export async function fetchMatchIdByChat(
     return data.id
   } catch {
     return null
+  }
+}
+
+export async function getReferralEarningsAction(
+  userId: string,
+): Promise<{ total: number | null; error: string | null }> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/referrals/earnings/${userId}`)
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      return { total: null, error: err.message || `Error ${res.status}` }
+    }
+    const data = (await res.json()) as { total: number }
+    return { total: data.total, error: null }
+  } catch (err: any) {
+    return { total: null, error: err.message || 'Error de red.' }
   }
 }

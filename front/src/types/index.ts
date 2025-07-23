@@ -6,6 +6,7 @@ export interface RegistrarUsuarioRequest {
   email: string;
   telefono: string;
   linkAmistad: string;
+  referralCode?: string;
 }
 
 export interface BackendUsuarioDto {
@@ -17,6 +18,7 @@ export interface BackendUsuarioDto {
   linkAmistad: string;
   saldo: number;
   reputacion: number;
+  referralCode?: string;
 }
 
 export interface BackendTransaccionRequestDto {
@@ -115,6 +117,7 @@ export interface User {
   balance: number;
   friendLink?: string;
   reputacion?: number;
+  referralCode?: string;
 }
 
 // Para el formulario de completar perfil después del login con Google
@@ -122,13 +125,14 @@ export interface CompleteProfileFormValues {
   username: string;
   phone: string;
   friendLink: string;
+  referralCode?: string;
 }
 
 // Valores obtenidos de la simulación de Google Auth
 export interface GoogleAuthValues {
   googleId: string;
-  email: string;
-  username: string;
+  email?: string;
+  username?: string;
   avatarUrl?: string;
 }
 
@@ -141,6 +145,7 @@ export type RegisterWithGoogleData = {
   phone: string;
   friendLink: string;
   clashTag?: string;
+  referralCode?: string;
 };
 
 

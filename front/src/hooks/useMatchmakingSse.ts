@@ -9,15 +9,17 @@ export interface MatchEventData {
   jugadorOponenteTag: string;
   jugadorOponenteNombre: string;
   chatId?: string;
+  revancha?: boolean;
 }
-
+/*
 export default function useMatchmakingSse(
   playerId: string | undefined,
   onMatchFound: (data: MatchEventData) => void,
   onChatReady: (data: MatchEventData) => void,
   onOpponentAccepted?: (data: MatchEventData) => void,
   onMatchCancelled?: (data: MatchEventData) => void,
-  onMatchValidated?: (data: MatchEventData) => void
+  onMatchValidated?: (data: MatchEventData) => void,
+  onPlayerVoted?: (data: MatchEventData) => void
 ) {
   const { toast } = useToast();
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -27,11 +29,13 @@ export default function useMatchmakingSse(
   const onOpponentAcceptedRef = useRef(onOpponentAccepted);
   const onMatchCancelledRef = useRef(onMatchCancelled);
   const onMatchValidatedRef = useRef(onMatchValidated);
+  const onPlayerVotedRef = useRef(onPlayerVoted);
   const matchHandlerRef = useRef<(event: MessageEvent) => void>();
   const readyHandlerRef = useRef<(event: MessageEvent) => void>();
   const acceptedHandlerRef = useRef<(event: MessageEvent) => void>();
   const cancelledHandlerRef = useRef<(event: MessageEvent) => void>();
   const validatedHandlerRef = useRef<(event: MessageEvent) => void>();
+  const votedHandlerRef = useRef<(event: MessageEvent) => void>();
   const connectRef = useRef<(onOpen?: () => void) => void>();
 
   const removeListeners = () => {
@@ -50,6 +54,9 @@ export default function useMatchmakingSse(
     }
     if (validatedHandlerRef.current) {
       eventSourceRef.current.removeEventListener('match-validated', validatedHandlerRef.current as EventListener);
+    }
+    if (votedHandlerRef.current) {
+      eventSourceRef.current.removeEventListener('player-voted', votedHandlerRef.current as EventListener);
     }
   };
 
@@ -92,6 +99,10 @@ export default function useMatchmakingSse(
   useEffect(() => {
     onMatchValidatedRef.current = onMatchValidated;
   }, [onMatchValidated]);
+
+  useEffect(() => {
+    onPlayerVotedRef.current = onPlayerVoted;
+  }, [onPlayerVoted]);
 
   useEffect(() => {
     if (!playerId) return;
@@ -151,6 +162,17 @@ export default function useMatchmakingSse(
     };
     validatedHandlerRef.current = validatedHandler;
 
+    const votedHandler = (event: MessageEvent) => {
+      try {
+        const data: MatchEventData = JSON.parse(event.data);
+        console.log('Jugador votó:', data);
+        onPlayerVotedRef.current && onPlayerVotedRef.current(data);
+      } catch (err) {
+        console.error('Error al procesar evento SSE de voto:', err);
+      }
+    };
+    votedHandlerRef.current = votedHandler;
+
     const connect = (onOpen?: () => void) => {
       const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
       console.log('Abriendo conexión SSE de matchmaking:', url);
@@ -175,6 +197,9 @@ export default function useMatchmakingSse(
       }
       if (validatedHandlerRef.current) {
         es.addEventListener('match-validated', validatedHandlerRef.current as EventListener);
+      }
+      if (votedHandlerRef.current) {
+        es.addEventListener('player-voted', votedHandlerRef.current as EventListener);
       }
 
       es.onerror = (err) => {
@@ -209,3 +234,4 @@ export default function useMatchmakingSse(
 
   return { reconnect };
 }
+*/

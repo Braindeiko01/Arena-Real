@@ -1,14 +1,15 @@
 package co.com.arena.real.application.controller;
 
-import co.com.arena.real.application.service.MatchmakingService;
 import co.com.arena.real.application.service.MatchDeclineService;
 import co.com.arena.real.application.service.MatchSseService;
-import co.com.arena.real.infrastructure.repository.JugadorRepository;
+import co.com.arena.real.application.service.MatchmakingService;
+import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.infrastructure.dto.rq.CancelarMatchmakingRequest;
 import co.com.arena.real.infrastructure.dto.rq.MatchDeclineRequest;
 import co.com.arena.real.infrastructure.dto.rq.PartidaEnEsperaRequest;
 import co.com.arena.real.infrastructure.dto.rs.MatchSseDto;
-import co.com.arena.real.domain.entity.Jugador;
+import co.com.arena.real.infrastructure.repository.JugadorRepository;
+import co.com.arena.real.websocket.MatchWsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ public class MatchmakingController {
     private final MatchmakingService matchmakingService;
     private final MatchDeclineService matchDeclineService;
     private final MatchSseService matchSseService;
+    private final MatchWsService matchWsService;
     private final JugadorRepository jugadorRepository;
 
     @PostMapping("/ejecutar")
@@ -45,6 +47,7 @@ public class MatchmakingController {
                             .jugadorOponenteId(oponente.getId())
                             .jugadorOponenteTag(tag)
                             .jugadorOponenteNombre(nombre)
+                            .revancha(false)
                             .build();
                 })
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
