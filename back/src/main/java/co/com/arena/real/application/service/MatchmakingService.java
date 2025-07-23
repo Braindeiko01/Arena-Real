@@ -13,6 +13,7 @@ import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import co.com.arena.real.infrastructure.repository.MatchProposalRepository;
 import co.com.arena.real.application.service.MatchSseService;
 import co.com.arena.real.application.service.MatchDeclineService;
+import co.com.arena.real.websocket.MatchWsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,7 @@ public class MatchmakingService {
     private final PartidaRepository partidaRepository;
     private final MatchProposalRepository matchProposalRepository;
     private final MatchSseService matchSseService;
+    private final MatchWsService matchWsService;
     private final MatchDeclineService matchDeclineService;
 
     private static final List<ModoJuego> PRIORIDAD_MODO_JUEGO = List.of(
@@ -74,7 +76,6 @@ public class MatchmakingService {
             cancelarSolicitudes(jugadorEncontrado);
 
             MatchProposal proposal = crearPropuesta(partidaEnEspera, partidaEncontrada);
-
             matchSseService.notifyMatchFound(null, proposal.getId(), null, jugadorEnEspera, jugadorEncontrado);
 
             return proposal;
@@ -142,11 +143,11 @@ public class MatchmakingService {
         return !(matchDeclineService.isDeclined(idA, idB) && Math.random() < 0.5);
     }
 
-    @Transactional
-    @org.springframework.scheduling.annotation.Scheduled(fixedRate = 60000)
-    public void limpiarSolicitudesAntiguas() {
-        LocalDateTime threshold = LocalDateTime.now().minusMinutes(10);
-        partidaEnEsperaRepository.deleteByCreadaEnBefore(threshold);
-    }
+//    @Transactional
+//    @org.springframework.scheduling.annotation.Scheduled(fixedRate = 60000)
+//    public void limpiarSolicitudesAntiguas() {
+//        LocalDateTime threshold = LocalDateTime.now().minusMinutes(10);
+//        partidaEnEsperaRepository.deleteByCreadaEnBefore(threshold);
+//    }
 
 }

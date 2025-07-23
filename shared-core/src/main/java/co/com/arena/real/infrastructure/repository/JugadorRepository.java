@@ -8,4 +8,6 @@ public interface JugadorRepository extends JpaRepository<Jugador, String> {
 
     boolean existsByTelefono(String telefono);
 
+    java.util.Optional<Jugador> findByReferralCode(String referralCode);
+
 }

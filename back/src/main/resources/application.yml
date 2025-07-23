@@ -20,12 +20,14 @@ spring:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
     co.com: DEBUG
 
 service:
   auth:
-    token: ${SERVICE_AUTH_TOKEN:changeme}
+    token: ${SERVICE_AUTH_TOKEN}
 admin:
   secret:
-    token: ${ADMIN_SECRET_TOKEN:changeme}
+    token: ${ADMIN_SECRET_TOKEN}
+firebase:
+  enabled: true

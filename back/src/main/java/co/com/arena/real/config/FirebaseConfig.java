@@ -3,8 +3,10 @@ package co.com.arena.real.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -48,5 +50,11 @@ public class FirebaseConfig {
         FirebaseApp app = FirebaseApp.initializeApp(options);
         System.out.println("Firebase inicializado con: " + app.getName());
         return app;
+    }
+
+    @Bean
+    @ConditionalOnBean(FirebaseApp.class)
+    public FirebaseMessaging firebaseMessaging(FirebaseApp firebaseApp) {
+        return FirebaseMessaging.getInstance(firebaseApp);
     }
 }

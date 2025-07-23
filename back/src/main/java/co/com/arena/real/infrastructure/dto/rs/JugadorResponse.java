@@ -26,4 +26,6 @@ public class JugadorResponse implements Serializable {
     private BigDecimal saldo;
     private Integer reputacion;
 
+    private String referralCode;
+
 }

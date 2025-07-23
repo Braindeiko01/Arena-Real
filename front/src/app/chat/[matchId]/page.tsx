@@ -21,7 +21,7 @@ import { submitMatchResultAction, fetchMatchIdByChat } from '@/lib/actions';
 import useMatchmakingSse from '@/hooks/useMatchmakingSse';
 
 import { Label } from '@/components/ui/label';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 
@@ -255,17 +255,11 @@ const ChatPageContent = () => {
   useEffect(() => {
     if (incompleteData || isLoading || !user || !opponentProfile || startMessageSentRef.current) return;
     if (messages.length === 0) {
-      const startMsg = {
-        matchId: validChatId,
-        senderId: 'system',
-        text: `Chat iniciado para el duelo (Chat ID: ${validChatId}) con ${opponentDisplayName}.`,
-        timestamp: new Date().toISOString(),
-        isSystemMessage: true,
-      };
-      sendMessageSafely(startMsg);
       startMessageSentRef.current = true;
+      fetch(`${BACKEND_URL}/api/chats/${encodeURIComponent(validChatId)}/start-message`, { method: 'POST' })
+        .catch(err => console.error('Error solicitando mensaje inicial', err));
     }
-  }, [user, opponentProfile, validChatId, validOpponentTag, opponentDisplayName, messages.length, incompleteData, isLoading]);
+  }, [user, opponentProfile, validChatId, validOpponentTag, opponentDisplayName, messages.length, incompleteData, isLoading, BACKEND_URL]);
 
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();
@@ -275,7 +269,7 @@ const ChatPageContent = () => {
       matchId: validChatId, // ID del chat (UUID)
       senderId: user.id, // googleId del remitente
       text: newMessage,
-      timestamp: new Date().toISOString(),
+      timestamp: serverTimestamp(),
     };
     sendMessageSafely(message);
     setNewMessage('');
@@ -294,14 +288,12 @@ const ChatPageContent = () => {
       friendLinkMessage = `${userDisplayName} intentó compartir su link de amigo, pero no lo tiene configurado en su perfil.`;
     }
     
-    const message = {
-      matchId: validChatId, // ID del chat (UUID)
-      senderId: 'system',
-      text: friendLinkMessage,
-      timestamp: new Date().toISOString(),
-      isSystemMessage: true,
-    };
-    sendMessageSafely(message);
+    fetch(`${BACKEND_URL}/api/chats/${encodeURIComponent(validChatId)}/share-link`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ link: linkToShare, text: friendLinkMessage }),
+    }).catch(err => console.error('Error compartiendo link de amigo', err));
+
     toast({ title: "Link de Amigo Compartido", description: `Tu link de amigo ${user.friendLink ? '' : '(o un aviso de que no lo tienes) '}ha sido publicado en el chat.` });
   };
 
@@ -351,7 +343,7 @@ const ChatPageContent = () => {
     });
     
     setResultSubmitted(true);
-    setIsSubmittingResult(false); 
+    setIsSubmittingResult(false);
     setScreenshotFile(null);
     
      const userDisplayName = user.clashTag || user.username;
@@ -421,7 +413,7 @@ const ChatPageContent = () => {
                 <div className={`max-w-xs md:max-w-md lg:max-w-lg p-3 rounded-2xl shadow-md ${msg.senderId === user.id ? 'bg-primary text-primary-foreground rounded-br-none ml-auto' : 'bg-card text-card-foreground rounded-bl-none mr-auto'}`}>
                   <p className="text-base break-words">{msg.text}</p>
                   <p className={`text-xs mt-1 ${msg.senderId === user.id ? 'text-primary-foreground/70 text-right' : 'text-muted-foreground/70 text-left'}`}>
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(msg.timestamp as string).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
               )}

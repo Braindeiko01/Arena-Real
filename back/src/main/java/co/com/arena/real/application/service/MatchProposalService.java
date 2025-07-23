@@ -5,6 +5,7 @@ import co.com.arena.real.domain.entity.partida.EstadoPartida;
 import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.infrastructure.repository.MatchProposalRepository;
 import co.com.arena.real.infrastructure.exception.ResourceNotFoundException;
+import co.com.arena.real.websocket.MatchWsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class MatchProposalService {
 
     private final MatchProposalRepository matchProposalRepository;
     private final MatchSseService matchSseService;
+    private final MatchWsService matchWsService;
 
     public Optional<Partida> aceptarPropuesta(UUID partidaId, String jugadorId) {
         MatchProposal proposal = matchProposalRepository.findByIdForUpdate(partidaId)
@@ -30,9 +32,19 @@ public class MatchProposalService {
                     proposal.getId(),
                     proposal.getJugador1(),
                     proposal.getJugador2());
+            matchWsService.notifyOpponentAccepted(
+                    null,
+                    proposal.getId(),
+                    proposal.getJugador1(),
+                    proposal.getJugador2());
         } else if (proposal.getJugador2() != null && jugadorId.equals(proposal.getJugador2().getId())) {
             proposal.setAceptadoJugador2(true);
             matchSseService.notifyOpponentAccepted(
+                    null,
+                    proposal.getId(),
+                    proposal.getJugador2(),
+                    proposal.getJugador1());
+            matchWsService.notifyOpponentAccepted(
                     null,
                     proposal.getId(),
                     proposal.getJugador2(),

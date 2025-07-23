@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,9 +18,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@RequiredArgsConstructor
 public class MatchSseService {
 
     private static final Logger log = LoggerFactory.getLogger(MatchSseService.class);
+
 
     private static class EmitterWrapper {
         final SseEmitter emitter;
@@ -130,7 +133,6 @@ public class MatchSseService {
                 .jugadorOponenteId(oponente.getId())
                 .jugadorOponenteTag(tag)
                 .jugadorOponenteNombre(nombre)
-                .chatId(chatId)
                 .revancha(revancha)
                 .build();
         latestEvents.put(receptorId, new LatestEvent("match-found", dto));
@@ -284,6 +286,32 @@ public class MatchSseService {
         try {
             wrapper.emitter.send(SseEmitter.event()
                     .name("match-validated")
+                    .data(dto));
+            wrapper.lastAccess = System.currentTimeMillis();
+            latestEvents.remove(receptorId);
+        } catch (IOException e) {
+            removeEmitter(receptorId);
+            wrapper.emitter.completeWithError(e);
+        }
+    }
+
+    private void sendRematchAvailable(String receptorId, co.com.arena.real.infrastructure.dto.rs.PartidaResponse partida) {
+        if (receptorId == null) {
+            return;
+        }
+        MatchSseDto dto = MatchSseDto.builder()
+                .apuestaId(partida.getApuestaId())
+                .partidaId(partida.getId())
+                .build();
+        latestEvents.put(receptorId, new LatestEvent("rematch-available", dto));
+
+        EmitterWrapper wrapper = emitters.get(receptorId);
+        if (wrapper == null) {
+            return;
+        }
+        try {
+            wrapper.emitter.send(SseEmitter.event()
+                    .name("rematch-available")
                     .data(dto));
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
