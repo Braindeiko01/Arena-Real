@@ -170,7 +170,6 @@ public class PartidaService {
             premio.setEstado(EstadoTransaccion.APROBADA);
             premio.setCreadoEn(LocalDateTime.now());
             Transaccion savedPremio = transaccionRepository.save(premio);
-
             co.com.arena.real.domain.entity.Jugador ganador = jugadorRepository.findById(partida.getGanador().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
             ganador.setSaldo(ganador.getSaldo().add(savedPremio.getMonto()));
