@@ -34,6 +34,8 @@ WebSocket endpoints are enabled on the same port. The frontend connects to
 configured in `NEXT_PUBLIC_BACKEND_WS_URL`.
 When a match ends, a new `rematch-available` event is sent on the matchmaking
 WebSocket so players can start a rematch quickly.
+The backend now sends periodic WebSocket pings every 15 seconds and cleans up
+stale connections to prevent timeouts or reconnection loops.
 
 Build all Java modules in one step:
 
