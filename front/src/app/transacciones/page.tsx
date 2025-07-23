@@ -3,10 +3,10 @@
 import React from 'react';
 import AppLayout from '@/components/AppLayout';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import useApprovedTransactionsWs, { ApprovedTransaction } from '@/hooks/useApprovedTransactionsWs';
+import useApprovedTransactionsSse, { ApprovedTransaction } from '@/hooks/useApprovedTransactionsSse';
 
 export default function TransactionsPage() {
-  const approved = useApprovedTransactionsWs();
+  const approved = useApprovedTransactionsSse();
 
   return (
     <AppLayout>
