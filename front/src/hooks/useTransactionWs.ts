@@ -19,7 +19,7 @@ export interface UseTransactionWsOptions {
 }
 
 export default function useTransactionWs(options: UseTransactionWsOptions = {}) {
-  const [approvedTransactions, setApprovedTransactions] = useState<ApprovedTransaction[]>([]);
+  /*const [approvedTransactions, setApprovedTransactions] = useState<ApprovedTransaction[]>([]);
   const { user, refreshUser, updateUser } = useAuth();
   const { toast } = useToast();
   const { addNotification } = useNotifications();
@@ -150,5 +150,5 @@ export default function useTransactionWs(options: UseTransactionWsOptions = {}) 
     };
   }, [user, refreshUser, updateUser, toast, reconnect, disconnect]);
 
-  return { approvedTransactions, reconnect };
+  return { approvedTransactions, reconnect };*/
 }

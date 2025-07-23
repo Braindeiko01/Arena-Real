@@ -145,11 +145,11 @@ public class MatchmakingService {
         return !(matchDeclineService.isDeclined(idA, idB) && Math.random() < 0.5);
     }
 
-    @Transactional
-    @org.springframework.scheduling.annotation.Scheduled(fixedRate = 60000)
-    public void limpiarSolicitudesAntiguas() {
-        LocalDateTime threshold = LocalDateTime.now().minusMinutes(10);
-        partidaEnEsperaRepository.deleteByCreadaEnBefore(threshold);
-    }
+//    @Transactional
+//    @org.springframework.scheduling.annotation.Scheduled(fixedRate = 60000)
+//    public void limpiarSolicitudesAntiguas() {
+//        LocalDateTime threshold = LocalDateTime.now().minusMinutes(10);
+//        partidaEnEsperaRepository.deleteByCreadaEnBefore(threshold);
+//    }
 
 }

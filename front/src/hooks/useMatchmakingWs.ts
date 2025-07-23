@@ -11,6 +11,7 @@ export interface MatchEventData {
   chatId?: string;
 }
 
+
 export default function useMatchmakingWs(
   playerId: string | undefined,
   onMatchFound: (data: MatchEventData) => void,
@@ -20,6 +21,8 @@ export default function useMatchmakingWs(
   onMatchValidated?: (data: MatchEventData) => void,
   onRematchAvailable?: (data: MatchEventData) => void,
 ) {
+
+  /*
   const { toast } = useToast();
   const socketRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -149,5 +152,6 @@ export default function useMatchmakingWs(
   }, [playerId, reconnect]);
 
   return { reconnect };
+  */
 }
 

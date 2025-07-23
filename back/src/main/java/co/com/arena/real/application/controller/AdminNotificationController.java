@@ -28,14 +28,14 @@ public class AdminNotificationController {
 
     @PostMapping("/notify-transaction-approved")
     public ResponseEntity<Void> notifyTransactionApproved(
-            @RequestHeader(value = "X-Admin-Secret", required = false) String secret,
+            @RequestHeader(value = "X-Admin-Secret", required = false) String secret, //todo: cambiar a JWT para autenticarse
             @RequestBody TransaccionResponse dto) {
         if (adminToken == null || !adminToken.equals(secret)) {
             log.warn("\uD83D\uDD12 Token admin inválido recibido en notificación de transacción.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         log.info("\uD83D\uDCE5 Backend recibió notificación de transacción aprobada. Transacción ID: {}, Jugador ID: {}", dto.getId(), dto.getJugadorId());
-        sseService.notificarTransaccionAprobada(dto);
+//        sseService.notificarTransaccionAprobada(dto);
         wsService.notificarTransaccionAprobada(dto);
         return ResponseEntity.ok().build();
     }

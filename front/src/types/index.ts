@@ -131,8 +131,8 @@ export interface CompleteProfileFormValues {
 // Valores obtenidos de la simulación de Google Auth
 export interface GoogleAuthValues {
   googleId: string;
-  email: string;
-  username: string;
+  email?: string;
+  username?: string;
   avatarUrl?: string;
 }
 

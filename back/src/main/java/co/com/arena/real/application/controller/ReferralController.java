@@ -35,4 +35,5 @@ public class ReferralController {
         BigDecimal total = rewardService.earningsForUser(userId);
         return ResponseEntity.ok(Map.of("total", total));
     }
+
 }

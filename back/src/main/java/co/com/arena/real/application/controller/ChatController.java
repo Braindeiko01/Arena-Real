@@ -34,4 +34,5 @@ public class ChatController {
                 .map(id -> ResponseEntity.ok(Map.of("chatId", id)))
                 .orElse(ResponseEntity.notFound().build());
     }
+
 }

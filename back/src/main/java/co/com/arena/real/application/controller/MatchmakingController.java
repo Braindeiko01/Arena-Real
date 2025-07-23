@@ -1,15 +1,15 @@
 package co.com.arena.real.application.controller;
 
-import co.com.arena.real.application.service.MatchmakingService;
 import co.com.arena.real.application.service.MatchDeclineService;
 import co.com.arena.real.application.service.MatchSseService;
-import co.com.arena.real.websocket.MatchWsService;
-import co.com.arena.real.infrastructure.repository.JugadorRepository;
+import co.com.arena.real.application.service.MatchmakingService;
+import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.infrastructure.dto.rq.CancelarMatchmakingRequest;
 import co.com.arena.real.infrastructure.dto.rq.MatchDeclineRequest;
 import co.com.arena.real.infrastructure.dto.rq.PartidaEnEsperaRequest;
 import co.com.arena.real.infrastructure.dto.rs.MatchSseDto;
-import co.com.arena.real.domain.entity.Jugador;
+import co.com.arena.real.infrastructure.repository.JugadorRepository;
+import co.com.arena.real.websocket.MatchWsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,8 +71,8 @@ public class MatchmakingController {
         matchDeclineService.recordDecline(request.getJugadorId(), request.getOponenteId());
         jugadorRepository.findById(request.getJugadorId()).ifPresent(declinante ->
                 jugadorRepository.findById(request.getOponenteId()).ifPresent(oponente -> {
-                        matchSseService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente);
-                        matchWsService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente);
+                    matchSseService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente);
+                    matchWsService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente);
                 })
         );
         Map<String, Object> resp = new HashMap<>();
