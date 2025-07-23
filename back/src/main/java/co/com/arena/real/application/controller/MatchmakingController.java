@@ -67,9 +67,9 @@ public class MatchmakingController {
     public ResponseEntity<?> declinarPareja(@RequestBody MatchDeclineRequest request) {
         matchDeclineService.recordDecline(request.getJugadorId(), request.getOponenteId());
         jugadorRepository.findById(request.getJugadorId()).ifPresent(declinante ->
-                jugadorRepository.findById(request.getOponenteId()).ifPresent(oponente ->
-                        matchSseService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente)
-                )
+                jugadorRepository.findById(request.getOponenteId()).ifPresent(oponente -> {
+                        matchSseService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente);
+                })
         );
         Map<String, Object> resp = new HashMap<>();
         resp.put("status", "registrado");

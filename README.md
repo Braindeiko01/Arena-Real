@@ -5,8 +5,9 @@ This repository contains a Spring Boot backend and a Next.js frontend.
 
 ## Setup
 
-1. Copy `front/.env.example` to `front/.env.local` and fill in your Firebase and API credentials.
-   These variables are required for the chat to work correctly.
+1. Copy `front/.env.example` to `front/.env.local` and fill in your Firebase and
+   API credentials. Set `NEXT_PUBLIC_BACKEND_API_URL` to the base URL of the main
+   backend (e.g. `http://localhost:8080`).
 2. Install dependencies and run the frontend:
 
 ```bash
@@ -26,6 +27,10 @@ The backend uses Maven (Java 17). A root `pom.xml` aggregates all Java modules:
 cd back
 mvn spring-boot:run
 ```
+
+The backend exposes Server-Sent Event (SSE) endpoints for real-time
+notifications. When a match ends, a `rematch-available` event is sent so
+players can start a rematch quickly.
 
 Build all Java modules in one step:
 

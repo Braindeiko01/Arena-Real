@@ -15,5 +15,6 @@ public class PartidaValidadaEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePartidaValidada(PartidaValidadaEvent event) {
         matchSseService.notifyMatchValidated(event.partida());
+        matchSseService.notifyRematchAvailable(event.partida());
     }
 }
