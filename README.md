@@ -7,8 +7,7 @@ This repository contains a Spring Boot backend and a Next.js frontend.
 
 1. Copy `front/.env.example` to `front/.env.local` and fill in your Firebase and
    API credentials. Set `NEXT_PUBLIC_BACKEND_API_URL` to the base URL of the main
-   backend (e.g. `http://localhost:8080`). Optionally configure
-   `NEXT_PUBLIC_BACKEND_WS_URL` if the WebSocket address differs.
+   backend (e.g. `http://localhost:8080`).
 2. Install dependencies and run the frontend:
 
 ```bash
@@ -29,13 +28,10 @@ cd back
 mvn spring-boot:run
 ```
 
-WebSocket endpoints are enabled on the same port. The frontend connects to
-`/ws/transacciones/{jugadorId}` and `/ws/matchmaking/{jugadorId}` using the URL
-configured in `NEXT_PUBLIC_BACKEND_WS_URL`.
-When a match ends, a new `rematch-available` event is sent on the matchmaking
-WebSocket so players can start a rematch quickly.
-The backend now sends periodic WebSocket pings every 15 seconds and cleans up
-stale connections to prevent timeouts or reconnection loops.
+
+The backend exposes Server-Sent Event (SSE) endpoints for real-time
+notifications. When a match ends, a `rematch-available` event is sent so
+players can start a rematch quickly.
 
 Build all Java modules in one step:
 

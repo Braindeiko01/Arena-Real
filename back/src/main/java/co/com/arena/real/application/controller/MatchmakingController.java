@@ -71,8 +71,7 @@ public class MatchmakingController {
         matchDeclineService.recordDecline(request.getJugadorId(), request.getOponenteId());
         jugadorRepository.findById(request.getJugadorId()).ifPresent(declinante ->
                 jugadorRepository.findById(request.getOponenteId()).ifPresent(oponente -> {
-                    matchSseService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente);
-                    matchWsService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente);
+                        matchSseService.notifyMatchCancelled(request.getPartidaId(), declinante, oponente);
                 })
         );
         Map<String, Object> resp = new HashMap<>();
