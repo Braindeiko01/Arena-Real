@@ -11,7 +11,7 @@ export interface MatchEventData {
   chatId?: string;
   revancha?: boolean;
 }
-/*
+
 export default function useMatchmakingSse(
   playerId: string | undefined,
   onMatchFound: (data: MatchEventData) => void,
@@ -234,4 +234,3 @@ export default function useMatchmakingSse(
 
   return { reconnect };
 }
-*/

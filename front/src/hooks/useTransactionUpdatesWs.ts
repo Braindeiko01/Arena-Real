@@ -3,6 +3,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import useNotifications from '@/hooks/useNotifications';
 import { BACKEND_WS_URL } from '@/lib/config';
+
 /*
 export default function useTransactionUpdatesWs() {
   const { user, refreshUser, updateUser } = useAuth();
@@ -93,5 +94,4 @@ export default function useTransactionUpdatesWs() {
     };
   }, [user, refreshUser, updateUser, toast]);
 }
-
 */

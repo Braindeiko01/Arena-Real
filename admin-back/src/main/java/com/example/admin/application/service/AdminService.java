@@ -1,5 +1,6 @@
 package com.example.admin.application.service;
 
+import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import com.example.admin.infrastructure.dto.GameResultDto;
 import com.example.admin.infrastructure.dto.ImageDto;
 import com.example.admin.infrastructure.dto.TransactionDto;
@@ -109,7 +110,7 @@ public class AdminService {
 
             if (newStatus == EstadoTransaccion.APROBADA
                     && !EstadoTransaccion.APROBADA.equals(t.getEstado())) {
-                co.com.arena.real.infrastructure.dto.rs.TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
+                TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
                 log.info("\uD83D\uDD04 Solicitando actualizaci\u00f3n de saldo para jugador {}", resp.getJugadorId());
                 usersBackendClient.notifySaldoUpdate(resp.getJugadorId());
                 log.info("➡️ Transacción aprobada. Notificando al backend principal... Jugador ID: {}, Transacción ID: {}", resp.getJugadorId(), resp.getId());

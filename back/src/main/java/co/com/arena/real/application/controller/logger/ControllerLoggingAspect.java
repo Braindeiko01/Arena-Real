@@ -19,7 +19,7 @@ public class ControllerLoggingAspect {
         String methodName = joinPoint.getSignature().getName();
 
         // Log de entrada
-        log.info("[IN]\t{}.{} \t: {}", className, methodName, Arrays.toString(joinPoint.getArgs()));
+        log.info("[IN] \t{}.{} \t: {}", className, methodName, Arrays.toString(joinPoint.getArgs()));
 
         Object result;
         try {

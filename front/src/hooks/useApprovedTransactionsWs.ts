@@ -11,7 +11,7 @@ export interface ApprovedTransaction {
   estado: 'APROBADA';
   creadoEn: string;
 }
-
+/*
 export default function useApprovedTransactionsWs() {
   const [transactions, setTransactions] = useState<ApprovedTransaction[]>([]);
   const { user } = useAuth();
@@ -73,4 +73,4 @@ export default function useApprovedTransactionsWs() {
 
   return transactions;
 }
-
+*/

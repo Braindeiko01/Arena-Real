@@ -12,7 +12,6 @@ export interface ApprovedTransaction {
   creadoEn: string;
 }
 
-/*
 export default function useApprovedTransactionsSse() {
   const [transactions, setTransactions] = useState<ApprovedTransaction[]>([]);
   const { user } = useAuth();
@@ -67,4 +66,3 @@ export default function useApprovedTransactionsSse() {
 
   return transactions;
 }
-*/
