@@ -7,7 +7,6 @@ import { useAuth } from '@/hooks/useAuth';
 import type { Bet, BackendPartidaResponseDto } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollTextIcon, VictoryIcon, DefeatIcon, InfoIcon } from '@/components/icons/ClashRoyaleIcons';
-import { Repeat } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { getUserDuelsAction } from '@/lib/actions';
@@ -79,7 +78,6 @@ const HistoryPageContent = () => {
 
   const wonBets = bets.filter(bet => bet.result === 'win');
   const lostBets = bets.filter(bet => bet.result === 'loss');
-  const drawBets = bets.filter(bet => bet.result === 'draw');
   const pendingBets = bets.filter(bet => !bet.result);
 
   const BetCard = ({ bet }: { bet: Bet }) => {
@@ -101,8 +99,6 @@ const HistoryPageContent = () => {
                 ? 'default'
                 : bet.result === 'loss'
                 ? 'destructive'
-                : bet.result === 'draw'
-                ? 'secondary'
                 : 'secondary'
             }
             className={`capitalize ${
@@ -110,12 +106,10 @@ const HistoryPageContent = () => {
                 ? 'bg-green-500 text-white'
                 : bet.result === 'loss'
                 ? 'bg-destructive text-destructive-foreground'
-                : bet.result === 'draw'
-                ? 'bg-secondary text-secondary-foreground'
                 : 'bg-muted text-muted-foreground'
             }`}
           >
-            {bet.result === 'draw' ? 'empate' : bet.result || bet.status || 'Pendiente'}
+            {bet.result || bet.status || 'Pendiente'}
           </Badge>
         </div>
       </CardHeader>
@@ -127,7 +121,6 @@ const HistoryPageContent = () => {
           </div>
           {bet.result === 'win' && <VictoryIcon className="h-8 w-8 text-green-500" />}
           {bet.result === 'loss' && <DefeatIcon className="h-8 w-8 text-destructive" />}
-          {bet.result === 'draw' && <Repeat className="h-8 w-8 text-secondary" />}
           {!bet.result && <InfoIcon className="h-8 w-8 text-muted-foreground" />}
         </div>
       </CardContent>
@@ -150,7 +143,6 @@ const HistoryPageContent = () => {
             <TabsTrigger value="all" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-md hover:bg-primary/20">Todos ({bets.length})</TabsTrigger>
             <TabsTrigger value="ganadas" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-green-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-primary/20">Ganadas ({wonBets.length})</TabsTrigger>
             <TabsTrigger value="perdidas" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-destructive data-[state=active]:text-destructive-foreground data-[state=active]:shadow-md hover:bg-primary/20">Perdidas ({lostBets.length})</TabsTrigger>
-            <TabsTrigger value="empates" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-md hover:bg-primary/20">Empates ({drawBets.length})</TabsTrigger>
           </TabsList>
           
           <TabsContent value="all">
@@ -172,13 +164,6 @@ const HistoryPageContent = () => {
               <p className="text-center text-muted-foreground py-8">No has perdido ninguna apuesta todavía.</p>
             ) : (
               lostBets.map((bet) => <BetCard key={bet.id} bet={bet} />)
-            )}
-          </TabsContent>
-          <TabsContent value="empates">
-            {drawBets.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No tienes empates registrados.</p>
-            ) : (
-              drawBets.map((bet) => <BetCard key={bet.id} bet={bet} />)
             )}
           </TabsContent>
         </Tabs>

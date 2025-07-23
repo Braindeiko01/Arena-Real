@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PartidaResultadoRequest {
     private String jugadorId;
-    private String resultado; // VICTORIA, DERROTA o EMPATE
+    private String resultado; // VICTORIA o DERROTA
     private String captura;
 }

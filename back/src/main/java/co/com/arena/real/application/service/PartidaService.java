@@ -124,25 +124,6 @@ public class PartidaService {
             throw new IllegalArgumentException("Jugador no pertenece a la partida");
         }
 
-        boolean ambosVotaron = partida.getResultadoJugador1() != null && partida.getResultadoJugador2() != null;
-        if (ambosVotaron) {
-            if (partida.getResultadoJugador1() == ResultadoJugador.EMPATE && partida.getResultadoJugador2() == ResultadoJugador.EMPATE) {
-                partida.setValidada(false);
-                partida.setEstado(EstadoPartida.PENDIENTE);
-                partida.setGanador(null);
-                partida.setResultadoJugador1(null);
-                partida.setResultadoJugador2(null);
-                partida.setCapturaJugador1(null);
-                partida.setCapturaJugador2(null);
-                partida.setAceptadoJugador1(false);
-                partida.setAceptadoJugador2(false);
-                partida.setRevanchaCount(partida.getRevanchaCount() + 1);
-
-                Partida saved = partidaRepository.save(partida);
-                matchSseService.notifyMatchFound(saved, true);
-                return partidaMapper.toDto(saved);
-            }
-        }
         partida.setEstado(EstadoPartida.POR_APROBAR);
 
         Partida saved = partidaRepository.save(partida);
@@ -208,11 +189,7 @@ public class PartidaService {
         partida.setCapturaJugador2(null);
         partida.setAceptadoJugador1(false);
         partida.setAceptadoJugador2(false);
-        partida.setRevanchaCount(partida.getRevanchaCount() + 1);
-
         Partida saved = partidaRepository.save(partida);
-        matchSseService.notifyMatchFound(saved, true);
-
         return partidaMapper.toDto(saved);
     }
   
@@ -243,27 +220,6 @@ public class PartidaService {
         return partidaMapper.toDto(saved);
     }
 
-    @Transactional
-    public PartidaResponse forzarRevancha(UUID partidaId) {
-        Partida partida = partidaRepository.findByIdForUpdate(partidaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Partida no encontrada"));
-
-        partida.setValidada(false);
-        partida.setEstado(EstadoPartida.PENDIENTE);
-        partida.setGanador(null);
-        partida.setResultadoJugador1(null);
-        partida.setResultadoJugador2(null);
-        partida.setCapturaJugador1(null);
-        partida.setCapturaJugador2(null);
-        partida.setAceptadoJugador1(false);
-        partida.setAceptadoJugador2(false);
-        partida.setRevanchaCount(partida.getRevanchaCount() + 1);
-
-        Partida saved = partidaRepository.save(partida);
-        matchSseService.notifyMatchFound(saved, true);
-
-        return partidaMapper.toDto(saved);
-    }
 
     private void registrarReembolso(co.com.arena.real.domain.entity.Jugador jugador, java.math.BigDecimal monto) {
         if (jugador == null) {

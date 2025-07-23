@@ -23,6 +23,5 @@ public class MatchSseDto implements Serializable {
     private String jugadorOponenteTag;
     private String jugadorOponenteNombre;
     private UUID chatId;
-    private boolean revancha;
 
 }

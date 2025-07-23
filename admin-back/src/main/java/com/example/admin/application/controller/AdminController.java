@@ -67,12 +67,6 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/games/{id}/rematch")
-    public ResponseEntity<Void> forceRematch(@PathVariable UUID id) {
-        adminService.forceRematch(id);
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("/bets/{id}/state")
     public ResponseEntity<Void> changeBetState(@PathVariable UUID id,
                                                @RequestParam("state") String state) {

@@ -355,7 +355,7 @@ export async function assignMatchWinnerAction(
 export async function submitMatchResultAction(
   matchId: string,
   jugadorId: string,
-  result: 'VICTORIA' | 'DERROTA' | 'EMPATE',
+  result: 'VICTORIA' | 'DERROTA',
   screenshot?: string,
 ): Promise<{ duel: BackendPartidaResponseDto | null; error: string | null }> {
   try {

@@ -172,11 +172,6 @@ public class AdminService {
     }
 
     @Transactional
-    public void forceRematch(UUID gameId) {
-        partidaService.forzarRevancha(gameId);
-    }
-
-    @Transactional
     public void changeBetState(UUID betId, String state) {
         apuestaRepository.findById(betId).ifPresent(a -> {
             a.setEstado(EstadoApuesta.valueOf(state));

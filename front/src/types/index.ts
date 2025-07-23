@@ -150,7 +150,7 @@ export type RegisterWithGoogleData = {
 
 
 export type MatchStatus = 'pending' | 'active' | 'completed' | 'cancelled';
-export type MatchResult = 'win' | 'loss' | 'draw';
+export type MatchResult = 'win' | 'loss';
 
 export interface Bet {
   id: string; // ID de la apuesta (del backend, UUID)
