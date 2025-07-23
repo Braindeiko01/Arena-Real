@@ -96,6 +96,23 @@ public class SseService {
         }
     }
 
+    public void notificarSaldoActualizado(String jugadorId, java.math.BigDecimal saldo) {
+        EmitterWrapper wrapper = emitters.get(jugadorId);
+        if (wrapper == null) {
+            return;
+        }
+
+        try {
+            wrapper.emitter.send(SseEmitter.event()
+                    .name("saldo-actualizar")
+                    .data(saldo));
+            wrapper.lastAccess = System.currentTimeMillis();
+        } catch (IOException e) {
+            removeEmitter(jugadorId);
+            wrapper.emitter.completeWithError(e);
+        }
+    }
+
     public void sendEvent(String jugadorId, String eventName, Object data) {
         EmitterWrapper wrapper = emitters.get(jugadorId);
         if (wrapper == null) {

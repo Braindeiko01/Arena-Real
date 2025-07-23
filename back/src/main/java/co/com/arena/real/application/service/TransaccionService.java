@@ -1,6 +1,7 @@
 package co.com.arena.real.application.service;
 
 import co.com.arena.real.application.events.TransaccionAprobadaEvent;
+import co.com.arena.real.application.events.SaldoActualizadoEvent;
 import co.com.arena.real.domain.entity.EstadoTransaccion;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.Transaccion;
@@ -79,6 +80,7 @@ public class TransaccionService {
             }
         }
 
-        jugadorRepository.save(jugador);
+        Jugador updated = jugadorRepository.save(jugador);
+        eventPublisher.publishEvent(new SaldoActualizadoEvent(updated.getId(), updated.getSaldo()));
     }
 }

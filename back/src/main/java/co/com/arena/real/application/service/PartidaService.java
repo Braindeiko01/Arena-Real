@@ -27,6 +27,7 @@ import co.com.arena.real.application.service.MatchProposalService;
 import co.com.arena.real.application.service.MatchService;
 import co.com.arena.real.application.service.MatchSseService;
 import co.com.arena.real.application.events.PartidaValidadaEvent;
+import co.com.arena.real.application.events.SaldoActualizadoEvent;
 import co.com.arena.real.application.service.ReferralRewardService;
 import org.springframework.context.ApplicationEventPublisher;
 import lombok.RequiredArgsConstructor;
@@ -169,7 +170,8 @@ public class PartidaService {
 
             jugadorRepository.findById(partida.getGanador().getId()).ifPresent(u -> {
                 u.setSaldo(u.getSaldo().add(premio.getMonto()));
-                jugadorRepository.save(u);
+                co.com.arena.real.domain.entity.Jugador savedUser = jugadorRepository.save(u);
+                eventPublisher.publishEvent(new SaldoActualizadoEvent(savedUser.getId(), savedUser.getSaldo()));
             });
 
             chatService.cerrarChat(partida.getChatId());
@@ -235,7 +237,8 @@ public class PartidaService {
 
         jugadorRepository.findById(jugador.getId()).ifPresent(u -> {
             u.setSaldo(u.getSaldo().add(monto));
-            jugadorRepository.save(u);
+            co.com.arena.real.domain.entity.Jugador savedUser = jugadorRepository.save(u);
+            eventPublisher.publishEvent(new SaldoActualizadoEvent(savedUser.getId(), savedUser.getSaldo()));
         });
     }
 
