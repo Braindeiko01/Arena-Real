@@ -128,7 +128,7 @@ public class MatchSseService {
         sendRematchAvailable(partida.getJugador2Id(), partida);
     }
 
-    private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, Jugador oponente) {
+    private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, Jugador oponente, Boolean revancha) {
         String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
         String nombre = oponente.getNombre() != null ? oponente.getNombre() : tag;
         MatchSseDto dto = MatchSseDto.builder()
