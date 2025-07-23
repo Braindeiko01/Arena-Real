@@ -30,4 +30,4 @@ admin:
   secret:
     token: ${ADMIN_SECRET_TOKEN}
 firebase:
-  enabled: true
+  enabled: false

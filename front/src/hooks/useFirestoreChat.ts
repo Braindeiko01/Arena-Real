@@ -31,12 +31,18 @@ export default function useFirestoreChat(chatId: string | undefined) {
         const msgs: ChatMessage[] = [];
         snapshot.forEach(doc => {
           const data = doc.data();
+          let timestamp: string;
+          if (data.timestamp && typeof (data.timestamp.toDate) === 'function') {
+            timestamp = data.timestamp.toDate().toISOString();
+          } else {
+            timestamp = new Date().toISOString();
+          }
           msgs.push({
             id: doc.id,
             matchId: chatId,
             senderId: data.senderId,
             text: data.text,
-            timestamp: data.timestamp.toDate().toISOString(),
+            timestamp,
             isSystemMessage: data.isSystemMessage || false,
           });
         });

@@ -138,13 +138,13 @@ export default function RegisterPage() {
     }
     setIsLoading(true);
 
-    const fullRegistrationData: RegisterWithGoogleData = {
-      googleId: googleAuthData.googleId,
-      email: googleAuthData.email,
-      username: profileData.username,
-      avatarUrl: googleAuthData.avatarUrl,
-      phone: profileData.phone,
-      friendLink: profileData.friendLink,
+      const fullRegistrationData: RegisterWithGoogleData = {
+        googleId: googleAuthData.googleId,
+        email: googleAuthData.email || '',
+        username: profileData.username,
+        avatarUrl: googleAuthData.avatarUrl,
+        phone: profileData.phone,
+        friendLink: profileData.friendLink,
       referralCode: profileData.referralCode || undefined,
     };
 
