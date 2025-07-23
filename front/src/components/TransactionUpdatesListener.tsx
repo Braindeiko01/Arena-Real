@@ -1,8 +1,8 @@
 "use client";
 
-import useTransactionWs from '@/hooks/useTransactionWs';
+import useTransactionUpdates from '@/hooks/useTransactionUpdates';
 
 export default function TransactionUpdatesListener() {
-  useTransactionWs();
+  useTransactionUpdates();
   return null;
 }

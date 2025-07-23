@@ -14,7 +14,7 @@ import { SaldoIcon, FindMatchIcon } from '@/components/icons/ClashRoyaleIcons';
 import { useToast } from "@/hooks/use-toast";
 import { Coins, UploadCloud, Swords, Layers, Banknote, Loader2 } from 'lucide-react';
 import { requestTransactionAction, matchmakingAction, cancelMatchmakingAction, declineMatchAction, acceptMatchAction } from '@/lib/actions';
-import useMatchmakingWs, { MatchEventData } from '@/hooks/useMatchmakingWs';
+import useMatchmakingSse, { MatchEventData } from '@/hooks/useMatchmakingSse';
 import { setLocalStorageItem } from '@/lib/storage';
 import { ACTIVE_CHAT_KEY } from '@/hooks/useActiveChat';
 
@@ -95,7 +95,7 @@ const HomePageContent = () => {
     refreshUser();
   };
 
-  useMatchmakingWs(
+  useMatchmakingSse(
     user?.id,
     handleMatchFound,
     handleChatReady,
