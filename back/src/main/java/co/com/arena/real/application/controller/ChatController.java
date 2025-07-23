@@ -3,6 +3,7 @@ package co.com.arena.real.application.controller;
 import co.com.arena.real.application.service.ChatService;
 import co.com.arena.real.application.service.PartidaService;
 import co.com.arena.real.infrastructure.dto.rq.ShareLinkRequest;
+import co.com.arena.real.infrastructure.dto.rq.ResultMessageRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,13 @@ public class ChatController {
     public ResponseEntity<Void> shareLink(@PathVariable UUID chatId,
                                           @RequestBody ShareLinkRequest request) {
         chatService.compartirLink(chatId, request.getText());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{chatId}/result-message")
+    public ResponseEntity<Void> resultMessage(@PathVariable UUID chatId,
+                                              @RequestBody ResultMessageRequest request) {
+        chatService.enviarMensajeResultado(chatId, request.getText());
         return ResponseEntity.ok().build();
     }
 }

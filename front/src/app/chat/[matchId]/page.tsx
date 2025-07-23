@@ -357,7 +357,11 @@ const ChatPageContent = () => {
       timestamp: new Date().toISOString(),
       isSystemMessage: true,
     };
-    sendMessageSafely(resultSystemMessage);
+    fetch(`${BACKEND_URL}/api/chats/${encodeURIComponent(validChatId)}/result-message`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: resultMessageText })
+    }).catch(err => console.error('Error enviando mensaje de resultado', err));
   };
 
 

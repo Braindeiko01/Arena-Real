@@ -117,6 +117,10 @@ public class ChatService {
     public void compartirLink(UUID chatId, String text) {
         enviarMensajeSistema(chatId, text);
     }
+
+    public void enviarMensajeResultado(UUID chatId, String text) {
+        enviarMensajeSistema(chatId, text);
+    }
 }
 
 
