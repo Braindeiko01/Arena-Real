@@ -147,6 +147,7 @@ public class AdminService {
                     dto.setMonto(p.getMonto());
                     dto.setWinnerId(p.getGanador() != null ? UUID.fromString(p.getGanador().getId()) : null);
                     dto.setDistributed(p.isValidada());
+                    dto.setRevanchaCount(p.getRevanchaCount());
                     return dto;
                 })
                 .toList();
@@ -167,6 +168,11 @@ public class AdminService {
             chatService.cerrarChat(partida.getChatId());
             partidaRepository.save(partida);
         });
+    }
+
+    @Transactional
+    public void forceRematch(UUID gameId) {
+        partidaService.forzarRevancha(gameId);
     }
 
     @Transactional

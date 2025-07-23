@@ -12,12 +12,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
+import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud, Repeat } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import useFirestoreChat from '@/hooks/useFirestoreChat';
 import { BACKEND_URL } from '@/lib/config';
 import type { ChatMessage, User } from '@/types';
 import { submitMatchResultAction, fetchMatchIdByChat } from '@/lib/actions';
+import useMatchmakingSse from '@/hooks/useMatchmakingSse';
 
 import { Label } from '@/components/ui/label';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
@@ -109,6 +110,19 @@ const ChatPageContent = () => {
   const [partidaId, setPartidaId] = useState<string | null>(initialPartidaId);
   const [opponentProfile, setOpponentProfile] = useState<User | null>(null);
   const opponentDisplayName = opponentProfile?.username || validOpponentTag;
+  useMatchmakingSse(
+    user?.id,
+    () => {},
+    () => {},
+    undefined,
+    undefined,
+    undefined,
+    (data) => {
+      if (data.partidaId === partidaId) {
+        setOpponentVoted(true);
+      }
+    }
+  );
   const sendMessageSafely = (msg: Omit<ChatMessage, 'id'>) => {
     if (!chatActive) {
       console.warn('Chat inactivo. No se pueden enviar mensajes.');
@@ -124,6 +138,7 @@ const ChatPageContent = () => {
   const [isSubmittingResult, setIsSubmittingResult] = useState(false);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [resultSubmitted, setResultSubmitted] = useState(false);
+  const [opponentVoted, setOpponentVoted] = useState(false);
 
   const startMessageSentRef = useRef(false);
 
@@ -138,6 +153,22 @@ const ChatPageContent = () => {
   };
 
   useEffect(scrollToBottom, [messages]);
+
+  useEffect(() => {
+    const checkVote = async () => {
+      if (!chatId || !user?.id) return;
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/partidas/chat/${encodeURIComponent(chatId)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const opponentResult = data.jugador1Id === user.id ? data.resultadoJugador2 : data.resultadoJugador1;
+        setOpponentVoted(!!opponentResult);
+      } catch {
+        /* ignore */
+      }
+    };
+    checkVote();
+  }, [chatId, user?.id, messages.length]);
 
   useEffect(() => {
     const fetchPartida = async () => {
@@ -274,7 +305,7 @@ const ChatPageContent = () => {
     toast({ title: "Link de Amigo Compartido", description: `Tu link de amigo ${user.friendLink ? '' : '(o un aviso de que no lo tienes) '}ha sido publicado en el chat.` });
   };
 
-  const handleResultSubmission = async (result: 'win' | 'loss') => {
+  const handleResultSubmission = async (result: 'win' | 'loss' | 'draw') => {
     if (!user || !user.id || resultSubmitted) {
       toast({ title: 'Error', description: 'No se puede enviar el resultado sin identificación de usuario.', variant: 'destructive' })
       return
@@ -302,7 +333,7 @@ const ChatPageContent = () => {
     const response = await submitMatchResultAction(
       validPartidaId,
       user.id,
-      result === 'win' ? 'VICTORIA' : 'DERROTA',
+      result === 'win' ? 'VICTORIA' : result === 'loss' ? 'DERROTA' : 'EMPATE',
       screenshotBase64,
     )
 
@@ -313,7 +344,9 @@ const ChatPageContent = () => {
     
     toast({
       title: "¡Resultado Enviado!",
-      description: `Reportaste una ${result === 'win' ? 'victoria' : 'derrota'}. ${screenshotFile ? 'Comprobante adjuntado.' : 'Sin comprobante.'} Esperando al oponente si es necesario, o verificación del administrador.`,
+      description: `Reportaste ${
+        result === 'win' ? 'una victoria' : result === 'loss' ? 'una derrota' : 'un empate'
+      }. ${screenshotFile ? 'Comprobante adjuntado.' : 'Sin comprobante.'} Esperando al oponente si es necesario, o verificación del administrador.`,
       variant: "default",
     });
     
@@ -322,7 +355,9 @@ const ChatPageContent = () => {
     setScreenshotFile(null);
     
      const userDisplayName = user.clashTag || user.username;
-     const resultMessageText = `${userDisplayName} envió el resultado del duelo como ${result === 'win' ? 'VICTORIA' : 'DERROTA'}. ${screenshotFile ? 'Captura de pantalla proporcionada.' : 'No se proporcionó captura.'}`;
+     const resultMessageText = `${userDisplayName} envió el resultado del duelo como ${
+       result === 'win' ? 'VICTORIA' : result === 'loss' ? 'DERROTA' : 'EMPATE'
+     }. ${screenshotFile ? 'Captura de pantalla proporcionada.' : 'No se proporcionó captura.'}`;
     const resultSystemMessage = {
       matchId: validChatId, // ID del chat (UUID)
       senderId: 'system',
@@ -364,6 +399,9 @@ const ChatPageContent = () => {
             {resultSubmitted ? 'Resultado Enviado' : 'Enviar Resultado'}
           </CartoonButton>
         </CardHeader>
+        {!resultSubmitted && opponentVoted && (
+          <p className="text-center text-sm text-yellow-500 py-1">Tu oponente ya envió su resultado.</p>
+        )}
         {!chatActive && (
           <p className="text-center text-sm text-muted-foreground py-2">Chat finalizado. No puedes enviar nuevos mensajes.</p>
         )}
@@ -443,6 +481,15 @@ const ChatPageContent = () => {
                   disabled={!chatActive}
                 >
                   Gané
+                </CartoonButton>
+                <CartoonButton
+                  variant="secondary"
+                  onClick={() => handleResultSubmission('draw')}
+                  className="flex-1"
+                  disabled={!chatActive}
+                  iconLeft={<Repeat />}
+                >
+                  Empate
                 </CartoonButton>
                 <CartoonButton
                   variant="destructive"
