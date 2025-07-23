@@ -2,13 +2,10 @@ package co.com.arena.real.application.controller;
 
 import co.com.arena.real.application.service.ChatService;
 import co.com.arena.real.application.service.PartidaService;
+import co.com.arena.real.infrastructure.dto.rq.ShareLinkRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.UUID;
@@ -35,4 +32,16 @@ public class ChatController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/{chatId}/start-message")
+    public ResponseEntity<Void> startMessage(@PathVariable UUID chatId) {
+        chatService.enviarMensajeInicio(chatId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{chatId}/share-link")
+    public ResponseEntity<Void> shareLink(@PathVariable UUID chatId,
+                                          @RequestBody ShareLinkRequest request) {
+        chatService.compartirLink(chatId, request.getText());
+        return ResponseEntity.ok().build();
+    }
 }
