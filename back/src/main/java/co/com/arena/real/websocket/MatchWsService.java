@@ -8,12 +8,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -204,6 +207,33 @@ public class MatchWsService {
                 .build();
         latestEvents.put(receptorId, new LatestEvent("rematch-available", dto));
         sendEvent(receptorId, "rematch-available", dto);
+    }
+
+    @Scheduled(fixedRate = 15000)
+    public void sendHeartbeats() {
+        sessions.forEach((id, wrapper) -> {
+            try {
+                if (wrapper.session.isOpen()) {
+                    wrapper.session.sendMessage(new PingMessage(ByteBuffer.allocate(0)));
+                    wrapper.lastAccess = System.currentTimeMillis();
+                }
+            } catch (IOException e) {
+                sessions.remove(id);
+                try { wrapper.session.close(CloseStatus.SERVER_ERROR); } catch (IOException ignored) {}
+            }
+        });
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void limpiarSesiones() {
+        long now = System.currentTimeMillis();
+        long ttl = 5 * 60 * 1000L;
+        sessions.forEach((id, wrapper) -> {
+            if (!wrapper.session.isOpen() || now - wrapper.lastAccess > ttl) {
+                sessions.remove(id);
+                try { wrapper.session.close(CloseStatus.GOING_AWAY); } catch (IOException ignored) {}
+            }
+        });
     }
 }
 
