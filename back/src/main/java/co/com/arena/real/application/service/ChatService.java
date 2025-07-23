@@ -88,6 +88,35 @@ public class ChatService {
             log.warn("Firestore no configurado, se omite el cierre del chat en Firestore");
         }
     }
+
+    private void enviarMensajeSistema(UUID chatId, String text) {
+        if (firestore == null) {
+            log.warn("Firestore no configurado, se omite el envío del mensaje de sistema");
+            return;
+        }
+        try {
+            java.util.Map<String, Object> msg = new java.util.HashMap<>();
+            msg.put("senderId", "system");
+            msg.put("text", text);
+            msg.put("timestamp", com.google.cloud.Timestamp.now());
+            msg.put("isSystemMessage", true);
+
+            firestore.collection("chats")
+                    .document(chatId.toString())
+                    .collection("messages")
+                    .add(msg);
+        } catch (Exception e) {
+            log.error("Error al enviar mensaje de sistema", e);
+        }
+    }
+
+    public void enviarMensajeInicio(UUID chatId) {
+        enviarMensajeSistema(chatId, "Partida iniciada");
+    }
+
+    public void compartirLink(UUID chatId, String text) {
+        enviarMensajeSistema(chatId, text);
+    }
 }
 
 
