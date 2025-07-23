@@ -77,24 +77,16 @@ public class MatchSseService {
         }
     }
 
-    public void notifyMatchFound(UUID apuestaId, UUID partidaId, UUID chatId, Jugador jugador1, Jugador jugador2, boolean revancha) {
-        sendMatchFound(jugador1.getId(), apuestaId, partidaId, chatId, jugador2, revancha);
-        sendMatchFound(jugador2.getId(), apuestaId, partidaId, chatId, jugador1, revancha);
-    }
-
     public void notifyMatchFound(UUID apuestaId, UUID partidaId, UUID chatId, Jugador jugador1, Jugador jugador2) {
-        notifyMatchFound(apuestaId, partidaId, chatId, jugador1, jugador2, false);
+        sendMatchFound(jugador1.getId(), apuestaId, partidaId, chatId, jugador2);
+        sendMatchFound(jugador2.getId(), apuestaId, partidaId, chatId, jugador1);
     }
 
     public void notifyMatchFound(Partida partida) {
-        notifyMatchFound(partida, false);
-    }
-
-    public void notifyMatchFound(Partida partida, boolean revancha) {
         UUID apuestaId = partida.getApuesta() != null ? partida.getApuesta().getId() : null;
         UUID partidaId = partida.getId();
         UUID chatId = partida.getChatId();
-        notifyMatchFound(apuestaId, partidaId, chatId, partida.getJugador1(), partida.getJugador2(), revancha);
+        notifyMatchFound(apuestaId, partidaId, chatId, partida.getJugador1(), partida.getJugador2());
     }
 
     public void notifyChatReady(Partida partida) {
@@ -124,7 +116,7 @@ public class MatchSseService {
         sendMatchValidated(partida.getJugador2Id(), partida);
     }
 
-    private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, UUID chatId, Jugador oponente, boolean revancha) {
+    private void sendMatchFound(String receptorId, UUID apuestaId, UUID partidaId, UUID chatId, Jugador oponente) {
         String tag = oponente.getTagClash() != null ? oponente.getTagClash() : oponente.getNombre();
         String nombre = oponente.getNombre() != null ? oponente.getNombre() : tag;
         MatchSseDto dto = MatchSseDto.builder()
@@ -133,7 +125,6 @@ public class MatchSseService {
                 .jugadorOponenteId(oponente.getId())
                 .jugadorOponenteTag(tag)
                 .jugadorOponenteNombre(nombre)
-                .revancha(revancha)
                 .build();
         latestEvents.put(receptorId, new LatestEvent("match-found", dto));
 
@@ -295,31 +286,6 @@ public class MatchSseService {
         }
     }
 
-    private void sendRematchAvailable(String receptorId, co.com.arena.real.infrastructure.dto.rs.PartidaResponse partida) {
-        if (receptorId == null) {
-            return;
-        }
-        MatchSseDto dto = MatchSseDto.builder()
-                .apuestaId(partida.getApuestaId())
-                .partidaId(partida.getId())
-                .build();
-        latestEvents.put(receptorId, new LatestEvent("rematch-available", dto));
-
-        EmitterWrapper wrapper = emitters.get(receptorId);
-        if (wrapper == null) {
-            return;
-        }
-        try {
-            wrapper.emitter.send(SseEmitter.event()
-                    .name("rematch-available")
-                    .data(dto));
-            wrapper.lastAccess = System.currentTimeMillis();
-            latestEvents.remove(receptorId);
-        } catch (IOException e) {
-            removeEmitter(receptorId);
-            wrapper.emitter.completeWithError(e);
-        }
-    }
 
     private void sendMatch(String receptorId, Partida partida) {
         EmitterWrapper wrapper = emitters.get(receptorId);

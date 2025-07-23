@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud, Repeat } from 'lucide-react';
+import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import useFirestoreChat from '@/hooks/useFirestoreChat';
 import { BACKEND_URL } from '@/lib/config';
@@ -297,7 +297,7 @@ const ChatPageContent = () => {
     toast({ title: "Link de Amigo Compartido", description: `Tu link de amigo ${user.friendLink ? '' : '(o un aviso de que no lo tienes) '}ha sido publicado en el chat.` });
   };
 
-  const handleResultSubmission = async (result: 'win' | 'loss' | 'draw') => {
+  const handleResultSubmission = async (result: 'win' | 'loss') => {
     if (!user || !user.id || resultSubmitted) {
       toast({ title: 'Error', description: 'No se puede enviar el resultado sin identificación de usuario.', variant: 'destructive' })
       return
@@ -325,7 +325,7 @@ const ChatPageContent = () => {
     const response = await submitMatchResultAction(
       validPartidaId,
       user.id,
-      result === 'win' ? 'VICTORIA' : result === 'loss' ? 'DERROTA' : 'EMPATE',
+      result === 'win' ? 'VICTORIA' : 'DERROTA',
       screenshotBase64,
     )
 
@@ -337,7 +337,7 @@ const ChatPageContent = () => {
     toast({
       title: "¡Resultado Enviado!",
       description: `Reportaste ${
-        result === 'win' ? 'una victoria' : result === 'loss' ? 'una derrota' : 'un empate'
+        result === 'win' ? 'una victoria' : 'una derrota'
       }. ${screenshotFile ? 'Comprobante adjuntado.' : 'Sin comprobante.'} Esperando al oponente si es necesario, o verificación del administrador.`,
       variant: "default",
     });
@@ -348,7 +348,7 @@ const ChatPageContent = () => {
     
      const userDisplayName = user.clashTag || user.username;
      const resultMessageText = `${userDisplayName} envió el resultado del duelo como ${
-       result === 'win' ? 'VICTORIA' : result === 'loss' ? 'DERROTA' : 'EMPATE'
+       result === 'win' ? 'VICTORIA' : 'DERROTA'
      }. ${screenshotFile ? 'Captura de pantalla proporcionada.' : 'No se proporcionó captura.'}`;
     const resultSystemMessage = {
       matchId: validChatId, // ID del chat (UUID)
@@ -473,15 +473,6 @@ const ChatPageContent = () => {
                   disabled={!chatActive}
                 >
                   Gané
-                </CartoonButton>
-                <CartoonButton
-                  variant="secondary"
-                  onClick={() => handleResultSubmission('draw')}
-                  className="flex-1"
-                  disabled={!chatActive}
-                  iconLeft={<Repeat />}
-                >
-                  Empate
                 </CartoonButton>
                 <CartoonButton
                   variant="destructive"

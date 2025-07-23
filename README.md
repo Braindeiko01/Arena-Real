@@ -30,8 +30,7 @@ mvn spring-boot:run
 
 
 The backend exposes Server-Sent Event (SSE) endpoints for real-time
-notifications. When a match ends, a `rematch-available` event is sent so
-players can start a rematch quickly.
+notifications.
 
 Build all Java modules in one step:
 

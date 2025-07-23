@@ -9,7 +9,6 @@ export interface MatchEventData {
   jugadorOponenteTag: string;
   jugadorOponenteNombre: string;
   chatId?: string;
-  revancha?: boolean;
 }
 
 export default function useMatchmakingSse(
