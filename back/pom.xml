@@ -73,10 +73,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
 
         <!-- JPA sin log4j-to-slf4j ni spring-boot-starter-logging -->
         <dependency>
