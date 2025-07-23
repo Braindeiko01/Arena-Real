@@ -76,9 +76,7 @@ public class MatchmakingService {
             cancelarSolicitudes(jugadorEncontrado);
 
             MatchProposal proposal = crearPropuesta(partidaEnEspera, partidaEncontrada);
-
-            matchSseService.notifyMatchFound(null, proposal.getId(), jugadorEnEspera, jugadorEncontrado);
-            matchWsService.notifyMatchFound(null, proposal.getId(), jugadorEnEspera, jugadorEncontrado);
+            matchSseService.notifyMatchFound(null, proposal.getId(), null, jugadorEnEspera, jugadorEncontrado);
 
             return proposal;
         });
