@@ -17,6 +17,7 @@ interface GameResult {
   monto?: number
   winnerId?: string | null
   distributed: boolean
+  revanchaCount?: number
 }
 
 export default function MatchTable() {
@@ -79,6 +80,7 @@ export default function MatchTable() {
             <th className="border px-2 py-1">Jugador B</th>
             <th className="border px-2 py-1">Captura B</th>
             <th className="border px-2 py-1">Resultado B</th>
+            <th className="border px-2 py-1">Revancha</th>
             <th className="border px-2 py-1">Apuesta</th>
             <th className="border px-2 py-1">Ganador</th>
             <th className="border px-2 py-1">Estado</th>
@@ -130,6 +132,7 @@ export default function MatchTable() {
                 )}
               </td>
               <td className="border px-2 py-1">{r.resultadoB || '-'}</td>
+              <td className="border px-2 py-1">{r.revanchaCount ?? 0}</td>
               <td className="border px-2 py-1">
                 {r.monto !== undefined ? `$${r.monto}` : '-'}
               </td>
