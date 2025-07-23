@@ -170,14 +170,11 @@ public class PartidaService {
             premio.setEstado(EstadoTransaccion.APROBADA);
             premio.setCreadoEn(LocalDateTime.now());
             Transaccion savedPremio = transaccionRepository.save(premio);
-
-            java.math.BigDecimal nuevoSaldo = null;
-            co.com.arena.real.domain.entity.Jugador ganador = jugadorRepository.findById(partida.getGanador().getId()).orElse(null);
-            if (ganador != null) {
-                ganador.setSaldo(ganador.getSaldo().add(savedPremio.getMonto()));
-                ganador = jugadorRepository.save(ganador);
-                nuevoSaldo = ganador.getSaldo();
-            }
+            co.com.arena.real.domain.entity.Jugador ganador = jugadorRepository.findById(partida.getGanador().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
+            ganador.setSaldo(ganador.getSaldo().add(savedPremio.getMonto()));
+            ganador = jugadorRepository.save(ganador);
+            java.math.BigDecimal nuevoSaldo = ganador.getSaldo();
 
             TransaccionResponse premioDto = transaccionMapper.toDto(savedPremio);
             eventPublisher.publishEvent(new TransaccionAprobadaEvent(premioDto));
