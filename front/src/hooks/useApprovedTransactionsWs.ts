@@ -48,7 +48,9 @@ export default function useApprovedTransactionsWs() {
 
       ws.onmessage = handleMessage;
       ws.onclose = () => {
-        reconnectTimeoutRef.current = setTimeout(connect, 3000);
+        if (socketRef.current === ws) {
+          reconnectTimeoutRef.current = setTimeout(connect, 3000);
+        }
       };
       ws.onerror = (err) => {
         console.error('WS error:', err);
@@ -60,9 +62,11 @@ export default function useApprovedTransactionsWs() {
     return () => {
       if (socketRef.current) {
         socketRef.current.close();
+        socketRef.current = null;
       }
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
       }
     };
   }, [user]);
