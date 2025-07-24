@@ -28,8 +28,8 @@ import co.com.arena.real.application.service.MatchService;
 import co.com.arena.real.application.service.MatchSseService;
 import co.com.arena.real.application.events.PartidaValidadaEvent;
 import co.com.arena.real.application.events.TransaccionAprobadaEvent;
-import co.com.arena.real.application.events.SaldoActualizadoEvent;
 import co.com.arena.real.application.service.ReferralRewardService;
+import co.com.arena.real.application.service.SaldoService;
 import co.com.arena.real.infrastructure.mapper.TransaccionMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +60,7 @@ public class PartidaService {
     private final MatchSseService matchSseService;
     private final ApplicationEventPublisher eventPublisher;
     private final ReferralRewardService referralRewardService;
+    private final SaldoService saldoService;
     private final TransaccionMapper transaccionMapper;
 
     private static final Logger log = LoggerFactory.getLogger(PartidaService.class);
@@ -173,14 +174,10 @@ public class PartidaService {
 
             Transaccion savedPremio = transaccionRepository.save(premio);
 
-            co.com.arena.real.domain.entity.Jugador ganador = jugadorRepository.findById(partida.getGanador().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
-            ganador.setSaldo(ganador.getSaldo().add(savedPremio.getMonto()));
-            ganador = jugadorRepository.save(ganador);
+            saldoService.acreditarSaldo(partida.getGanador().getId(), savedPremio.getMonto());
 
             TransaccionResponse premioDto = transaccionMapper.toDto(savedPremio);
             eventPublisher.publishEvent(new TransaccionAprobadaEvent(premioDto));
-            eventPublisher.publishEvent(new SaldoActualizadoEvent(premioDto.getJugadorId(), ganador.getSaldo()));
 
             chatService.cerrarChat(partida.getChatId());
 
@@ -243,10 +240,7 @@ public class PartidaService {
         reembolso.setCreadoEn(LocalDateTime.now());
         transaccionRepository.save(reembolso);
 
-        jugadorRepository.findById(jugador.getId()).ifPresent(u -> {
-            u.setSaldo(u.getSaldo().add(monto));
-            jugadorRepository.save(u);
-        });
+        saldoService.acreditarSaldo(jugador.getId(), monto);
     }
 
 }
