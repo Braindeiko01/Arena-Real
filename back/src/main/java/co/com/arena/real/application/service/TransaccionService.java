@@ -2,6 +2,7 @@ package co.com.arena.real.application.service;
 
 import co.com.arena.real.application.events.TransaccionAprobadaEvent;
 import co.com.arena.real.domain.entity.EstadoTransaccion;
+import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.Transaccion;
 import co.com.arena.real.infrastructure.dto.rq.TransaccionRequest;
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
