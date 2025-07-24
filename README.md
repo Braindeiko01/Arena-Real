@@ -172,8 +172,8 @@ When an admin marks a transaction as **ENTREGADA** in the admin console:
 
 1. `AdminService` calls `TransaccionService.aprobarTransaccion` in the admin backend.
 2. The admin backend sends two requests to the main backend:
-   - `/api/actualizar-saldo` triggers a balance refresh and sends SSE events.
-   - `/api/internal/notify-transaction-approved` emits a `transaccion-aprobada` event over SSE.
+   - The backend now emits a `saldo-actualizar` SSE event automatically whenever a player's balance changes.
+   - `/api/internal/notify-transaction-approved` emits both `transaccion-aprobada` and `saldo-actualizar` SSE events.
 3. The user client now uses `useTransactionUpdates` to receive these notifications in real time.
    If the connection was lost, the hook refreshes data when the page becomes visible or after reconnecting.
 
