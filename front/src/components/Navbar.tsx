@@ -26,6 +26,7 @@ import ActiveLink from './ActiveLink';
 // Simple auth hook to access user data
 import { useAuth } from '@/hooks/useAuth';
 import useActiveChat from '@/hooks/useActiveChat';
+import useNotifications from '@/hooks/useNotifications';
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -41,8 +42,7 @@ const Navbar = () => {
     { href: '/referrals', label: 'Referidos', icon: Users },
   ];
 
-  // TODO: replace with real notification count
-  const notifications = 0;
+  const { unreadCount } = useNotifications();
 
   return (
     <header className="bg-gradient-to-r from-blue-500 via-blue-700 to-blue-900 text-white shadow-md animate-gradient-x">
@@ -80,9 +80,9 @@ const Navbar = () => {
           <div className="hidden items-center gap-4 md:flex">
             <button className="relative rounded-full p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
               <Bell className="h-6 w-6" />
-              {notifications > 0 && (
+              {unreadCount > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs">
-                  {notifications}
+                  {unreadCount}
                 </span>
               )}
             </button>
@@ -126,9 +126,9 @@ const Navbar = () => {
               <div className="flex items-center gap-3 pt-2">
                 <button className="relative rounded-full p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
                   <Bell className="h-6 w-6" />
-                  {notifications > 0 && (
+                  {unreadCount > 0 && (
                     <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs">
-                      {notifications}
+                      {unreadCount}
                     </span>
                   )}
                 </button>
