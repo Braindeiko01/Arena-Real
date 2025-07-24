@@ -92,7 +92,6 @@ public class AdminService {
     public void approveTransaction(UUID id) {
         co.com.arena.real.infrastructure.dto.rs.TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
         log.info("\uD83D\uDD04 Solicitando actualizaci\u00f3n de saldo para jugador {}", resp.getJugadorId());
-        usersBackendClient.notifySaldoUpdate(resp.getJugadorId());
         usersBackendClient.notifyTransactionApproved(resp);
     }
 
@@ -112,7 +111,6 @@ public class AdminService {
                     && !EstadoTransaccion.APROBADA.equals(t.getEstado())) {
                 TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
                 log.info("\uD83D\uDD04 Solicitando actualizaci\u00f3n de saldo para jugador {}", resp.getJugadorId());
-                usersBackendClient.notifySaldoUpdate(resp.getJugadorId());
                 log.info("➡️ Transacción aprobada. Notificando al backend principal... Jugador ID: {}, Transacción ID: {}", resp.getJugadorId(), resp.getId());
                 usersBackendClient.notifyTransactionApproved(resp);
                 return;
