@@ -40,4 +40,20 @@ public class AdminNotificationController {
                 .ifPresent(saldo -> sseService.sendEvent(dto.getJugadorId(), "saldo-actualizar", saldo));
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/notify-prize-distributed")
+    public ResponseEntity<Void> notifyPrizeDistributed(
+            @RequestHeader(value = "X-Admin-Secret", required = false) String secret,
+            @RequestBody TransaccionResponse dto) {
+        if (adminToken == null || !adminToken.equals(secret)) {
+            log.warn("\uD83D\uDD12 Token admin inválido recibido en notificación de premio.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        log.info("\uD83C\uDFC6 Backend recibió notificación de premio. Transacción ID: {}, Jugador ID: {}",
+                dto.getId(), dto.getJugadorId());
+        sseService.notificarTransaccionAprobada(dto);
+        jugadorService.obtenerSaldo(dto.getJugadorId())
+                .ifPresent(saldo -> sseService.sendEvent(dto.getJugadorId(), "saldo-actualizar", saldo));
+        return ResponseEntity.ok().build();
+    }
 }

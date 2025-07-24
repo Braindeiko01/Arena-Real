@@ -43,4 +43,23 @@ public class UsersBackendClient {
             log.error("\u274C Error al enviar notificación al backend principal", e);
         }
     }
+
+    public void notifyPrizeDistributed(TransaccionResponse dto) {
+        String url = backendUrl + "/api/internal/notify-prize-distributed";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Admin-Secret", backendToken);
+        HttpEntity<TransaccionResponse> entity = new HttpEntity<>(dto, headers);
+
+        try {
+            retryTemplate.execute(ctx -> {
+                log.info("\uD83D\uDCE4 Enviando notificación de premio al backend: {} -> {}", dto.getId(), url);
+                restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+                log.info("\u2705 Notificación de premio enviada correctamente para transacción {}", dto.getId());
+                return null;
+            });
+        } catch (Exception e) {
+            log.error("\u274C Error al enviar notificación de premio al backend principal", e);
+        }
+    }
 }
