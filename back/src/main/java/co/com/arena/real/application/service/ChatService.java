@@ -1,7 +1,13 @@
 package co.com.arena.real.application.service;
+import java.util.Map;
+import java.util.HashMap;
+
+import com.google.cloud.Timestamp;
+import com.google.cloud.firestore.QuerySnapshot;
 
 import co.com.arena.real.domain.entity.Chat;
 import co.com.arena.real.infrastructure.repository.ChatRepository;
+import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Firestore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +35,7 @@ public class ChatService {
         log.info("Creando chat para partida entre {} y {}", jugador1Id, jugador2Id);
         Chat chat = Chat.builder()
                 .jugadores(List.of(jugador1Id, jugador2Id))
+                .activo(true)
                 .build();
 
         Chat saved = chatRepository.save(chat);
@@ -109,10 +116,43 @@ public class ChatService {
             log.error("Error al enviar mensaje de sistema", e);
         }
     }
-
     public void enviarMensajeInicio(UUID chatId) {
-        enviarMensajeSistema(chatId, "Partida iniciada");
+        if (firestore == null) {
+            log.warn("Firestore no configurado, se omite el envío del mensaje de inicio");
+            return;
+        }
+
+        try {
+            CollectionReference mensajes = firestore
+                    .collection("chats")
+                    .document(chatId.toString())
+                    .collection("messages");
+
+            QuerySnapshot snapshot = mensajes
+                    .whereEqualTo("text", "Partida iniciada")
+                    .whereEqualTo("senderId", "system")
+                    .get()
+                    .get(); // Bloqueante, esperará respuesta
+
+            if (snapshot.isEmpty()) {
+                log.info("Enviando mensaje de inicio para el chat {}", chatId);
+
+                Map<String, Object> msg = new HashMap<>();
+                msg.put("senderId", "system");
+                msg.put("text", "Partida iniciada");
+                msg.put("timestamp", Timestamp.now());
+                msg.put("isSystemMessage", true);
+
+                mensajes.add(msg);
+            } else {
+                log.info("Mensaje de inicio ya existe para el chat {}", chatId);
+            }
+
+        } catch (Exception e) {
+            log.error("Error al enviar mensaje de inicio", e);
+        }
     }
+
 
     public void compartirLink(UUID chatId, String text) {
         enviarMensajeSistema(chatId, text);
