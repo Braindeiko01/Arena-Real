@@ -21,7 +21,7 @@ import { submitMatchResultAction, fetchMatchIdByChat } from '@/lib/actions';
 import useMatchmakingSse from '@/hooks/useMatchmakingSse';
 
 import { Label } from '@/components/ui/label';
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { db } from '@/lib/firebase';
 
@@ -83,10 +83,7 @@ const ChatPageContent = () => {
 
         const data = snap.data() as any;
         if (!Array.isArray(data.jugadores)) {
-          await updateDoc(ref, {
-            jugadores: [uid, opponentGoogleId],
-            activo: true,
-          });
+          console.error('Documento de chat mal formado, jugadores debe ser un array', data);
         }
       } catch (err: any) {
         console.error('Error asegurando documento de chat', err);
