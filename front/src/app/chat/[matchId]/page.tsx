@@ -22,6 +22,7 @@ import useMatchmakingSse from '@/hooks/useMatchmakingSse';
 
 import { Label } from '@/components/ui/label';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { db } from '@/lib/firebase';
 
 
@@ -66,27 +67,37 @@ const ChatPageContent = () => {
   const incompleteData = !opponentTag || !opponentGoogleId;
 
   useEffect(() => {
-    if (!chatId || !user?.id || !opponentGoogleId) return;
+    const uid = getAuth().currentUser?.uid;
+    if (!chatId || !uid || !opponentGoogleId) return;
     const ref = doc(db, 'chats', chatId);
     const ensure = async () => {
       try {
         const snap = await getDoc(ref);
         if (!snap.exists()) {
           await setDoc(ref, {
-            jugadores: [user.id, opponentGoogleId],
+            jugadores: [uid, opponentGoogleId],
             activo: true,
           });
-        } else {
-          const data = snap.data() as any;
-          if (!Array.isArray(data.jugadores)) {
-            await updateDoc(ref, {
-              jugadores: [user.id, opponentGoogleId],
-              activo: true,
-            });
-          }
+          return;
         }
-      } catch (err) {
+
+        const data = snap.data() as any;
+        if (!Array.isArray(data.jugadores)) {
+          await updateDoc(ref, {
+            jugadores: [uid, opponentGoogleId],
+            activo: true,
+          });
+        }
+      } catch (err: any) {
         console.error('Error asegurando documento de chat', err);
+        try {
+          await setDoc(ref, {
+            jugadores: [uid, opponentGoogleId],
+            activo: true,
+          });
+        } catch (creationErr) {
+          console.error('Error creando documento de chat', creationErr);
+        }
       }
     };
     ensure();
