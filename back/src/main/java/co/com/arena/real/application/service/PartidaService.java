@@ -68,6 +68,7 @@ public class PartidaService {
         return partidaRepository.findByApuesta_Id(apuestaId).map(partidaMapper::toDto);
     }
 
+    @Transactional(readOnly = true)
     public java.util.List<PartidaResponse> listarHistorial(String jugadorId) {
         return partidaRepository.findByJugadorAndEstado(jugadorId, EstadoPartida.FINALIZADA)
                 .stream()
