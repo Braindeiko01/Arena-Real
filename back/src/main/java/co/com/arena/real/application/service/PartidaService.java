@@ -13,7 +13,6 @@ import co.com.arena.real.infrastructure.repository.PartidaRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
 import co.com.arena.real.domain.entity.partida.EstadoPartida;
 import co.com.arena.real.application.service.ChatService;
-import co.com.arena.real.application.service.TransaccionSseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +31,6 @@ public class PartidaService {
     private final JugadorRepository jugadorRepository;
     private final TransaccionRepository transaccionRepository;
     private final ChatService chatService;
-    private final TransaccionSseService transaccionSseService;
 
     public Optional<PartidaResponse> obtenerPorApuestaId(UUID apuestaId) {
         return partidaRepository.findByApuesta_Id(apuestaId).map(partidaMapper::toDto);
@@ -73,7 +71,6 @@ public class PartidaService {
             jugadorRepository.findById(partida.getGanador().getId()).ifPresent(u -> {
                 u.setSaldo(u.getSaldo().add(premio.getMonto()));
                 jugadorRepository.save(u);
-                transaccionSseService.sendSaldoActualizado(u.getId(), u.getSaldo());
             });
         }
 

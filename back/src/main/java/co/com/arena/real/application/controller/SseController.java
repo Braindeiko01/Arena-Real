@@ -1,7 +1,7 @@
 package co.com.arena.real.application.controller;
 
 import co.com.arena.real.application.service.MatchSseService;
-import co.com.arena.real.application.service.TransaccionSseService;
+import co.com.arena.real.application.service.SseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,12 +15,12 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequiredArgsConstructor
 public class SseController {
 
-    private final TransaccionSseService transaccionSseService;
+    private final SseService sseService;
     private final MatchSseService matchSseService;
 
     @GetMapping("/transacciones/{jugadorId}")
     public SseEmitter streamTransacciones(@PathVariable String jugadorId) {
-        return transaccionSseService.subscribe(jugadorId);
+        return sseService.subscribe(jugadorId);
     }
 
     @GetMapping("/matchmaking/{jugadorId}")
