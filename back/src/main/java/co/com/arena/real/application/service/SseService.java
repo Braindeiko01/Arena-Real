@@ -18,14 +18,13 @@ public class SseService extends AbstractSseEmitterService {
 
     private static final Logger log = LoggerFactory.getLogger(SseService.class);
 
-    private record LatestEvent(String name, Object data) {
-    }
+    private record LatestEvent(String name, Object data) {}
 
     private final Map<String, LatestEvent> latestEvents = new ConcurrentHashMap<>();
 
     @Override
     protected void onSubscribe(String jugadorId, EmitterWrapper wrapper) {
-        LatestEvent last = latestEvents.remove(jugadorId);
+        LatestEvent last = latestEvents.remove(jugadorId); // directamente lo eliminamos al intentar enviar
         if (last != null) {
             CompletableFuture.runAsync(() -> {
                 try {
@@ -34,8 +33,10 @@ public class SseService extends AbstractSseEmitterService {
                             .data(last.data()));
                     wrapper.lastAccess = System.currentTimeMillis();
                 } catch (IOException e) {
+                    log.error("❌ Error al enviar evento pendiente en onSubscribe", e);
                     removeEmitter(jugadorId);
                     wrapper.emitter.completeWithError(e);
+                    latestEvents.put(jugadorId, last); // lo volvemos a guardar si falló
                 }
             });
         }
@@ -56,14 +57,12 @@ public class SseService extends AbstractSseEmitterService {
         }
 
         try {
-            log.info("\uD83D\uDCE1 Enviando evento SSE 'transaccion-aprobada' al jugador {}", dto.getJugadorId());
             wrapper.emitter.send(SseEmitter.event()
                     .name("transaccion-aprobada")
                     .data(dto));
             wrapper.lastAccess = System.currentTimeMillis();
-            latestEvents.remove(jugadorId);
         } catch (IOException e) {
-            log.error("\u274C Error al enviar evento SSE al jugador {}", dto.getJugadorId(), e);
+            log.error("❌ Error al enviar evento SSE al jugador {}", jugadorId, e);
             removeEmitter(jugadorId);
             wrapper.emitter.completeWithError(e);
             latestEvents.put(jugadorId, latest);
@@ -84,8 +83,8 @@ public class SseService extends AbstractSseEmitterService {
                     .name(eventName)
                     .data(data));
             wrapper.lastAccess = System.currentTimeMillis();
-            latestEvents.remove(jugadorId);
         } catch (IOException e) {
+            log.error("❌ Error al enviar evento SSE '{}'", eventName, e);
             removeEmitter(jugadorId);
             wrapper.emitter.completeWithError(e);
             latestEvents.put(jugadorId, latest);
