@@ -72,6 +72,7 @@ const ChatPageContent = () => {
     const ref = doc(db, 'chats', chatId);
     const ensure = async () => {
       try {
+        console.log('Fetching chat doc', { chatId, uid, opponentGoogleId });
         const snap = await getDoc(ref);
         if (!snap.exists()) {
           await setDoc(ref, {
@@ -93,7 +94,7 @@ const ChatPageContent = () => {
             activo: true,
           });
         } catch (creationErr) {
-          console.error('Error creando documento de chat', creationErr);
+          console.error('Error creando documento de chat', { chatId, uid, opponentGoogleId, error: creationErr });
         }
       }
     };
