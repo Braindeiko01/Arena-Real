@@ -1,6 +1,7 @@
 package co.com.arena.real.application.service;
 
 import co.com.arena.real.application.events.TransaccionAprobadaEvent;
+import co.com.arena.real.application.events.SaldoActualizadoEvent;
 import co.com.arena.real.domain.entity.EstadoTransaccion;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.Transaccion;
@@ -64,6 +65,10 @@ public class TransaccionService {
 
         TransaccionResponse dto = transaccionMapper.toDto(saved);
         eventPublisher.publishEvent(new TransaccionAprobadaEvent(dto));
+        eventPublisher.publishEvent(new SaldoActualizadoEvent(
+                saved.getJugador().getId(),
+                saved.getJugador().getSaldo()
+        ));
         return dto;
     }
 
