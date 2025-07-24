@@ -34,16 +34,7 @@ export default function useTransactionUpdates() {
       }
     };
 
-    const saldoHandler = async () => {
-      try {
-        await refreshUser();
-      } catch (err) {
-        console.error('Error procesando evento SSE', err);
-      }
-    };
-
     es.addEventListener('transaccion-aprobada', handler as EventListener);
-    es.addEventListener('saldo-actualizar', saldoHandler as EventListener);
 
     es.onerror = (err) => {
       console.error('SSE error:', err);
@@ -52,7 +43,6 @@ export default function useTransactionUpdates() {
     return () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.removeEventListener('transaccion-aprobada', handler as EventListener);
-        eventSourceRef.current.removeEventListener('saldo-actualizar', saldoHandler as EventListener);
         eventSourceRef.current.close();
       }
     };
