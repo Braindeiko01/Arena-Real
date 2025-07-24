@@ -4,6 +4,7 @@ import co.com.arena.real.application.events.TransaccionAprobadaEvent;
 import co.com.arena.real.domain.entity.EstadoTransaccion;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.Transaccion;
+import co.com.arena.real.application.service.TransaccionSseService;
 import co.com.arena.real.infrastructure.dto.rq.TransaccionRequest;
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import co.com.arena.real.infrastructure.mapper.TransaccionMapper;
@@ -26,6 +27,7 @@ public class TransaccionService {
     private final TransaccionMapper transaccionMapper;
     private final JugadorRepository jugadorRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final TransaccionSseService transaccionSseService;
 
     public TransaccionResponse registrarTransaccion(TransaccionRequest dto) {
         Jugador jugador = jugadorRepository.findById(dto.getJugadorId())
@@ -55,17 +57,18 @@ public class TransaccionService {
             throw new IllegalArgumentException("La transaccion ya ha sido aprobada con anterioridad");
         }
 
-        modificarSaldoJugador(transaccion);
+        Jugador jugadorActualizado = modificarSaldoJugador(transaccion);
 
         transaccion.setEstado(EstadoTransaccion.APROBADA);
         Transaccion saved = transaccionRepository.save(transaccion);
 
         TransaccionResponse dto = transaccionMapper.toDto(saved);
         eventPublisher.publishEvent(new TransaccionAprobadaEvent(dto));
+        transaccionSseService.sendSaldoActualizado(jugadorActualizado.getId(), jugadorActualizado.getSaldo());
         return dto;
     }
 
-    private void modificarSaldoJugador(Transaccion transaccion) {
+    private Jugador modificarSaldoJugador(Transaccion transaccion) {
         Jugador jugador = jugadorRepository.findById(transaccion.getJugador().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
 
@@ -80,5 +83,6 @@ public class TransaccionService {
         }
 
         jugadorRepository.save(jugador);
+        return jugador;
     }
 }

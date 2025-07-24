@@ -1,6 +1,6 @@
 package co.com.arena.real.application.controller;
 
-import co.com.arena.real.application.service.SseService;
+import co.com.arena.real.application.service.TransaccionSseService;
 import co.com.arena.real.application.service.TransaccionService;
 import co.com.arena.real.infrastructure.dto.rq.TransaccionRequest;
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
@@ -27,7 +27,7 @@ import java.util.UUID;
 public class TransaccionController {
 
     private final TransaccionService transaccionService;
-    private final SseService sseService;
+    private final TransaccionSseService transaccionSseService;
 
     @PostMapping
     @Operation(summary = "Registrar transacción", description = "Crea una nueva transacción")
@@ -45,7 +45,7 @@ public class TransaccionController {
 
     @GetMapping("/stream/{jugadorId}")
     public SseEmitter stream(@PathVariable String jugadorId) {
-        return sseService.subscribe(jugadorId); // <- usando tu SseService refactorizado
+        return transaccionSseService.subscribe(jugadorId);
     }
 
     @PostMapping("/{id}/aprobar")
