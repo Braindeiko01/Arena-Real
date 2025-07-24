@@ -9,6 +9,7 @@ import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import co.com.arena.real.infrastructure.mapper.TransaccionMapper;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import co.com.arena.real.infrastructure.repository.TransaccionRepository;
+import co.com.arena.real.application.service.SaldoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class TransaccionService {
     private final TransaccionMapper transaccionMapper;
     private final JugadorRepository jugadorRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final SaldoService saldoService;
 
     public TransaccionResponse registrarTransaccion(TransaccionRequest dto) {
         Jugador jugador = jugadorRepository.findById(dto.getJugadorId())
@@ -66,19 +68,11 @@ public class TransaccionService {
     }
 
     private void modificarSaldoJugador(Transaccion transaccion) {
-        Jugador jugador = jugadorRepository.findById(transaccion.getJugador().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Jugador no encontrado"));
-
         switch (transaccion.getTipo()) {
-            case DEPOSITO, PREMIO, REEMBOLSO -> jugador.setSaldo(jugador.getSaldo().add(transaccion.getMonto()));
-            case RETIRO, APUESTA -> {
-                if (!(jugador.getSaldo().compareTo(transaccion.getMonto()) >= 0)) {
-                    throw new IllegalArgumentException("Saldo insuficiente para realizar la transacción");
-                }
-                jugador.setSaldo(jugador.getSaldo().subtract(transaccion.getMonto()));
-            }
+            case DEPOSITO, PREMIO, REEMBOLSO ->
+                    saldoService.acreditarSaldo(transaccion.getJugador().getId(), transaccion.getMonto());
+            case RETIRO, APUESTA ->
+                    saldoService.debitarSaldo(transaccion.getJugador().getId(), transaccion.getMonto());
         }
-
-        jugadorRepository.save(jugador);
     }
 }
