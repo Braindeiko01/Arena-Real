@@ -177,6 +177,14 @@ When an admin marks a transaction as **ENTREGADA** in the admin console:
 3. The user client now uses `useTransactionUpdates` to receive these notifications in real time.
    If the connection was lost, the hook refreshes data when the page becomes visible or after reconnecting.
 
+## Prize distribution
+
+When an admin distributes a prize from the admin panel:
+
+1. `AdminService` calls `PartidaService.marcarComoValidada` in the admin backend.
+2. The created `TransaccionResponse` is sent to the main backend via `/api/internal/notify-prize-distributed`.
+3. That endpoint emits `transaccion-aprobada` and `saldo-actualizar` SSE events so the winner's balance updates in real time.
+
 ## Referral system
 
 Two new endpoints implement a simple referral program:

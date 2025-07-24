@@ -154,7 +154,12 @@ public class AdminService {
 
     @Transactional
     public void distributePrize(UUID gameId) {
-        partidaService.marcarComoValidada(gameId);
+        TransaccionResponse premio = partidaService.marcarComoValidada(gameId);
+        if (premio != null) {
+            log.info("➡️ Premio generado. Notificando al backend principal... Jugador ID: {}, Transacción ID: {}",
+                    premio.getJugadorId(), premio.getId());
+            usersBackendClient.notifyPrizeDistributed(premio);
+        }
     }
 
     @Transactional

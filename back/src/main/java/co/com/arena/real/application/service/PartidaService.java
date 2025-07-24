@@ -152,7 +152,7 @@ public class PartidaService {
     }
 
     @Transactional
-    public PartidaResponse marcarComoValidada(UUID partidaId) {
+    public TransaccionResponse marcarComoValidada(UUID partidaId) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Partida no encontrada"));
         partida.setValidadaEn(LocalDateTime.now());
@@ -187,7 +187,7 @@ public class PartidaService {
             Partida saved = partidaRepository.save(partida);
             PartidaResponse dto = partidaMapper.toDto(saved);
             eventPublisher.publishEvent(new PartidaValidadaEvent(dto));
-            return dto;
+            return premioDto;
         }
 
         partida.setValidada(false);
@@ -200,7 +200,7 @@ public class PartidaService {
         partida.setAceptadoJugador1(false);
         partida.setAceptadoJugador2(false);
         Partida saved = partidaRepository.save(partida);
-        return partidaMapper.toDto(saved);
+        return null;
     }
   
     @Transactional
