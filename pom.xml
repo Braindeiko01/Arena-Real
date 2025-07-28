@@ -9,7 +9,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>shared-core</module>
         <module>back</module>
         <module>admin-back</module>
     </modules>
