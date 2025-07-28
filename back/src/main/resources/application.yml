@@ -29,11 +29,12 @@ service:
 admin:
   secret:
     token: ${ADMIN_SECRET_TOKEN}
-  security:
-    jwt-secret: ${ADMIN_SECURITY_JWT_SECRET}
   credentials:
     user: ${ADMIN_CREDENTIALS_USER}
     password: ${ADMIN_CREDENTIALS_PASSWORD}
+
+security:
+  jwt-secret: ${SECURITY_JWT_SECRET:${ADMIN_SECURITY_JWT_SECRET}}
 users:
   backend:
     url: ${USERS_BACKEND_URL}
