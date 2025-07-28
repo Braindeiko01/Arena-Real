@@ -1,4 +1,4 @@
-package com.example.admin.infrastructure.dto;
+package co.com.arena.real.admin.infrastructure.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

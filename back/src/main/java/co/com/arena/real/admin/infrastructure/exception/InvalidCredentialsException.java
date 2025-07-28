@@ -1,4 +1,4 @@
-package com.example.admin.infrastructure.exception;
+package co.com.arena.real.admin.infrastructure.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

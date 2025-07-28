@@ -1,6 +1,6 @@
-package com.example.admin.application.service;
+package co.com.arena.real.admin.application.service;
 
-import com.example.admin.infrastructure.exception.InvalidCredentialsException;
+import co.com.arena.real.admin.infrastructure.exception.InvalidCredentialsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

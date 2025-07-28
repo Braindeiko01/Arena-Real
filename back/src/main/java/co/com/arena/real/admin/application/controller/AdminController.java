@@ -1,9 +1,9 @@
-package com.example.admin.application.controller;
+package co.com.arena.real.admin.application.controller;
 
-import com.example.admin.application.service.AdminService;
-import com.example.admin.infrastructure.dto.GameResultDto;
-import com.example.admin.infrastructure.dto.ImageDto;
-import com.example.admin.infrastructure.dto.TransactionDto;
+import co.com.arena.real.admin.application.service.AdminService;
+import co.com.arena.real.admin.infrastructure.dto.GameResultDto;
+import co.com.arena.real.admin.infrastructure.dto.ImageDto;
+import co.com.arena.real.admin.infrastructure.dto.TransactionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

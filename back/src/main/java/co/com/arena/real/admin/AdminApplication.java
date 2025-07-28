@@ -1,4 +1,4 @@
-package com.example.admin;
+package co.com.arena.real.admin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +9,7 @@ import co.com.arena.real.config.FirebaseConfig;
 import co.com.arena.real.config.FirestoreConfig;
 
 @SpringBootApplication(
-        scanBasePackages = {"com.example.admin", "co.com.arena.real"}
+        scanBasePackages = {"co.com.arena.real.admin", "co.com.arena.real"}
 )
 @EnableJpaRepositories("co.com.arena.real.infrastructure.repository")
 @EntityScan("co.com.arena.real.domain.entity")

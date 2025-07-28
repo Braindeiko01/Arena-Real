@@ -1,9 +1,9 @@
-package com.example.admin.application.service;
+package co.com.arena.real.admin.application.service;
 
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
-import com.example.admin.infrastructure.dto.GameResultDto;
-import com.example.admin.infrastructure.dto.ImageDto;
-import com.example.admin.infrastructure.dto.TransactionDto;
+import co.com.arena.real.admin.infrastructure.dto.GameResultDto;
+import co.com.arena.real.admin.infrastructure.dto.ImageDto;
+import co.com.arena.real.admin.infrastructure.dto.TransactionDto;
 import lombok.extern.slf4j.Slf4j;
 import co.com.arena.real.domain.entity.EstadoApuesta;
 import co.com.arena.real.domain.entity.EstadoTransaccion;
@@ -17,7 +17,7 @@ import co.com.arena.real.application.service.PartidaService;
 import co.com.arena.real.application.service.TransaccionService;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.Apuesta;
-import com.example.admin.infrastructure.client.UsersBackendClient;
+import co.com.arena.real.admin.infrastructure.client.UsersBackendClient;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
