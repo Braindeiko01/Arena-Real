@@ -5,9 +5,12 @@ import co.com.arena.real.application.service.JugadorService;
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -22,15 +25,13 @@ public class AdminNotificationController {
 
     private final SseService sseService;
     private final JugadorService jugadorService;
-
-    @Value("${admin.secret.token:}")
-    private String adminToken;
+    private final JwtDecoder jwtDecoder;
 
     @PostMapping("/notify-transaction-approved")
     public ResponseEntity<Void> notifyTransactionApproved(
-            @RequestHeader(value = "X-Admin-Secret", required = false) String secret, //todo: cambiar a JWT para autenticarse
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
             @RequestBody TransaccionResponse dto) {
-        if (adminToken == null || !adminToken.equals(secret)) {
+        if (!isValidAdminToken(authorization)) {
             log.warn("\uD83D\uDD12 Token admin inválido recibido en notificación de transacción.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -43,9 +44,9 @@ public class AdminNotificationController {
 
     @PostMapping("/notify-prize-distributed")
     public ResponseEntity<Void> notifyPrizeDistributed(
-            @RequestHeader(value = "X-Admin-Secret", required = false) String secret,
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
             @RequestBody TransaccionResponse dto) {
-        if (adminToken == null || !adminToken.equals(secret)) {
+        if (!isValidAdminToken(authorization)) {
             log.warn("\uD83D\uDD12 Token admin inválido recibido en notificación de premio.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -55,5 +56,20 @@ public class AdminNotificationController {
         jugadorService.obtenerSaldo(dto.getJugadorId())
                 .ifPresent(saldo -> sseService.sendEvent(dto.getJugadorId(), "saldo-actualizar", saldo));
         return ResponseEntity.ok().build();
+    }
+
+    private boolean isValidAdminToken(String authorization) {
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            return false;
+        }
+        String token = authorization.substring(7);
+        try {
+            Jwt jwt = jwtDecoder.decode(token);
+            String scope = jwt.getClaimAsString("scope");
+            return "ADMIN".equals(scope);
+        } catch (JwtException e) {
+            log.warn("Invalid admin JWT", e);
+            return false;
+        }
     }
 }
