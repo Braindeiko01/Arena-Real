@@ -35,8 +35,9 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/admin/auth/login").permitAll()
+                    .requestMatchers("/public/**", "/auth/**", "/api/admin/auth/login").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/api/**").authenticated()
                     .anyRequest().permitAll())
             .oauth2ResourceServer(oauth2 -> oauth2
                     .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
@@ -65,14 +66,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtDecoder jwtDecoder(@Value("${admin.security.jwt-secret}") String secret) {
+    public JwtDecoder jwtDecoder(@Value("${security.jwt-secret}") String secret) {
         SecretKey key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         return NimbusJwtDecoder.withSecretKey(key).build();
     }
 
     @Bean
     @Primary
-    public JwtEncoder jwtEncoder(@Value("${admin.security.jwt-secret}") String secret) {
+    public JwtEncoder jwtEncoder(@Value("${security.jwt-secret}") String secret) {
         log.debug("Initializing JWT encoder");
         SecretKey key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         return new NimbusJwtEncoder(new ImmutableSecret<>(key));

@@ -108,7 +108,7 @@ Before running, configure a database connection. Create `admin-back/.env` (you c
 SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/arena_real
 SPRING_DATASOURCE_USERNAME=postgres
 SPRING_DATASOURCE_PASSWORD=postgres
-ADMIN_SECURITY_JWT_SECRET=changeMe
+SECURITY_JWT_SECRET=changeMe
 ADMIN_CREDENTIALS_USER=admin
 ADMIN_CREDENTIALS_PASSWORD=admin
 ```
