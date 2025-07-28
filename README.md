@@ -108,7 +108,10 @@ Before running, configure a database connection. Create `admin-back/.env` (you c
 SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/arena_real
 SPRING_DATASOURCE_USERNAME=postgres
 SPRING_DATASOURCE_PASSWORD=postgres
-SECURITY_JWT_SECRET=changeMe
+# Use a 256‑bit value (at least 32 characters)
+SECURITY_JWT_SECRET=5e8f0bc1f6c34fdfadcb5c1249eb4d77b91c8f2d0316fabbf90c1aaaf7b39cdd
+# Generate your own secret with:
+# openssl rand -hex 32
 ADMIN_CREDENTIALS_USER=admin
 ADMIN_CREDENTIALS_PASSWORD=admin
 ```
