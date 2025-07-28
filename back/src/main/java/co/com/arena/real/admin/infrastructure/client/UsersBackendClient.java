@@ -1,4 +1,4 @@
-package com.example.admin.infrastructure.client;
+package co.com.arena.real.admin.infrastructure.client;
 
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import lombok.RequiredArgsConstructor;

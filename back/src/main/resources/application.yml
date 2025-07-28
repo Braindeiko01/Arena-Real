@@ -29,5 +29,14 @@ service:
 admin:
   secret:
     token: ${ADMIN_SECRET_TOKEN:changeme}
+  security:
+    jwt-secret: ${ADMIN_SECURITY_JWT_SECRET:5e8f0bc1f6c34fdfadcb5c1249eb4d77b91c8f2d0316fabbf90c1aaaf7b39cdd}
+  credentials:
+    user: ${ADMIN_CREDENTIALS_USER:admin}
+    password: ${ADMIN_CREDENTIALS_PASSWORD:admin}
+users:
+  backend:
+    url: ${USERS_BACKEND_URL:http://localhost:8080}
+    token: ${USERS_BACKEND_TOKEN:changeme}
 firebase:
   enabled: true

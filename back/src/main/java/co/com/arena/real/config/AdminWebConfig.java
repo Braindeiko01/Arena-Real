@@ -1,4 +1,4 @@
-package com.example.admin.config;
+package co.com.arena.real.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

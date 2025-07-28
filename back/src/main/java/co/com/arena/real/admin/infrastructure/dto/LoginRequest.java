@@ -1,4 +1,4 @@
-package com.example.admin.infrastructure.dto;
+package co.com.arena.real.admin.infrastructure.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

@@ -1,8 +1,8 @@
-package com.example.admin.application.controller;
+package co.com.arena.real.admin.application.controller;
 
-import com.example.admin.application.service.AuthService;
-import com.example.admin.infrastructure.dto.LoginRequest;
-import com.example.admin.infrastructure.dto.TokenDto;
+import co.com.arena.real.admin.application.service.AuthService;
+import co.com.arena.real.admin.infrastructure.dto.LoginRequest;
+import co.com.arena.real.admin.infrastructure.dto.TokenDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
