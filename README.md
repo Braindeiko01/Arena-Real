@@ -8,7 +8,8 @@ This repository contains a Spring Boot backend and a Next.js frontend.
 1. Copy `front/.env.example` to `front/.env.local` and fill in your Firebase and
    API credentials. Set `NEXT_PUBLIC_BACKEND_API_URL` to the base URL of the main
    backend (e.g. `http://localhost:8080`).
-2. Install dependencies and run the frontend:
+2. Copy `back/.env.example` to `back/.env` and configure the backend variables.
+3. Install dependencies and run the frontend:
 
 ```bash
 cd front
@@ -16,7 +17,7 @@ npm install
 npm run dev
 ```
 
-3. The `/chat` page shows all your conversations. When a chat is active, both
+4. The `/chat` page shows all your conversations. When a chat is active, both
    the top and bottom navigation bars include a chat icon that links directly to
    that conversation. The icon displays a small red badge while the chat is
    active.
