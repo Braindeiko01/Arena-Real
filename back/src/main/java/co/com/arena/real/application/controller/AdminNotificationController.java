@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Slf4j
 @RestController
@@ -28,6 +29,7 @@ public class AdminNotificationController {
     private final JwtDecoder jwtDecoder;
 
     @PostMapping("/notify-transaction-approved")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> notifyTransactionApproved(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
             @RequestBody TransaccionResponse dto) {
@@ -43,6 +45,7 @@ public class AdminNotificationController {
     }
 
     @PostMapping("/notify-prize-distributed")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> notifyPrizeDistributed(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
             @RequestBody TransaccionResponse dto) {
