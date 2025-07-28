@@ -33,6 +33,50 @@ mvn spring-boot:run
 The backend exposes Server-Sent Event (SSE) endpoints for real-time
 notifications.
 
+## API overview
+
+The following table lists the available REST and SSE endpoints, the required HTTP method, expected role and whether a JWT token is required. Public endpoints can be called without authentication, while ADMIN routes expect an `Authorization` header with a valid token.
+
+| Route | Method | Role | JWT required |
+|-------|--------|------|--------------|
+| `/api/register` | POST | Public | No |
+| `/api/referrals/earnings/{userId}` | GET | Public | No |
+| `/api/push/register` | POST | Public | No |
+| `/api/jugadores` | PUT | Public | No |
+| `/api/jugadores/{id}` | GET | Public | No |
+| `/api/jugadores/{id}/saldo` | GET | Public | No |
+| `/api/partidas/apuesta/{apuestaId}` | GET | Public | No |
+| `/api/partidas/chat/{chatId}` | GET | Public | No |
+| `/api/partidas/{id}/aceptar/{jugadorId}` | PUT | Public | No |
+| `/api/partidas/{id}/cancelar` | PUT | Public | No |
+| `/api/partidas/{id}/resultado` | PUT | Public | No |
+| `/api/partidas/jugador/{jugadorId}` | GET | Public | No |
+| `/api/matchmaking/ejecutar` | POST | Public | No |
+| `/api/matchmaking/cancelar` | POST | Public | No |
+| `/api/matchmaking/declinar` | POST | Public | No |
+| `/api/transacciones` | POST | Public | No |
+| `/api/transacciones/jugador/{id}` | GET | Public | No |
+| `/api/transacciones/stream/{jugadorId}` | GET (SSE) | User/Admin | Yes |
+| `/sse/transacciones/{jugadorId}` | GET (SSE) | User/Admin | Yes |
+| `/sse/matchmaking/{jugadorId}` | GET (SSE) | User/Admin | Yes |
+| `/sse/match` | GET (SSE) | User/Admin | Yes |
+| `/api/chats/between` | GET | Public | No |
+| `/api/chats/partida/{partidaId}` | GET | Public | No |
+| `/api/chats/{chatId}/start-message` | POST | Public | No |
+| `/api/chats/{chatId}/share-link` | POST | Public | No |
+| `/api/chats/{chatId}/result-message` | POST | Public | No |
+| `/api/internal/notify-transaction-approved` | POST | ADMIN | Yes |
+| `/api/internal/notify-prize-distributed` | POST | ADMIN | Yes |
+| `/api/admin/images` | GET | ADMIN | Yes |
+| `/api/admin/images/{id}/approve` | POST | ADMIN | Yes |
+| `/api/admin/transactions` | GET | ADMIN | Yes |
+| `/api/admin/transactions/{id}/status` | POST | ADMIN | Yes |
+| `/api/admin/games/results` | GET | ADMIN | Yes |
+| `/api/admin/games/{id}/distribute` | POST | ADMIN | Yes |
+| `/api/admin/games/{id}/winner/{playerId}` | POST | ADMIN | Yes |
+| `/api/admin/bets/{id}/state` | POST | ADMIN | Yes |
+| `/api/admin/auth/login` | POST | Public | No |
+
 Build all Java modules in one step:
 
 ```bash
