@@ -3,6 +3,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import useNotifications from '@/hooks/useNotifications';
 import { BACKEND_URL } from '@/lib/config';
+import { auth } from '@/lib/firebase';
 
 
 /**
@@ -31,9 +32,17 @@ export default function useTransactionUpdates() {
     };
     document.addEventListener('visibilitychange', onVisibility);
 
-    const connect = () => {
-      const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
-      const es = new EventSource(url, { withCredentials: true });
+    const connect = async () => {
+      let token: string | null = null;
+      if (typeof window !== 'undefined') {
+        try {
+          token = await auth.currentUser?.getIdToken() || null;
+        } catch {
+          token = null;
+        }
+      }
+      const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}${token ? `?token=${token}` : ''}`;
+      const es = new EventSource(url);
       eventSourceRef.current = es;
 
       es.onopen = () => {

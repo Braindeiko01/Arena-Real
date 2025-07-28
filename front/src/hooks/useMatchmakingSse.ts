@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { BACKEND_URL } from '@/lib/config';
+import { auth } from '@/lib/firebase';
 
 export interface MatchEventData {
   apuestaId: string;
@@ -172,10 +173,18 @@ export default function useMatchmakingSse(
     };
     votedHandlerRef.current = votedHandler;
 
-    const connect = (onOpen?: () => void) => {
-      const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
+    const connect = async (onOpen?: () => void) => {
+      let token: string | null = null;
+      if (typeof window !== 'undefined') {
+        try {
+          token = await auth.currentUser?.getIdToken() || null;
+        } catch {
+          token = null;
+        }
+      }
+      const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}${token ? `?token=${token}` : ''}`;
       console.log('Abriendo conexión SSE de matchmaking:', url);
-      const es = new EventSource(url, { withCredentials: true });
+      const es = new EventSource(url);
       eventSourceRef.current = es;
 
       es.onopen = () => {
