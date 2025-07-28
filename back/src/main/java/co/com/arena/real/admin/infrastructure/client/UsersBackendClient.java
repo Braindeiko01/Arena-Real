@@ -29,7 +29,7 @@ public class UsersBackendClient {
         String url = backendUrl + "/api/internal/notify-transaction-approved";
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Admin-Secret", backendToken);
+        headers.setBearerAuth(backendToken);
         HttpEntity<TransaccionResponse> entity = new HttpEntity<>(dto, headers);
 
         try {
@@ -48,7 +48,7 @@ public class UsersBackendClient {
         String url = backendUrl + "/api/internal/notify-prize-distributed";
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Admin-Secret", backendToken);
+        headers.setBearerAuth(backendToken);
         HttpEntity<TransaccionResponse> entity = new HttpEntity<>(dto, headers);
 
         try {
