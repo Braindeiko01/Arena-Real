@@ -1,4 +1,4 @@
-package co.com.arena.real.application.controller.log;
+package co.com.arena.real.application.controller.logger;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
