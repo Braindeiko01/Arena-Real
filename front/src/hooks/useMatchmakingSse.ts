@@ -218,9 +218,23 @@ export default function useMatchmakingSse(
       };
     };
     connectRef.current = connect;
-    connect();
+    let authUnsub: (() => void) | undefined;
+    if (!auth.currentUser) {
+      console.info('Matchmaking SSE skipped: no Firebase user. Waiting for login...');
+      authUnsub = auth.onAuthStateChanged(u => {
+        if (u) {
+          console.info('Firebase user logged in, starting matchmaking SSE');
+          connect();
+          authUnsub && authUnsub();
+          authUnsub = undefined;
+        }
+      });
+    } else {
+      connect();
+    }
 
     return () => {
+      authUnsub && authUnsub();
       console.log('Cerrando conexión SSE de matchmaking');
       disconnect();
 
