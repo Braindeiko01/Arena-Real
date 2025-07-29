@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from 'react';
-import { messaging } from '@/lib/firebase';
+import { messaging, auth } from '@/lib/firebase';
 import { getToken, onMessage } from 'firebase/messaging';
 import { BACKEND_URL } from '@/lib/config';
 import { useAuth } from '@/hooks/useAuth';
@@ -23,9 +23,13 @@ export default function usePushNotifications() {
           const token = await getToken(messaging!, {
             serviceWorkerRegistration: reg
           });
+          const authToken = await auth.currentUser?.getIdToken();
           await fetch(`${BACKEND_URL}/api/push/register`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              ...(authToken ? { Authorization: `Bearer ${authToken}` } : {})
+            },
             body: JSON.stringify({ jugadorId: user.id, token })
           });
         } catch (err) {
