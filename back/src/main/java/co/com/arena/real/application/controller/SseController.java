@@ -49,9 +49,13 @@ public class SseController {
         try {
             Jwt jwt = jwtDecoder.decode(token);
             String scope = jwt.getClaimAsString("scope");
-            if (!"USER".equals(scope) && !"ADMIN".equals(scope)) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            if ("ADMIN".equals(scope) || "USER".equals(scope)) {
+                return;
             }
+            if (jwt.hasClaim("firebase")) {
+                return;
+            }
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         } catch (JwtException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
