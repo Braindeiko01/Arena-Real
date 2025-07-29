@@ -39,7 +39,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .requestMatchers("/api/transacciones/stream/**", "/sse/**").permitAll()
                     .requestMatchers("/api/push/register").permitAll()
-                    .requestMatchers("/api/**").authenticated()
+                    .requestMatchers("/api/**").hasRole("USER")
                     .anyRequest().denyAll())
             .oauth2ResourceServer(oauth2 -> oauth2
                     .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
