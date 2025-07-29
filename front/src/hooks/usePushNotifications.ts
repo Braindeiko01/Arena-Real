@@ -23,12 +23,21 @@ export default function usePushNotifications() {
           const token = await getToken(messaging!, {
             serviceWorkerRegistration: reg
           });
-          const authToken = await auth.currentUser?.getIdToken();
+          let authToken: string | null = null;
+          try {
+            authToken = await auth.currentUser?.getIdToken(true) || null;
+          } catch {
+            authToken = null;
+          }
+          if (!authToken) {
+            console.warn('Push registration skipped: no auth token');
+            return;
+          }
           await fetch(`${BACKEND_URL}/api/push/register`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              ...(authToken ? { Authorization: `Bearer ${authToken}` } : {})
+              Authorization: `Bearer ${authToken}`
             },
             body: JSON.stringify({ jugadorId: user.id, token })
           });
