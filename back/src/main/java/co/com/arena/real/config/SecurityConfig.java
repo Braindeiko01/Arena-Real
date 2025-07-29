@@ -38,6 +38,7 @@ public class SecurityConfig {
                     .requestMatchers("/public/**", "/auth/**", "/api/admin/auth/login", "/api/register", "/api/jugadores/**").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .requestMatchers("/api/transacciones/stream/**", "/sse/**").permitAll()
+                    .requestMatchers("/api/push/register").permitAll()
                     .requestMatchers("/api/**").authenticated()
                     .anyRequest().denyAll())
             .oauth2ResourceServer(oauth2 -> oauth2

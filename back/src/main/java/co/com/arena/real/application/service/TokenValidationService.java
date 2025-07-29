@@ -21,6 +21,9 @@ public class TokenValidationService {
     private final ObjectProvider<FirebaseApp> firebaseAppProvider;
 
     public void validate(String token) {
+        if (token == null || token.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
         try {
             Jwt jwt = jwtDecoder.decode(token);
             String scope = jwt.getClaimAsString("scope");
