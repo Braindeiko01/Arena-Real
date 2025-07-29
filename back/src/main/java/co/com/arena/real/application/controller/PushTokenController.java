@@ -2,7 +2,6 @@ package co.com.arena.real.application.controller;
 
 import co.com.arena.real.application.service.PushNotificationService;
 import co.com.arena.real.application.service.TokenValidationService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import co.com.arena.real.infrastructure.dto.rq.PushTokenRequest;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import lombok.RequiredArgsConstructor;
