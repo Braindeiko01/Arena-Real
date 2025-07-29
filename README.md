@@ -41,7 +41,7 @@ The following table lists the available REST and SSE endpoints, the required HTT
 |-------|--------|------|--------------|
 | `/api/register` | POST | Public | No |
 | `/api/referrals/earnings/{userId}` | GET | User | Yes |
-| `/api/push/register` | POST | Public | No |
+| `/api/push/register` | POST | Public | Yes |
 | `/api/jugadores` | PUT | Public | No |
 | `/api/jugadores/{id}` | GET | Public | No |
 | `/api/jugadores/{id}/saldo` | GET | Public | No |
@@ -76,6 +76,8 @@ The following table lists the available REST and SSE endpoints, the required HTT
 | `/api/admin/games/{id}/winner/{playerId}` | POST | ADMIN | Yes |
 | `/api/admin/bets/{id}/state` | POST | ADMIN | Yes |
 | `/api/admin/auth/login` | POST | Public | No |
+
+**Note:** `/api/push/register` returns `401` if the `Authorization: Bearer <token>` header is missing or invalid.
 
 Build all Java modules in one step:
 
