@@ -2,6 +2,7 @@ package co.com.arena.real.application.controller;
 
 import co.com.arena.real.application.service.SseService;
 import co.com.arena.real.application.service.TransaccionService;
+import co.com.arena.real.application.service.TokenValidationService;
 import co.com.arena.real.infrastructure.dto.rq.TransaccionRequest;
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,9 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtException;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
@@ -33,7 +31,7 @@ public class TransaccionController {
 
     private final TransaccionService transaccionService;
     private final SseService sseService;
-    private final JwtDecoder jwtDecoder;
+    private final TokenValidationService tokenValidationService;
 
     @PostMapping
     @Operation(summary = "Registrar transacción", description = "Crea una nueva transacción")
@@ -57,18 +55,6 @@ public class TransaccionController {
     }
 
     private void validateScope(String token) {
-        try {
-            Jwt jwt = jwtDecoder.decode(token);
-            String scope = jwt.getClaimAsString("scope");
-            if ("ADMIN".equals(scope) || "USER".equals(scope)) {
-                return;
-            }
-            if (jwt.hasClaim("firebase")) {
-                return;
-            }
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        } catch (JwtException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
+        tokenValidationService.validate(token);
     }
 }
