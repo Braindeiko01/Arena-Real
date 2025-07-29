@@ -13,6 +13,10 @@ export default function usePushNotifications() {
     if (!user?.id) return;
     if (!messaging) return;
     if (!('Notification' in window)) return;
+    if (!auth.currentUser) {
+      console.info('Push registration skipped: no Firebase user. Will retry after login.');
+      return;
+    }
 
     navigator.serviceWorker
       .register('/firebase-messaging-sw.js', { scope: '/' })
