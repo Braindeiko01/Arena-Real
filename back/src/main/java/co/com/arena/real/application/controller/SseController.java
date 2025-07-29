@@ -3,16 +3,12 @@ package co.com.arena.real.application.controller;
 import co.com.arena.real.application.service.MatchSseService;
 import co.com.arena.real.application.service.SseService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import co.com.arena.real.application.service.TokenValidationService;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
@@ -22,7 +18,7 @@ public class SseController {
 
     private final SseService sseService;
     private final MatchSseService matchSseService;
-    private final JwtDecoder jwtDecoder;
+    private final TokenValidationService tokenValidationService;
 
     @GetMapping("/transacciones/{jugadorId}")
     public SseEmitter streamTransacciones(@PathVariable String jugadorId,
@@ -46,18 +42,6 @@ public class SseController {
     }
 
     private void validateScope(String token) {
-        try {
-            Jwt jwt = jwtDecoder.decode(token);
-            String scope = jwt.getClaimAsString("scope");
-            if ("ADMIN".equals(scope) || "USER".equals(scope)) {
-                return;
-            }
-            if (jwt.hasClaim("firebase")) {
-                return;
-            }
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        } catch (JwtException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
+        tokenValidationService.validate(token);
     }
 }
