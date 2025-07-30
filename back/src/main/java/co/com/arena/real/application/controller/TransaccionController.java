@@ -3,12 +3,13 @@ package co.com.arena.real.application.controller;
 import co.com.arena.real.application.service.SseService;
 import co.com.arena.real.application.service.TransaccionService;
 import co.com.arena.real.application.service.TokenValidationService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import co.com.arena.real.infrastructure.dto.rq.TransaccionRequest;
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,6 +56,8 @@ public class TransaccionController {
     }
 
     private void validateScope(String token) {
-        tokenValidationService.validate(token);
+        if (tokenValidationService.validate(token).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
     }
 }
