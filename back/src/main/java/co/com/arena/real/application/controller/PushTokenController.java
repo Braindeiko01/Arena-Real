@@ -7,6 +7,7 @@ import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,11 +29,22 @@ public class PushTokenController {
     public ResponseEntity<Void> register(
             @RequestBody PushTokenRequest request,
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            tokenValidationService.validate(authHeader.substring(7));
-        } else {
-            tokenValidationService.validate(null);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
+        String token = authHeader.substring(7);
+        java.util.Optional<org.springframework.security.oauth2.jwt.Jwt> jwt = tokenValidationService.validate(token);
+
+        if (jwt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String subject = jwt.get().getSubject();
+        if (!subject.equals(request.getJugadorId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return jugadorRepository.findById(request.getJugadorId())
                 .map(jugador -> {
                     PushNotificationService svc = pushNotificationService.getIfAvailable();
