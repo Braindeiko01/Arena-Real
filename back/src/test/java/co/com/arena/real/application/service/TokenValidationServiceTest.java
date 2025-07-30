@@ -20,10 +20,7 @@ public class TokenValidationServiceTest {
     void returnsJwtForFirebaseToken() throws Exception {
         FirebaseToken fbToken = mock(FirebaseToken.class);
         when(fbToken.getUid()).thenReturn("123");
-        when(fbToken.getIssuedAtTimestamp()).thenReturn(1000L);
-        when(fbToken.getExpirationTimestamp()).thenReturn(2000L);
-        when(fbToken.getClaims()).thenReturn(Map.of("foo", "bar"));
-
+        when(fbToken.getClaims()).thenReturn(Map.of("foo", "bar", "iat", 1000L, "exp", 2000L));
         FirebaseApp app = mock(FirebaseApp.class);
         ObjectProvider<FirebaseApp> provider = () -> app;
 

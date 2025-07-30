@@ -39,17 +39,29 @@ public class TokenValidationService {
                     FirebaseToken fbToken = FirebaseAuth.getInstance(app).verifyIdToken(token);
                     Map<String, Object> claims = new HashMap<>(fbToken.getClaims());
                     claims.put("firebase", true);
-                    Jwt jwt = Jwt.withTokenValue(token)
+                    Long issued = getLongClaim(claims.get("iat"));
+                    Long expires = getLongClaim(claims.get("exp"));
+                    Jwt.Builder builder = Jwt.withTokenValue(token)
                             .subject(fbToken.getUid())
-                            .issuedAt(Instant.ofEpochSecond(fbToken.getIssuedAtTimestamp() / 1000))
-                            .expiresAt(Instant.ofEpochSecond(fbToken.getExpirationTimestamp() / 1000))
-                            .claims(claims)
-                            .build();
-                    return java.util.Optional.of(jwt);
+                            .claims(map -> map.putAll(claims));
+                    if (issued != null) {
+                        builder.issuedAt(Instant.ofEpochSecond(issued));
+                    }
+                    if (expires != null) {
+                        builder.expiresAt(Instant.ofEpochSecond(expires));
+                    }
+                    return java.util.Optional.of(builder.build());
                 } catch (FirebaseAuthException ignore) {
                 }
             }
         }
         return java.util.Optional.empty();
+    }
+
+    private Long getLongClaim(Object value) {
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        return null;
     }
 }
