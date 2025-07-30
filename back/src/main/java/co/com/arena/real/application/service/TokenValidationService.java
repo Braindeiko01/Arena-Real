@@ -3,6 +3,10 @@ package co.com.arena.real.application.service;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -32,8 +36,16 @@ public class TokenValidationService {
             FirebaseApp app = firebaseAppProvider.getIfAvailable();
             if (app != null) {
                 try {
-                    FirebaseAuth.getInstance(app).verifyIdToken(token);
-                    return java.util.Optional.empty();
+                    FirebaseToken fbToken = FirebaseAuth.getInstance(app).verifyIdToken(token);
+                    Map<String, Object> claims = new HashMap<>(fbToken.getClaims());
+                    claims.put("firebase", true);
+                    Jwt jwt = Jwt.withTokenValue(token)
+                            .subject(fbToken.getUid())
+                            .issuedAt(Instant.ofEpochSecond(fbToken.getIssuedAtTimestamp() / 1000))
+                            .expiresAt(Instant.ofEpochSecond(fbToken.getExpirationTimestamp() / 1000))
+                            .claims(claims)
+                            .build();
+                    return java.util.Optional.of(jwt);
                 } catch (FirebaseAuthException ignore) {
                 }
             }
