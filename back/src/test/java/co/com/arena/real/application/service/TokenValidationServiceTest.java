@@ -22,7 +22,6 @@ public class TokenValidationServiceTest {
         FirebaseToken fbToken = mock(FirebaseToken.class);
         when(fbToken.getUid()).thenReturn("123");
         when(fbToken.getClaims()).thenReturn(Map.of("foo", "bar", "iat", 1000L, "exp", 2000L));
-
         FirebaseApp app = mock(FirebaseApp.class);
         ObjectProvider<FirebaseApp> provider = () -> app;
         JwtDecoder decoder = mock(JwtDecoder.class);
