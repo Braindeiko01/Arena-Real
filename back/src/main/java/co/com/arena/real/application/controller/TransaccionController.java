@@ -51,13 +51,15 @@ public class TransaccionController {
     @GetMapping("/stream/{jugadorId}")
     public SseEmitter stream(@PathVariable String jugadorId,
                              @RequestParam String token) {
-        validateScope(token);
+        validateToken(token, jugadorId);
         return sseService.subscribe(jugadorId); // <- usando tu SseService refactorizado
     }
 
-    private void validateScope(String token) {
-        if (tokenValidationService.validate(token).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    private void validateToken(String token, String jugadorId) {
+        var jwt = tokenValidationService.validate(token)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        if (!jugadorId.equals(jwt.getSubject())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 }

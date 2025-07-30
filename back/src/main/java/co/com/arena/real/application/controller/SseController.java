@@ -25,27 +25,29 @@ public class SseController {
     @GetMapping("/transacciones/{jugadorId}")
     public SseEmitter streamTransacciones(@PathVariable String jugadorId,
                                           @RequestParam String token) {
-        validateScope(token);
+        validateToken(token, jugadorId);
         return sseService.subscribe(jugadorId);
     }
 
     @GetMapping("/matchmaking/{jugadorId}")
     public SseEmitter streamMatch(@PathVariable("jugadorId") String jugadorId,
                                   @RequestParam String token) {
-        validateScope(token);
+        validateToken(token, jugadorId);
         return matchSseService.subscribe(jugadorId);
     }
 
     @GetMapping("/match")
     public SseEmitter streamMatchLegacy(@RequestParam("jugadorId") String jugadorId,
                                         @RequestParam String token) {
-        validateScope(token);
+        validateToken(token, jugadorId);
         return matchSseService.subscribe(jugadorId);
     }
 
-    private void validateScope(String token) {
-        if (tokenValidationService.validate(token).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    private void validateToken(String token, String jugadorId) {
+        var jwt = tokenValidationService.validate(token)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        if (!jugadorId.equals(jwt.getSubject())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 }
