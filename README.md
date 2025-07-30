@@ -17,7 +17,13 @@ npm install
 npm run dev
 ```
 
-4. The `/chat` page shows all your conversations. When a chat is active, both
+4. Firebase Authentication opens a popup window when signing in with Google. To
+   allow this popup to close correctly, the frontend configures the
+   `Cross-Origin-Opener-Policy` header as `same-origin-allow-popups` in
+   `front/next.config.ts`. If you still see console warnings about the popup not
+   closing, make sure no browser extension is overriding this header.
+
+5. The `/chat` page shows all your conversations. When a chat is active, both
    the top and bottom navigation bars include a chat icon that links directly to
    that conversation. The icon displays a small red badge while the chat is
    active.
