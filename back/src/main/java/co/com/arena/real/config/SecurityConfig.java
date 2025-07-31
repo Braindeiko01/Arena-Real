@@ -128,15 +128,21 @@ public class SecurityConfig {
                     return adminManager;
                 } catch (JwtException ex) {
                     log.debug("Not an admin token: {}", ex.getMessage());
-                    try {
-                        firebaseJwtDecoder.decode(token);
-                        log.debug("Token validated as Firebase token");
-                        return firebaseManager;
-                    } catch (JwtException ex2) {
-                        log.debug("Invalid token for both decoders: {}", ex2.getMessage());
-                        return auth -> { throw new BadCredentialsException("Invalid token", ex2); };
-                    }
+                } catch (Exception ex) {
+                    log.error("Error decoding admin token", ex);
                 }
+
+                try {
+                    firebaseJwtDecoder.decode(token);
+                    log.debug("Token validated as Firebase token");
+                    return firebaseManager;
+                } catch (JwtException ex2) {
+                    log.debug("Invalid Firebase token: {}", ex2.getMessage());
+                } catch (Exception ex2) {
+                    log.error("Error decoding Firebase token", ex2);
+                }
+
+                return auth -> { throw new BadCredentialsException("Invalid token"); };
             }
             return auth -> { throw new BadCredentialsException("Missing bearer token"); };
         };
