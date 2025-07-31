@@ -24,6 +24,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -57,11 +58,11 @@ public class SecurityConfig {
             .exceptionHandling(ex -> ex
                     .authenticationEntryPoint((req, res, ae) -> {
                         log.error("Authentication failed", ae);
-                        res.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                     })
                     .accessDeniedHandler((req, res, ade) -> {
                         log.error("Access denied", ade);
-                        res.sendError(javax.servlet.http.HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+                        res.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
                     }));
         return http.build();
     }
@@ -147,7 +148,6 @@ public class SecurityConfig {
             return auth -> { throw new BadCredentialsException("Missing bearer token"); };
         };
     }
-
 
     @Bean
     @Primary
