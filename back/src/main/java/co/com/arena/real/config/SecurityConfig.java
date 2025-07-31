@@ -47,13 +47,22 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/public/**", "/auth/**", "/api/admin/auth/login", "/api/register", "/api/jugadores/**").permitAll()
-                    .requestMatchers("/api/admin/**", "/api/internal/**").hasRole("ADMIN")
-                    .requestMatchers("/sse/**", "/api/transacciones/**").hasRole("USER")
-                    .requestMatchers("/api/push/register").permitAll()
-                    .anyRequest().permitAll())
+                .requestMatchers("/public/**", "/auth/**", "/api/admin/auth/login", "/api/register", "/api/jugadores/**").permitAll()
+                .requestMatchers("/api/admin/**", "/api/internal/**").hasRole("ADMIN")
+                .requestMatchers("/sse/**", "/api/transacciones/**").hasRole("USER")
+                .requestMatchers("/api/push/register").permitAll()
+                .anyRequest().permitAll())
             .oauth2ResourceServer(oauth2 -> oauth2
-                    .authenticationManagerResolver(authenticationManagerResolver));
+                    .authenticationManagerResolver(authenticationManagerResolver))
+            .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint((req, res, ae) -> {
+                        log.error("Authentication failed", ae);
+                        res.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                    })
+                    .accessDeniedHandler((req, res, ade) -> {
+                        log.error("Access denied", ade);
+                        res.sendError(javax.servlet.http.HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+                    }));
         return http.build();
     }
 
@@ -112,14 +121,19 @@ public class SecurityConfig {
             String header = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (header != null && header.startsWith("Bearer ")) {
                 String token = header.substring(7);
+                log.debug("Resolving token for request {} {}", request.getMethod(), request.getRequestURI());
                 try {
                     hs256JwtDecoder.decode(token);
+                    log.debug("Token validated as admin token");
                     return adminManager;
                 } catch (JwtException ex) {
+                    log.debug("Not an admin token: {}", ex.getMessage());
                     try {
                         firebaseJwtDecoder.decode(token);
+                        log.debug("Token validated as Firebase token");
                         return firebaseManager;
                     } catch (JwtException ex2) {
+                        log.debug("Invalid token for both decoders: {}", ex2.getMessage());
                         return auth -> { throw new BadCredentialsException("Invalid token", ex2); };
                     }
                 }
