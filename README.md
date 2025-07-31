@@ -62,10 +62,10 @@ The following table lists the available REST and SSE endpoints, the required HTT
 | `/api/matchmaking/declinar` | POST | User | Yes |
 | `/api/transacciones` | POST | User | Yes |
 | `/api/transacciones/jugador/{id}` | GET | User | Yes |
-| `/api/transacciones/stream/{jugadorId}` | GET (SSE) | User/Admin | Yes |
-| `/sse/transacciones/{jugadorId}` | GET (SSE) | User/Admin | Yes |
-| `/sse/matchmaking/{jugadorId}` | GET (SSE) | User/Admin | Yes |
-| `/sse/match` | GET (SSE) | User/Admin | Yes |
+| `/api/transacciones/stream/{jugadorId}` | GET (SSE) | User | Yes |
+| `/sse/transacciones/{jugadorId}` | GET (SSE) | User | Yes |
+| `/sse/matchmaking/{jugadorId}` | GET (SSE) | User | Yes |
+| `/sse/match` | GET (SSE) | User | Yes |
 | `/api/chats/between` | GET | User | Yes |
 | `/api/chats/partida/{partidaId}` | GET | User | Yes |
 | `/api/chats/{chatId}/start-message` | POST | User | Yes |
