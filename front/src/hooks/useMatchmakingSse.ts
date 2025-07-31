@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import { useToast } from '@/hooks/use-toast';
 import { BACKEND_URL } from '@/lib/config';
 import { auth } from '@/lib/firebase';
@@ -182,9 +183,12 @@ export default function useMatchmakingSse(
           token = null;
         }
       }
-      const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}${token ? `?token=${token}` : ''}`;
+      const url = `${BACKEND_URL}/sse/matchmaking/${encodeURIComponent(playerId)}`;
       console.log('Abriendo conexión SSE de matchmaking:', url);
-      const es = new EventSource(url);
+      const es = new EventSourcePolyfill(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        withCredentials: false,
+      });
       eventSourceRef.current = es;
 
       es.onopen = () => {
@@ -210,8 +214,8 @@ export default function useMatchmakingSse(
         es.addEventListener('player-voted', votedHandlerRef.current as EventListener);
       }
 
-      es.onerror = (err) => {
-        console.error('Error en la conexión SSE de matchmaking:', err);
+        es.onerror = (err: Event) => {
+          console.error('Error en la conexión SSE de matchmaking:', err);
         toast({ title: 'Error de Matchmaking', description: 'La conexión se interrumpió. Reintentando...' });
         es.close();
         reconnectTimeoutRef.current = setTimeout(() => connect(), 3000);

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import useNotifications from '@/hooks/useNotifications';
@@ -33,16 +34,22 @@ export default function useTransactionUpdates() {
     document.addEventListener('visibilitychange', onVisibility);
 
     const connect = async () => {
+      if (!auth.currentUser) {
+        return;
+      }
       let token: string | null = null;
       if (typeof window !== 'undefined') {
         try {
-          token = await auth.currentUser?.getIdToken() || null;
+          token = await auth.currentUser?.getIdToken(true) || null;
         } catch {
           token = null;
         }
       }
-      const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}${token ? `?token=${token}` : ''}`;
-      const es = new EventSource(url);
+      const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
+      const es = new EventSourcePolyfill(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        withCredentials: false,
+      });
       eventSourceRef.current = es;
 
       es.onopen = () => {
@@ -82,7 +89,7 @@ export default function useTransactionUpdates() {
         await refreshUser();
       });
 
-      es.onerror = err => {
+      es.onerror = (err: Event) => {
         console.error('SSE error:', err);
         if (connectedRef.current) {
           toast({
@@ -96,17 +103,30 @@ export default function useTransactionUpdates() {
       };
     };
 
-    connect();
+    let authUnsub: (() => void) | undefined;
+    if (!auth.currentUser) {
+      console.info('Transaction SSE skipped: no Firebase user. Waiting for login...');
+      authUnsub = auth.onAuthStateChanged(u => {
+        if (u) {
+          connect();
+          authUnsub && authUnsub();
+          authUnsub = undefined;
+        }
+      });
+    } else {
+      connect();
+    }
 
     return () => {
-        if (eventSourceRef.current) {
-          eventSourceRef.current.close();
-        }
-        connectedRef.current = false;
-        if (reconnectTimeoutRef.current) {
-          clearTimeout(reconnectTimeoutRef.current);
-        }
-        document.removeEventListener('visibilitychange', onVisibility);
-      };
+      authUnsub && authUnsub();
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+      connectedRef.current = false;
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
   }, [user, refreshUser, updateUser, toast]);
 }
