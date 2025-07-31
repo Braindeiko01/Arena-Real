@@ -2,7 +2,6 @@ package co.com.arena.real.application.controller;
 
 import co.com.arena.real.application.service.SseService;
 import co.com.arena.real.application.service.TransaccionService;
-import co.com.arena.real.application.service.TokenValidationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import co.com.arena.real.infrastructure.dto.rq.TransaccionRequest;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -32,7 +31,6 @@ public class TransaccionController {
 
     private final TransaccionService transaccionService;
     private final SseService sseService;
-    private final TokenValidationService tokenValidationService;
 
     @PostMapping
     @Operation(summary = "Registrar transacción", description = "Crea una nueva transacción")
@@ -50,15 +48,13 @@ public class TransaccionController {
 
     @GetMapping("/stream/{jugadorId}")
     public SseEmitter stream(@PathVariable String jugadorId,
-                             @RequestParam String token) {
-        validateToken(token, jugadorId);
+                             Authentication authentication) {
+        checkJugador(jugadorId, authentication);
         return sseService.subscribe(jugadorId); // <- usando tu SseService refactorizado
     }
 
-    private void validateToken(String token, String jugadorId) {
-        var jwt = tokenValidationService.validate(token)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-        if (!jugadorId.equals(jwt.getSubject())) {
+    private void checkJugador(String jugadorId, Authentication authentication) {
+        if (authentication == null || !jugadorId.equals(authentication.getName())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
