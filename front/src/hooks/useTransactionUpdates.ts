@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import useNotifications from '@/hooks/useNotifications';
@@ -41,8 +42,11 @@ export default function useTransactionUpdates() {
           token = null;
         }
       }
-      const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}${token ? `?token=${token}` : ''}`;
-      const es = new EventSource(url);
+      const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
+      const es = new EventSourcePolyfill(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        withCredentials: false,
+      });
       eventSourceRef.current = es;
 
       es.onopen = () => {
@@ -82,7 +86,7 @@ export default function useTransactionUpdates() {
         await refreshUser();
       });
 
-      es.onerror = err => {
+      es.onerror = (err: Event) => {
         console.error('SSE error:', err);
         if (connectedRef.current) {
           toast({
