@@ -34,10 +34,13 @@ export default function useTransactionUpdates() {
     document.addEventListener('visibilitychange', onVisibility);
 
     const connect = async () => {
+      if (!auth.currentUser) {
+        return;
+      }
       let token: string | null = null;
       if (typeof window !== 'undefined') {
         try {
-          token = await auth.currentUser?.getIdToken() || null;
+          token = await auth.currentUser?.getIdToken(true) || null;
         } catch {
           token = null;
         }
@@ -100,17 +103,30 @@ export default function useTransactionUpdates() {
       };
     };
 
-    connect();
+    let authUnsub: (() => void) | undefined;
+    if (!auth.currentUser) {
+      console.info('Transaction SSE skipped: no Firebase user. Waiting for login...');
+      authUnsub = auth.onAuthStateChanged(u => {
+        if (u) {
+          connect();
+          authUnsub && authUnsub();
+          authUnsub = undefined;
+        }
+      });
+    } else {
+      connect();
+    }
 
     return () => {
-        if (eventSourceRef.current) {
-          eventSourceRef.current.close();
-        }
-        connectedRef.current = false;
-        if (reconnectTimeoutRef.current) {
-          clearTimeout(reconnectTimeoutRef.current);
-        }
-        document.removeEventListener('visibilitychange', onVisibility);
-      };
+      authUnsub && authUnsub();
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+      connectedRef.current = false;
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
   }, [user, refreshUser, updateUser, toast]);
 }

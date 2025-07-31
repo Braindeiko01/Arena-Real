@@ -50,7 +50,7 @@ public class TransaccionController {
     public SseEmitter stream(@PathVariable String jugadorId,
                              Authentication authentication) {
         checkJugador(jugadorId, authentication);
-        return sseService.subscribe(jugadorId); // <- usando tu SseService refactorizado
+        return sseService.subscribe(jugadorId);
     }
 
     private void checkJugador(String jugadorId, Authentication authentication) {
