@@ -35,6 +35,14 @@ public class AdminNotificationController {
         this.jwtDecoder = jwtDecoder;
     }
 
+    public AdminNotificationController(SseService sseService,
+            JugadorService jugadorService,
+            @Qualifier("hs256JwtDecoder") JwtDecoder jwtDecoder) {
+        this.sseService = sseService;
+        this.jugadorService = jugadorService;
+        this.jwtDecoder = jwtDecoder;
+    }
+
     @PostMapping("/notify-transaction-approved")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> notifyTransactionApproved(

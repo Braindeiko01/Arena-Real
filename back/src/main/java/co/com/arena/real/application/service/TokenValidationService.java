@@ -14,14 +14,18 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class TokenValidationService {
 
     private final @Qualifier("hs256JwtDecoder") JwtDecoder jwtDecoder;
     private final ObjectProvider<FirebaseApp> firebaseAppProvider;
+
+    public TokenValidationService(
+            @Qualifier("hs256JwtDecoder") JwtDecoder jwtDecoder,
+            ObjectProvider<FirebaseApp> firebaseAppProvider) {
+        this.jwtDecoder = jwtDecoder;
+        this.firebaseAppProvider = firebaseAppProvider;
+    }
 
     public java.util.Optional<Jwt> validate(String token) {
         if (token == null || token.isBlank()) {
