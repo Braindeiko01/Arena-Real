@@ -3,7 +3,6 @@ package co.com.arena.real.application.controller;
 import co.com.arena.real.application.service.SseService;
 import co.com.arena.real.application.service.JugadorService;
 import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,12 +21,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @Slf4j
 @RestController
 @RequestMapping("/api/internal")
-@RequiredArgsConstructor
 public class AdminNotificationController {
 
     private final SseService sseService;
     private final JugadorService jugadorService;
     private final @Qualifier("hs256JwtDecoder") JwtDecoder jwtDecoder;
+
+    public AdminNotificationController(SseService sseService,
+            JugadorService jugadorService,
+            @Qualifier("hs256JwtDecoder") JwtDecoder jwtDecoder) {
+        this.sseService = sseService;
+        this.jugadorService = jugadorService;
+        this.jwtDecoder = jwtDecoder;
+    }
 
     @PostMapping("/notify-transaction-approved")
     @PreAuthorize("hasRole('ADMIN')")
