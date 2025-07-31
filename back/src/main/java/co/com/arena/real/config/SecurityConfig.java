@@ -83,7 +83,7 @@ public class SecurityConfig {
         converter.setJwtGrantedAuthoritiesConverter(jwt -> java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_USER")));
         return converter;
     }
-  
+
     @Bean("hs256JwtDecoder")
     public JwtDecoder hs256JwtDecoder(@Value("${security.jwt-secret}") String secret) {
         SecretKey key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
@@ -128,20 +128,6 @@ public class SecurityConfig {
         };
     }
 
-
-    @Bean
-    @Primary
-    public JwtDecoder delegatingJwtDecoder(
-            @Qualifier("hs256JwtDecoder") JwtDecoder hs256JwtDecoder,
-            TokenValidationService tokenValidationService) {
-        return token -> {
-            try {
-                return hs256JwtDecoder.decode(token);
-            } catch (JwtException ex) {
-                return tokenValidationService.validate(token).orElseThrow(() -> ex);
-            }
-        };
-    }
 
     @Bean
     @Primary
