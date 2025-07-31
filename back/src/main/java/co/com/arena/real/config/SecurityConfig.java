@@ -1,6 +1,7 @@
 package co.com.arena.real.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -10,6 +11,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
@@ -24,6 +26,7 @@ import java.util.List;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import co.com.arena.real.application.service.TokenValidationService;
 
 @Configuration
 @EnableMethodSecurity
@@ -66,10 +69,24 @@ public class SecurityConfig {
         return converter;
     }
 
-    @Bean
-    public JwtDecoder jwtDecoder(@Value("${security.jwt-secret}") String secret) {
+    @Bean("hs256JwtDecoder")
+    public JwtDecoder hs256JwtDecoder(@Value("${security.jwt-secret}") String secret) {
         SecretKey key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         return NimbusJwtDecoder.withSecretKey(key).build();
+    }
+
+    @Bean
+    @Primary
+    public JwtDecoder delegatingJwtDecoder(
+            @Qualifier("hs256JwtDecoder") JwtDecoder hs256JwtDecoder,
+            TokenValidationService tokenValidationService) {
+        return token -> {
+            try {
+                return hs256JwtDecoder.decode(token);
+            } catch (JwtException ex) {
+                return tokenValidationService.validate(token).orElseThrow(() -> ex);
+            }
+        };
     }
 
     @Bean
