@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -26,7 +27,7 @@ public class AdminNotificationController {
 
     private final SseService sseService;
     private final JugadorService jugadorService;
-    private final JwtDecoder jwtDecoder;
+    private final @Qualifier("hs256JwtDecoder") JwtDecoder jwtDecoder;
 
     @PostMapping("/notify-transaction-approved")
     @PreAuthorize("hasRole('ADMIN')")

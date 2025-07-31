@@ -11,6 +11,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TokenValidationService {
 
-    private final JwtDecoder jwtDecoder;
+    private final @Qualifier("hs256JwtDecoder") JwtDecoder jwtDecoder;
     private final ObjectProvider<FirebaseApp> firebaseAppProvider;
 
     public java.util.Optional<Jwt> validate(String token) {
