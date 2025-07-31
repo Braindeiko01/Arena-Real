@@ -36,11 +36,10 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/public/**", "/auth/**", "/api/admin/auth/login", "/api/register", "/api/jugadores/**").permitAll()
-                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/api/admin/**", "/api/internal/**").hasRole("ADMIN")
                     .requestMatchers("/api/transacciones/stream/**", "/sse/**").permitAll()
                     .requestMatchers("/api/push/register").permitAll()
-                    .requestMatchers("/api/**").hasRole("USER")
-                    .anyRequest().denyAll())
+                    .anyRequest().permitAll())
             .oauth2ResourceServer(oauth2 -> oauth2
                     .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
         return http.build();
