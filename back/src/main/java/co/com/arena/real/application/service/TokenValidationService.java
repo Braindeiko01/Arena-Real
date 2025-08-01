@@ -1,30 +1,24 @@
 package co.com.arena.real.application.service;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseToken;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class TokenValidationService {
 
     private final @Qualifier("hs256JwtDecoder") JwtDecoder jwtDecoder;
-    private final ObjectProvider<FirebaseApp> firebaseAppProvider;
+    private final JwtDecoder firebaseJwtDecoder;
 
     public TokenValidationService(
             @Qualifier("hs256JwtDecoder") JwtDecoder jwtDecoder,
-            ObjectProvider<FirebaseApp> firebaseAppProvider) {
+            @Qualifier("firebaseJwtDecoder") JwtDecoder firebaseJwtDecoder) {
         this.jwtDecoder = jwtDecoder;
-        this.firebaseAppProvider = firebaseAppProvider;
+        this.firebaseJwtDecoder = firebaseJwtDecoder;
     }
 
     public java.util.Optional<Jwt> validate(String token) {
@@ -34,39 +28,25 @@ public class TokenValidationService {
         try {
             Jwt jwt = jwtDecoder.decode(token);
             String scope = jwt.getClaimAsString("scope");
-            if ("ADMIN".equals(scope) || "USER".equals(scope) || jwt.hasClaim("firebase")) {
+            if ("ADMIN".equals(scope) || "USER".equals(scope)) {
+                log.debug("Token validated as {} token", scope);
+                return java.util.Optional.of(jwt);
+            } else if (jwt.hasClaim("firebase")) {
+                log.debug("Token already contains firebase claim. Granting ROLE_USER");
                 return java.util.Optional.of(jwt);
             }
-        } catch (JwtException ex) {
-            FirebaseApp app = firebaseAppProvider.getIfAvailable();
-            if (app != null) {
-                try {
-                    FirebaseToken fbToken = FirebaseAuth.getInstance(app).verifyIdToken(token);
-                    Map<String, Object> claims = new HashMap<>(fbToken.getClaims());
-                    claims.put("firebase", true);
-                    Long issued = getLongClaim(claims.get("iat"));
-                    Long expires = getLongClaim(claims.get("exp"));
-                    Jwt.Builder builder = Jwt.withTokenValue(token)
-                            .subject(fbToken.getUid())
-                            .claims(map -> map.putAll(claims));
-                    if (issued != null) {
-                        builder.issuedAt(Instant.ofEpochSecond(issued));
-                    }
-                    if (expires != null) {
-                        builder.expiresAt(Instant.ofEpochSecond(expires));
-                    }
-                    return java.util.Optional.of(builder.build());
-                } catch (FirebaseAuthException ignore) {
-                }
-            }
+        } catch (JwtException ignore) {
+            // Not a HS256 token, try Firebase
         }
-        return java.util.Optional.empty();
-    }
 
-    private Long getLongClaim(Object value) {
-        if (value instanceof Number number) {
-            return number.longValue();
+        try {
+            Jwt firebaseJwt = firebaseJwtDecoder.decode(token);
+            log.debug("Token validated via Firebase. Granting ROLE_USER");
+            return java.util.Optional.of(firebaseJwt);
+        } catch (JwtException ex) {
+            log.debug("Invalid Firebase token: {}", ex.getMessage());
         }
-        return null;
+
+        return java.util.Optional.empty();
     }
 }
