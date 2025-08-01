@@ -71,8 +71,6 @@ The following table lists the available REST and SSE endpoints, the required HTT
 | `/api/chats/{chatId}/start-message` | POST | User | Yes |
 | `/api/chats/{chatId}/share-link` | POST | User | Yes |
 | `/api/chats/{chatId}/result-message` | POST | User | Yes |
-| `/api/internal/notify-transaction-approved` | POST | ADMIN | Yes |
-| `/api/internal/notify-prize-distributed` | POST | ADMIN | Yes |
 | `/api/admin/images` | GET | ADMIN | Yes |
 | `/api/admin/images/{id}/approve` | POST | ADMIN | Yes |
 | `/api/admin/transactions` | GET | ADMIN | Yes |
@@ -85,24 +83,13 @@ The following table lists the available REST and SSE endpoints, the required HTT
 
 **Note:** `/api/push/register` returns `401` if the `Authorization: Bearer <token>` header is missing or invalid.
 
-Build all Java modules in one step:
+Build the backend:
 
 ```bash
 mvn install
 ```
 
-This installs `shared-core`, the main backend and `admin-back` into your local
-Maven repository. If the admin backend fails with errors like `package
-co.com.arena.real.application.service does not exist`, verify that the install
-command completed successfully.
-
-If the admin backend fails with errors like `package co.com.arena.real.application.service does not exist`,
-verify that the main backend was installed locally:
-
-```bash
-cd back
-mvn install -DskipTests
-```
+This installs the backend dependencies into your local Maven repository.
 
 Before starting the backend, set the path to your Firebase service account
 credentials using either the custom `FIREBASE_SERVICE_ACCOUNT_FILE` variable or
@@ -141,48 +128,10 @@ Recuerda reiniciar el servidor de desarrollo después de modificar este archivo.
 
 ## Admin console
 
-Two new applications provide an isolated admin panel:
-
-- `admin-back` – Spring Boot backend exposing admin endpoints on port `8081`.
-- `admin` – Next.js frontend located in the `admin/` folder.
-
-Run the admin backend:
-
-```bash
-cd admin-back
-mvn spring-boot:run
-```
-
-
-Before running, configure a database connection. Create `admin-back/.env` (you can copy from `.env.example`) and set:
-
-```env
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/arena_real
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=postgres
-# Use a 256‑bit value (at least 32 characters)
-SECURITY_JWT_SECRET=5e8f0bc1f6c34fdfadcb5c1249eb4d77b91c8f2d0316fabbf90c1aaaf7b39cdd
-# Generate your own secret with:
-# openssl rand -hex 32
-ADMIN_CREDENTIALS_USER=admin
-ADMIN_CREDENTIALS_PASSWORD=admin
-```
-The application reads this `.env` file automatically at startup thanks to the
-`spring-dotenv` dependency, so no manual `export` is required. Set
-`dotenv.enabled=true` in your configuration to activate it. Administrative
-operations like approving transactions or validating game results are no longer
-available in the main backend. Use the admin API instead.
-Default values are provided in `admin-back/src/main/resources/application.properties`.
-
-You can obtain a JWT with:
-
-```bash
-curl -X POST -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin"}' \
-  http://localhost:8081/api/admin/auth/login
-```
-
-Run the admin frontend:
+An admin dashboard lives in the `admin/` folder and uses the same backend.
+Admin endpoints are available under `/api/admin` on the main server (port
+`8080` by default). Start the backend as explained above and then run the admin
+frontend:
 
 ```bash
 cd admin
@@ -193,15 +142,15 @@ npm run dev
 Copy `admin/.env.example` to `admin/.env.local` and set the API URL:
 
 ```env
-NEXT_PUBLIC_ADMIN_API_URL=http://localhost:8081
+NEXT_PUBLIC_BACKEND_API_URL=http://localhost:8080
 ```
 
 ### Troubleshooting 401 errors
 
 If you receive `401` responses from the admin API after logging in, verify:
 
-1. Ensure the values in `admin-back/.env` are correct. The backend loads this
-   file automatically when starting.
+1. Ensure the values in `back/.env` are correct. The backend loads this file
+   automatically when starting.
 
 2. The login request returns a token and it is stored as `adminToken` in
    `localStorage`. Use the browser dev tools to inspect this value.
@@ -226,20 +175,17 @@ that points to an accessible Maven repository.
 
 When an admin marks a transaction as **ENTREGADA** in the admin console:
 
-1. `AdminService` calls `TransaccionService.aprobarTransaccion` in the admin backend.
-2. The admin backend sends two requests to the main backend:
-   - The backend now emits a `saldo-actualizar` SSE event automatically whenever a player's balance changes.
-   - `/api/internal/notify-transaction-approved` emits both `transaccion-aprobada` and `saldo-actualizar` SSE events.
-3. The user client now uses `useTransactionUpdates` to receive these notifications in real time.
+1. `AdminService` calls `TransaccionService.aprobarTransaccion` in the backend.
+2. The backend emits `transaccion-aprobada` and `saldo-actualizar` SSE events so clients update in real time.
+3. The user client now uses `useTransactionUpdates` to receive these notifications.
    If the connection was lost, the hook refreshes data when the page becomes visible or after reconnecting.
 
 ## Prize distribution
 
 When an admin distributes a prize from the admin panel:
 
-1. `AdminService` calls `PartidaService.marcarComoValidada` in the admin backend.
-2. The created `TransaccionResponse` is sent to the main backend via `/api/internal/notify-prize-distributed`.
-3. That endpoint emits `transaccion-aprobada` and `saldo-actualizar` SSE events so the winner's balance updates in real time.
+1. `AdminService` calls `PartidaService.marcarComoValidada` in the backend.
+2. The resulting `TransaccionResponse` triggers `transaccion-aprobada` and `saldo-actualizar` SSE events so the winner's balance updates in real time.
 
 ## Referral system
 
@@ -251,8 +197,8 @@ GET  /api/referrals/earnings/{userId}
 ```
 
 Registering accepts an optional `referralCode`. When a referred player finishes a duel,
-the inviter automatically earns COP 1000. Rewards are credited after the admin
-backend validates the duel. The frontend includes a **Referidos** page at `/referrals` showing your code and total earned.
+the inviter automatically earns COP 1000. Rewards are credited after the backend
+validates the duel. The frontend includes a **Referidos** page at `/referrals` showing your code and total earned.
 ## Firestore chat migration
 
 Some early deployments stored chats under `chats/{chatId}/chats/{subId}`. The frontend only looks at the `chats/` collection, so these documents need to be copied to the root collection. A helper script is available in `front/scripts/migrateChats.ts`.

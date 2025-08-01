@@ -17,7 +17,6 @@ import co.com.arena.real.application.service.PartidaService;
 import co.com.arena.real.application.service.TransaccionService;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.Apuesta;
-import co.com.arena.real.admin.infrastructure.client.UsersBackendClient;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,6 @@ public class AdminService {
     private final ChatService chatService;
     private final PartidaService partidaService;
     private final TransaccionService transaccionService;
-    private final UsersBackendClient usersBackendClient;
 
     @Transactional(readOnly = true)
     public List<ImageDto> listPendingImages() {
@@ -90,9 +88,9 @@ public class AdminService {
 
     @Transactional
     public void approveTransaction(UUID id) {
-        co.com.arena.real.infrastructure.dto.rs.TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
-        log.info("\uD83D\uDD04 Solicitando actualizaci\u00f3n de saldo para jugador {}", resp.getJugadorId());
-        usersBackendClient.notifyTransactionApproved(resp);
+        co.com.arena.real.infrastructure.dto.rs.TransaccionResponse resp =
+                transaccionService.aprobarTransaccion(id);
+        log.info("\uD83D\uDD04 Transacci\u00f3n aprobada para jugador {}", resp.getJugadorId());
     }
 
     @Transactional
@@ -110,9 +108,7 @@ public class AdminService {
             if (newStatus == EstadoTransaccion.APROBADA
                     && !EstadoTransaccion.APROBADA.equals(t.getEstado())) {
                 TransaccionResponse resp = transaccionService.aprobarTransaccion(id);
-                log.info("\uD83D\uDD04 Solicitando actualizaci\u00f3n de saldo para jugador {}", resp.getJugadorId());
-                log.info("➡️ Transacción aprobada. Notificando al backend principal... Jugador ID: {}, Transacción ID: {}", resp.getJugadorId(), resp.getId());
-                usersBackendClient.notifyTransactionApproved(resp);
+                log.info("\uD83D\uDD04 Transacci\u00f3n aprobada para jugador {}", resp.getJugadorId());
                 return;
             }
 
@@ -156,9 +152,7 @@ public class AdminService {
     public void distributePrize(UUID gameId) {
         TransaccionResponse premio = partidaService.marcarComoValidada(gameId);
         if (premio != null) {
-            log.info("➡️ Premio generado. Notificando al backend principal... Jugador ID: {}, Transacción ID: {}",
-                    premio.getJugadorId(), premio.getId());
-            usersBackendClient.notifyPrizeDistributed(premio);
+            log.info("\uD83C\uDFC6 Premio generado para jugador {}", premio.getJugadorId());
         }
     }
 
