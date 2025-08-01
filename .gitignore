@@ -1,15 +1,6 @@
 back/src/main/resources/firebase/royaleduel-firebase-adminsdk-fbsvc-c7591b8656.json
 front/node_modules
 back/src/main/resources/firebase/royaleduel-firebase-adminsdk-fbsvc-35dea4ab7c.json
-admin-back/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
-admin-back/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
-admin-back/target/classes/application.properties
-admin-back/.idea/vcs.xml
-admin-back/.idea/misc.xml
-admin-back/.idea/jarRepositories.xml
-admin-back/.idea/encodings.xml
-admin-back/.idea/compiler.xml
-admin-back/.idea/workspace.xml
 
 # -----------------------------------------------------
 # Common build and dependency directories
@@ -39,7 +30,6 @@ admin-back/.idea/workspace.xml
 # Temporary Maven error logs
 back/\[Help*
 \[Help
-admin-back/mvn
 admin/package-lock.json
 front/package-lock.json
 front/package.json
