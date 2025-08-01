@@ -28,7 +28,7 @@ export default function useApprovedTransactionsSse() {
       let token: string | null = null;
       if (typeof window !== 'undefined') {
         try {
-          token = await auth.currentUser?.getIdToken() || null;
+          token = await auth.currentUser?.getIdToken(true) || null;
         } catch {
           token = null;
         }

@@ -122,7 +122,8 @@ public class SecurityConfig {
             String header = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (header != null && header.startsWith("Bearer ")) {
                 String token = header.substring(7);
-                log.info("Token recibido: {}", token);
+                String tokenSnippet = token.length() > 8 ? token.substring(0, 8) + "..." : token;
+                log.debug("Token recibido snippet: {}", tokenSnippet);
                 log.debug("Resolving token for request {} {}", request.getMethod(), request.getRequestURI());
                 try {
                     hs256JwtDecoder.decode(token);
