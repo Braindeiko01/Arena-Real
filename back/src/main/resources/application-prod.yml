@@ -15,7 +15,3 @@ service:
     credentials:
       user: ${ADMIN_CREDENTIALS_USER:admin}
       password: ${ADMIN_CREDENTIALS_PASSWORD:admin}
-users:
-  backend:
-    url: ${USERS_BACKEND_URL:http://localhost:8080}
-    token: ${USERS_BACKEND_TOKEN:changeme}

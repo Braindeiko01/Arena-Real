@@ -1,4 +1,4 @@
-const baseUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || 'http://localhost:8081';
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
 
 function authHeaders(): HeadersInit {
   const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null;
