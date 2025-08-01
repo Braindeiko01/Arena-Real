@@ -127,7 +127,7 @@ public class SecurityConfig {
                 log.debug("Resolving token for request {} {}", request.getMethod(), request.getRequestURI());
                 try {
                     hs256JwtDecoder.decode(token);
-                    log.debug("Token validated as admin token");
+                    log.debug("Token validated as admin token -> ROLE_ADMIN");
                     return adminManager;
                 } catch (JwtException ex) {
                     log.debug("Not an admin token: {}", ex.getMessage());
@@ -137,7 +137,7 @@ public class SecurityConfig {
 
                 try {
                     firebaseJwtDecoder.decode(token);
-                    log.debug("Token validated as Firebase token");
+                    log.debug("Token validated as Firebase token -> ROLE_USER");
                     return firebaseManager;
                 } catch (JwtException ex2) {
                     log.debug("Invalid Firebase token: {}", ex2.getMessage());
