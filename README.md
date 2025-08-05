@@ -41,13 +41,13 @@ notifications.
 
 ## API overview
 
-The following table lists the available REST and SSE endpoints, the required HTTP method, expected role and whether a JWT token is required. Public endpoints can be called without authentication. ADMIN routes expect an `Authorization` header with a valid token and all other `/api` routes now require a token granting the `USER` role.
+The following table lists the available REST and SSE endpoints, the required HTTP method, expected role and whether a JWT token is required. Public endpoints can be called without authentication. ADMIN routes expect an `Authorization` header with a valid token and all other `/api` routes now require a token granting the `USER` role. Any route not explicitly listed as public is authenticated by default; only `/public/**`, `/auth/**`, `/api/admin/auth/login`, `/api/register` and `/api/jugadores/**` are open.
 
 | Route | Method | Role | JWT required |
 |-------|--------|------|--------------|
 | `/api/register` | POST | Public | No |
 | `/api/referrals/earnings/{userId}` | GET | User | Yes |
-| `/api/push/register` | POST | Public | Yes |
+| `/api/push/register` | POST | User | Yes |
 | `/api/jugadores` | PUT | Public | No |
 | `/api/jugadores/{id}` | GET | Public | No |
 | `/api/jugadores/{id}/saldo` | GET | Public | No |

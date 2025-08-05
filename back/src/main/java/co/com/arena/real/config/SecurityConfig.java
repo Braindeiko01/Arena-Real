@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**", "/api/internal/**").hasRole("ADMIN")
                 .requestMatchers("/sse/**", "/api/transacciones/**").hasRole("USER")
                 .requestMatchers("/api/push/register").hasRole("USER")
-                .anyRequest().permitAll())
+                .anyRequest().authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2
                     .authenticationManagerResolver(authenticationManagerResolver))
             .exceptionHandling(ex -> ex
