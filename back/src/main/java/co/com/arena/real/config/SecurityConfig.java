@@ -1,11 +1,27 @@
 package co.com.arena.real.config;
 
+import co.com.arena.real.application.service.FirebaseJwtDecoder;
+import co.com.arena.real.application.service.JwtDecoderResolver;
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -13,31 +29,13 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
-import com.nimbusds.jose.jwk.source.ImmutableSecret;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationManagerResolver;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import lombok.extern.slf4j.Slf4j;
-import java.util.List;
-import java.util.Arrays;
-import com.nimbusds.jwt.JWTParser;
-import java.text.ParseException;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import co.com.arena.real.application.service.FirebaseJwtDecoder;
 
 @Configuration
 @EnableMethodSecurity
@@ -53,7 +51,7 @@ public class SecurityConfig {
                 .requestMatchers("/public/**", "/auth/**", "/api/admin/auth/login", "/api/register", "/api/jugadores/**").permitAll()
                 .requestMatchers("/api/admin/**", "/api/internal/**").hasRole("ADMIN")
                 .requestMatchers("/sse/**", "/api/transacciones/**").hasRole("USER")
-                .requestMatchers("/api/push/register").permitAll()
+                .requestMatchers("/api/push/register").hasRole("USER")
                 .anyRequest().permitAll())
             .oauth2ResourceServer(oauth2 -> oauth2
                     .authenticationManagerResolver(authenticationManagerResolver))
@@ -114,7 +112,8 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver(
             @Qualifier("hs256JwtDecoder") JwtDecoder hs256JwtDecoder,
-            JwtDecoder firebaseJwtDecoder) {
+            JwtDecoder firebaseJwtDecoder,
+            JwtDecoderResolver decoderResolver) {
         JwtAuthenticationProvider adminProvider = new JwtAuthenticationProvider(hs256JwtDecoder);
         adminProvider.setJwtAuthenticationConverter(jwtAuthenticationConverter());
 
@@ -143,18 +142,16 @@ public class SecurityConfig {
                     }
                 }
 
-                try {
-                    String issuer = JWTParser.parse(token).getJWTClaimsSet().getIssuer();
-                    if (issuer != null && issuer.contains("securetoken")) {
-                        log.debug("Token issuer '{}' matched Firebase -> ROLE_USER", issuer);
-                        return firebaseManager;
-                    }
-                } catch (ParseException ex) {
-                    log.debug("Unable to parse token issuer: {}", ex.getMessage());
-                }
-
-                log.debug("Defaulting to admin token provider");
-                return adminManager;
+                return decoderResolver.decode(token)
+                        .map(decoded -> {
+                            if (decoded.provider() == JwtDecoderResolver.Provider.FIREBASE) {
+                                log.debug("Token resolved via Firebase decoder -> ROLE_USER");
+                                return firebaseManager;
+                            }
+                            log.debug("Defaulting to admin token provider");
+                            return adminManager;
+                        })
+                        .orElseThrow(() -> new BadCredentialsException("Invalid token"));
             }
             return auth -> { throw new BadCredentialsException("Missing bearer token"); };
         };
