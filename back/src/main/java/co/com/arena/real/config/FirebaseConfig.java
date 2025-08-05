@@ -5,6 +5,8 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessaging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -16,6 +18,8 @@ import java.io.IOException;
 
 @Configuration
 public class FirebaseConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(FirebaseConfig.class);
 
     @Bean
     @ConditionalOnProperty(prefix = "firebase", name = "enabled", havingValue = "true")
@@ -37,7 +41,7 @@ public class FirebaseConfig {
                     "Firebase credentials file not found. Set FIREBASE_SERVICE_ACCOUNT_FILE or GOOGLE_APPLICATION_CREDENTIALS.");
         }
 
-        System.out.println("Firebase service file path: " + serviceAccountPath);
+        log.debug("Firebase service file path: {}", serviceAccountPath);
 
         GoogleCredentials credentials;
         try (FileInputStream serviceAccount = new FileInputStream(serviceAccountPath)) {
@@ -49,7 +53,7 @@ public class FirebaseConfig {
                 .build();
 
         FirebaseApp app = FirebaseApp.initializeApp(options);
-        System.out.println("Firebase inicializado con: " + app.getName());
+        log.info("Firebase inicializado con: {}", app.getName());
         return app;
     }
 
