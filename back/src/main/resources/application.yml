@@ -36,10 +36,8 @@ admin:
 security:
   jwt-secret: ${SECURITY_JWT_SECRET:${ADMIN_SECURITY_JWT_SECRET}}
 cors:
-  # Allowed origins for CORS; empty list allows none by default
-  allowed-origins:
-  - http://localhost:3000
-  - http://localhost:3001
+  # Allowed origins for CORS; override with CORS_ALLOWED_ORIGINS env var
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3001}
      
 firebase:
   enabled: true
