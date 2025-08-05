@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FirebaseAuthService {
 
+    private final FirebaseAuth firebaseAuth;
+
     public String createCustomToken(String uid) {
         try {
-            return FirebaseAuth.getInstance().createCustomToken(uid);
+            return firebaseAuth.createCustomToken(uid);
         } catch (FirebaseAuthException e) {
             throw new RuntimeException("Error creando token", e);
         }
