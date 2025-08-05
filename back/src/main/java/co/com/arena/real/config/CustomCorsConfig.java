@@ -15,7 +15,7 @@ import org.springframework.web.filter.CorsFilter;
 public class CustomCorsConfig {
 
     @Bean
-    public FilterRegistrationBean<CorsFilter> corsFilter(@Value("${cors.allowed-origins:}") String corsAllowedOrigins) {
+    public FilterRegistrationBean<CorsFilter> customCorsFilter(@Value("${cors.allowed-origins:}") String corsAllowedOrigins) {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         List<String> origins = Arrays.stream(corsAllowedOrigins.split(","))
