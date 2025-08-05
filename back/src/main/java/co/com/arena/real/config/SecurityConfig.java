@@ -12,7 +12,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
@@ -32,6 +31,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Arrays;
+import com.nimbusds.jwt.JWTParser;
+import java.text.ParseException;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -130,27 +131,30 @@ public class SecurityConfig {
                 String tokenSnippet = token.length() > 8 ? token.substring(0, 8) + "..." : token;
                 log.debug("Token recibido snippet: {}", tokenSnippet);
                 log.debug("Resolving token for request {} {}", request.getMethod(), request.getRequestURI());
-                try {
-                    hs256JwtDecoder.decode(token);
-                    log.debug("Token validated as admin token -> ROLE_ADMIN");
-                    return adminManager;
-                } catch (JwtException ex) {
-                    log.debug("Not an admin token: {}", ex.getMessage());
-                } catch (Exception ex) {
-                    log.error("Error decoding admin token", ex);
+
+                String providerHeader = request.getHeader("X-Auth-Provider");
+                if (providerHeader != null) {
+                    if ("firebase".equalsIgnoreCase(providerHeader)) {
+                        log.debug("Using Firebase provider due to custom header");
+                        return firebaseManager;
+                    } else if ("admin".equalsIgnoreCase(providerHeader)) {
+                        log.debug("Using admin provider due to custom header");
+                        return adminManager;
+                    }
                 }
 
                 try {
-                    firebaseJwtDecoder.decode(token);
-                    log.debug("Token validated as Firebase token -> ROLE_USER");
-                    return firebaseManager;
-                } catch (JwtException ex2) {
-                    log.debug("Invalid Firebase token: {}", ex2.getMessage());
-                } catch (Exception ex2) {
-                    log.error("Error decoding Firebase token", ex2);
+                    String issuer = JWTParser.parse(token).getJWTClaimsSet().getIssuer();
+                    if (issuer != null && issuer.contains("securetoken")) {
+                        log.debug("Token issuer '{}' matched Firebase -> ROLE_USER", issuer);
+                        return firebaseManager;
+                    }
+                } catch (ParseException ex) {
+                    log.debug("Unable to parse token issuer: {}", ex.getMessage());
                 }
 
-                return auth -> { throw new BadCredentialsException("Invalid token"); };
+                log.debug("Defaulting to admin token provider");
+                return adminManager;
             }
             return auth -> { throw new BadCredentialsException("Missing bearer token"); };
         };
