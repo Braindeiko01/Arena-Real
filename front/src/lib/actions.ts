@@ -28,7 +28,9 @@ async function authorizedFetch(input: RequestInfo | URL, init: RequestInit = {})
   }
   const headers = {
     ...(init.headers || {}),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(token
+      ? { Authorization: `Bearer ${token}`, 'X-Auth-Provider': 'firebase' }
+      : {}),
   } as HeadersInit
   return fetch(input, { ...init, headers })
 }
