@@ -47,9 +47,9 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/public/**", "/auth/**", "/api/admin/auth/login", "/api/register", "/api/jugadores/**").permitAll()
+                .requestMatchers("/public/**", "/auth/**", "/api/admin/auth/login", "/api/register", "/api/jugadores/**", "/sse/**", "/api/transacciones/stream/**").permitAll()
                 .requestMatchers("/api/admin/**", "/api/internal/**").hasRole("ADMIN")
-                .requestMatchers("/sse/**", "/api/transacciones/**").hasRole("USER")
+                .requestMatchers("/api/transacciones/**").hasRole("USER")
                 .requestMatchers("/api/push/register").hasRole("USER")
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2

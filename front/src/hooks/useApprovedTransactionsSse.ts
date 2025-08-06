@@ -3,7 +3,6 @@ import { EventSourcePolyfill } from 'event-source-polyfill';
 import { useAuth } from '@/hooks/useAuth';
 import useNotifications from '@/hooks/useNotifications';
 import { BACKEND_URL } from '@/lib/config';
-import { auth } from '@/lib/firebase';
 
 export interface ApprovedTransaction {
   id: string;
@@ -24,20 +23,9 @@ export default function useApprovedTransactionsSse() {
   useEffect(() => {
     if (!user?.id) return;
 
-    const connect = async () => {
-      let token: string | null = null;
-      if (typeof window !== 'undefined') {
-        try {
-          token = await auth.currentUser?.getIdToken(true) || null;
-        } catch {
-          token = null;
-        }
-      }
+    const connect = () => {
       const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
-      const es = new EventSourcePolyfill(url, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        withCredentials: false,
-      });
+      const es = new EventSourcePolyfill(url);
       eventSourceRef.current = es;
 
       const handler = (event: MessageEvent) => {
