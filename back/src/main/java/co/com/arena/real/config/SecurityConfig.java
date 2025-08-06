@@ -23,6 +23,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -47,7 +48,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/public/**", "/auth/**", "/api/admin/auth/login", "/api/register", "/api/jugadores/**", "/sse/**", "/api/transacciones/stream/**","/api/push/register").permitAll()
+                .requestMatchers("/public/**", "/auth/**", "/api/admin/auth/login", "/api/register", "/api/jugadores/**", "/sse/**", "/api/transacciones/stream/**").permitAll()
                 .requestMatchers("/api/admin/**", "/api/internal/**").hasRole("ADMIN")
                 .requestMatchers("/api/transacciones/**").hasRole("USER")
                 .anyRequest().authenticated())
@@ -63,6 +64,11 @@ public class SecurityConfig {
                         res.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
                     }));
         return http.build();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers("/api/push/register");
     }
 
     @Bean
@@ -148,7 +154,7 @@ public class SecurityConfig {
                         })
                         .orElseThrow(() -> new BadCredentialsException("Invalid token"));
             }
-            return auth -> { throw new BadCredentialsException("Missing bearer token"); };
+            return null;
         };
     }
 
