@@ -4,7 +4,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import useNotifications from '@/hooks/useNotifications';
 import { BACKEND_URL } from '@/lib/config';
-import { auth } from '@/lib/firebase';
 
 
 /**
@@ -33,23 +32,9 @@ export default function useTransactionUpdates() {
     };
     document.addEventListener('visibilitychange', onVisibility);
 
-    const connect = async () => {
-      if (!auth.currentUser) {
-        return;
-      }
-      let token: string | null = null;
-      if (typeof window !== 'undefined') {
-        try {
-          token = await auth.currentUser?.getIdToken(true) || null;
-        } catch {
-          token = null;
-        }
-      }
+    const connect = () => {
       const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
-      const es = new EventSourcePolyfill(url, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        withCredentials: false,
-      });
+      const es = new EventSourcePolyfill(url);
       eventSourceRef.current = es;
 
       es.onopen = () => {
@@ -103,22 +88,9 @@ export default function useTransactionUpdates() {
       };
     };
 
-    let authUnsub: (() => void) | undefined;
-    if (!auth.currentUser) {
-      console.info('Transaction SSE skipped: no Firebase user. Waiting for login...');
-      authUnsub = auth.onAuthStateChanged(u => {
-        if (u) {
-          connect();
-          authUnsub && authUnsub();
-          authUnsub = undefined;
-        }
-      });
-    } else {
-      connect();
-    }
+    connect();
 
     return () => {
-      authUnsub && authUnsub();
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
