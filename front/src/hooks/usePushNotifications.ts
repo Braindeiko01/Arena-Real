@@ -40,7 +40,8 @@ export default function usePushNotifications() {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${authToken}`
+                Authorization: `Bearer ${authToken}`,
+                'X-Auth-Provider': 'firebase'
               },
               body: JSON.stringify({ jugadorId: user.id, token })
             });
