@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,12 +49,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity<String> handleJwt(JwtException ex) {
-        log.error("Invalid JWT", ex);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
     }
 
     @ExceptionHandler(AuthenticationException.class)
