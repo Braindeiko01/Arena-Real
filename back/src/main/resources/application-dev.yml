@@ -11,3 +11,5 @@ service:
     credentials:
       user: ${ADMIN_CREDENTIALS_USER:admin}
       password: ${ADMIN_CREDENTIALS_PASSWORD:admin}
+jwt:
+  secret: ${JWT_SECRET:changeme}
