@@ -41,46 +41,7 @@ notifications.
 
 ## API overview
 
-The following table lists the available REST and SSE endpoints, the required HTTP method, expected role and whether a JWT token is required. Public endpoints can be called without authentication. ADMIN routes expect an `Authorization` header with a valid token and all other `/api` routes now require a token granting the `USER` role. Any route not explicitly listed as public is authenticated by default; only `/public/**`, `/auth/**`, `/api/admin/auth/login`, `/api/register` and `/api/jugadores/**` are open.
-
-| Route | Method | Role | JWT required |
-|-------|--------|------|--------------|
-| `/api/register` | POST | Public | No |
-| `/api/referrals/earnings/{userId}` | GET | User | Yes |
-| `/api/push/register` | POST | Public | No |
-| `/api/jugadores` | PUT | Public | No |
-| `/api/jugadores/{id}` | GET | Public | No |
-| `/api/jugadores/{id}/saldo` | GET | Public | No |
-| `/api/partidas/apuesta/{apuestaId}` | GET | User | Yes |
-| `/api/partidas/chat/{chatId}` | GET | User | Yes |
-| `/api/partidas/{id}/aceptar/{jugadorId}` | PUT | User | Yes |
-| `/api/partidas/{id}/cancelar` | PUT | User | Yes |
-| `/api/partidas/{id}/resultado` | PUT | User | Yes |
-| `/api/partidas/jugador/{jugadorId}` | GET | User | Yes |
-| `/api/matchmaking/ejecutar` | POST | User | Yes |
-| `/api/matchmaking/cancelar` | POST | User | Yes |
-| `/api/matchmaking/declinar` | POST | User | Yes |
-| `/api/transacciones` | POST | User | Yes |
-| `/api/transacciones/jugador/{id}` | GET | User | Yes |
-| `/api/transacciones/stream/{jugadorId}` | GET (SSE) | User | Yes |
-| `/sse/transacciones/{jugadorId}` | GET (SSE) | User | Yes |
-| `/sse/matchmaking/{jugadorId}` | GET (SSE) | User | Yes |
-| `/sse/match` | GET (SSE) | User | Yes |
-| `/api/chats/between` | GET | User | Yes |
-| `/api/chats/partida/{partidaId}` | GET | User | Yes |
-| `/api/chats/{chatId}/start-message` | POST | User | Yes |
-| `/api/chats/{chatId}/share-link` | POST | User | Yes |
-| `/api/chats/{chatId}/result-message` | POST | User | Yes |
-| `/api/admin/images` | GET | ADMIN | Yes |
-| `/api/admin/images/{id}/approve` | POST | ADMIN | Yes |
-| `/api/admin/transactions` | GET | ADMIN | Yes |
-| `/api/admin/transactions/{id}/status` | POST | ADMIN | Yes |
-| `/api/admin/games/results` | GET | ADMIN | Yes |
-| `/api/admin/games/{id}/distribute` | POST | ADMIN | Yes |
-| `/api/admin/games/{id}/winner/{playerId}` | POST | ADMIN | Yes |
-| `/api/admin/bets/{id}/state` | POST | ADMIN | Yes |
-| `/api/admin/auth/login` | POST | Public | No |
-
+The backend exposes REST and SSE endpoints.
 
 Build the backend:
 
@@ -144,18 +105,6 @@ Copy `admin/.env.example` to `admin/.env.local` and set the API URL:
 NEXT_PUBLIC_BACKEND_API_URL=http://localhost:8080
 ```
 
-### Troubleshooting 401 errors
-
-If you receive `401` responses from the admin API after logging in, verify:
-
-1. Ensure the values in `back/.env` are correct. The backend loads this file
-   automatically when starting.
-
-2. The login request returns a token and it is stored as `adminToken` in
-   `localStorage`. Use the browser dev tools to inspect this value.
-3. Subsequent requests must include `Authorization: Bearer <token>` in the
-   headers. If the token is missing or expired, remove it with
-   `localStorage.removeItem('adminToken')` and log in again.
 
 ## Maven troubleshooting
 

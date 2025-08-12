@@ -6,10 +6,7 @@ import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,14 +22,7 @@ public class PushTokenController {
     private final JugadorRepository jugadorRepository;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(
-            @RequestBody PushTokenRequest request,
-            @AuthenticationPrincipal Jwt jwt) {
-        String subject = jwt.getSubject();
-        if (!subject.equals(request.getJugadorId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
+    public ResponseEntity<Void> register(@RequestBody PushTokenRequest request) {
         return jugadorRepository.findById(request.getJugadorId())
                 .map(jugador -> {
                     PushNotificationService svc = pushNotificationService.getIfAvailable();
