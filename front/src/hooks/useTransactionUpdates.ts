@@ -34,7 +34,7 @@ export default function useTransactionUpdates() {
 
     const connect = () => {
       const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
-      const es = new EventSourcePolyfill(url,{heartbeaTimeout:120000});
+      const es = new EventSourcePolyfill(url, { heartbeatTimeout: 120000 });
       eventSourceRef.current = es;
 
       es.onopen = () => {
