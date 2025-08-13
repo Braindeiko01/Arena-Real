@@ -93,6 +93,11 @@ Admin endpoints are available under `/api/admin` on the main server (port
 `8080` by default). Start the backend as explained above and then run the admin
 frontend:
 
+The login uses credentials configured via `admin.credentials` in the backend
+configuration. For local development the default username and password are both
+`admin`. When deploying, override these with the `ADMIN_CREDENTIALS_USER` and
+`ADMIN_CREDENTIALS_PASSWORD` environment variables.
+
 ```bash
 cd admin
 npm install

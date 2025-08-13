@@ -30,8 +30,8 @@ admin:
   secret:
     token: ${ADMIN_SECRET_TOKEN}
   credentials:
-    user: ${ADMIN_CREDENTIALS_USER}
-    password: ${ADMIN_CREDENTIALS_PASSWORD}
+    user: ${ADMIN_CREDENTIALS_USER:admin}
+    password: ${ADMIN_CREDENTIALS_PASSWORD:admin}
 jwt:
   secret: ${JWT_SECRET:changeme}
 cors:
