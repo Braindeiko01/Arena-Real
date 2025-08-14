@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/transacciones")
@@ -46,10 +44,12 @@ public class TransaccionController {
         return ResponseEntity.ok(lista);
     }
 
-    @GetMapping(value = "/stream/{jugadorId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    // Alias de SSE bajo /api/transacciones
+    @GetMapping(path = "/stream/{jugadorId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter stream(
             @PathVariable String jugadorId,
-            @RequestHeader(value = "Last-Event-ID", required = false) String lastEventId) {
+            @RequestHeader(value = "Last-Event-ID", required = false) String lastEventId
+    ) {
         SseEmitter emitter = sseService.subscribe(jugadorId);
         sseService.replayOnSubscribe(jugadorId, lastEventId);
         return emitter;

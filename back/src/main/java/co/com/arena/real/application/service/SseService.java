@@ -6,11 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
+import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.ArrayDeque;
 
 @Service
 @RequiredArgsConstructor
@@ -35,8 +34,14 @@ public class SseService extends AbstractSseEmitterService {
         }
     }
 
+    // Un emisor por jugador (heredado de AbstractSseEmitterService)
+    // protected final Map<String, EmitterWrapper> emitters = ...
+
+    // Secuencia por jugador (para IDs)
     private final Map<String, AtomicLong> seqByUser = new ConcurrentHashMap<>();
+    // Buffer acotado por jugador para replay con Last-Event-ID
     private final Map<String, ArrayDeque<Ev>> buffers = new ConcurrentHashMap<>();
+    // Últimos por tipo (snapshot consistente)
     private final Map<String, Map<String, LatestEvent>> latestByType = new ConcurrentHashMap<>();
 
     @Override
@@ -46,12 +51,15 @@ public class SseService extends AbstractSseEmitterService {
             wrapper.lastAccess = System.currentTimeMillis();
         } catch (Exception ignored) {
         }
+        // El replay real lo dispara el controlador llamando a replayOnSubscribe(...)
     }
 
     public SseEmitter subscribe(String jugadorId) {
+        // Asegúrate de que AbstractSseEmitterService registre onTimeout/onError/onCompletion -> removeEmitter(jugadorId)
         return super.subscribe(jugadorId);
     }
 
+    /** Reproduce eventos pendientes al suscribirse/reconectarse */
     public void replayOnSubscribe(String jugadorId, String lastEventIdStr) {
         EmitterWrapper wrapper = emitters.get(jugadorId);
         if (wrapper == null) {
@@ -89,9 +97,28 @@ public class SseService extends AbstractSseEmitterService {
         }
     }
 
+    /** Atajo específico de dominio */
     public void notificarTransaccionAprobada(TransaccionResponse dto) {
         sendEvent(dto.getJugadorId(), "transaccion-aprobada", dto);
     }
+
+    /** Enviar evento (o encolar si el usuario aún no está suscrito) */
+    public void sendEvent(String jugadorId, String eventName, Object data) {
+        long id = nextId(jugadorId);
+        Ev ev = new Ev(id, eventName, data);
+
+        // Actualizar snapshot por tipo
+        latestByType.computeIfAbsent(jugadorId, k -> new ConcurrentHashMap<>())
+                .put(eventName, new LatestEvent(eventName, data));
+
+        // Encolar en buffer acotado
+        ArrayDeque<Ev> dq = buffers.computeIfAbsent(jugadorId, k -> new ArrayDeque<>(BUFFER_CAPACITY));
+        synchronized (dq) {
+            if (dq.size() == BUFFER_CAPACITY) {
+                dq.removeFirst();
+            }
+            dq.addLast(ev);
+        }
 
     public void sendEvent(String jugadorId, String eventName, Object data) {
         EmitterWrapper wrapper = emitters.get(jugadorId);

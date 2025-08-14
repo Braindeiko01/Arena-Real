@@ -23,18 +23,21 @@ public class SseController {
     @GetMapping(path = "/transacciones/{jugadorId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamTransacciones(
             @PathVariable String jugadorId,
-            @RequestHeader(value = "Last-Event-ID", required = false) String lastEventId) {
+            @RequestHeader(value = "Last-Event-ID", required = false) String lastEventId
+    ) {
+
         SseEmitter emitter = sseService.subscribe(jugadorId);
         sseService.replayOnSubscribe(jugadorId, lastEventId);
         return emitter;
     }
 
-    @GetMapping("/matchmaking/{jugadorId}")
+    @GetMapping(path = "/matchmaking/{jugadorId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamMatch(@PathVariable("jugadorId") String jugadorId) {
         return matchSseService.subscribe(jugadorId);
     }
 
-    @GetMapping("/match")
+    // Legacy: /sse/match?jugadorId=...
+    @GetMapping(path = "/match", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamMatchLegacy(@RequestParam("jugadorId") String jugadorId) {
         return matchSseService.subscribe(jugadorId);
     }
