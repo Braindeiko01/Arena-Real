@@ -25,7 +25,6 @@ public class SseController {
             @PathVariable String jugadorId,
             @RequestHeader(value = "Last-Event-ID", required = false) String lastEventId
     ) {
-
         SseEmitter emitter = sseService.subscribe(jugadorId);
         sseService.replayOnSubscribe(jugadorId, lastEventId);
         return emitter;

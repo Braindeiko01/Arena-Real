@@ -19,7 +19,6 @@ public class SseService extends AbstractSseEmitterService {
 
     private record LatestEvent(String name, Object data) {}
     private static final int BUFFER_CAPACITY = 50;
-
     private static final class Ev {
         final long id;
         final String name;
@@ -33,7 +32,6 @@ public class SseService extends AbstractSseEmitterService {
             this.ts = System.currentTimeMillis();
         }
     }
-
     // Un emisor por jugador (heredado de AbstractSseEmitterService)
     // protected final Map<String, EmitterWrapper> emitters = ...
 
@@ -110,6 +108,15 @@ public class SseService extends AbstractSseEmitterService {
         // Actualizar snapshot por tipo
         latestByType.computeIfAbsent(jugadorId, k -> new ConcurrentHashMap<>())
                 .put(eventName, new LatestEvent(eventName, data));
+
+        // Encolar en buffer acotado
+        ArrayDeque<Ev> dq = buffers.computeIfAbsent(jugadorId, k -> new ArrayDeque<>(BUFFER_CAPACITY));
+        synchronized (dq) {
+            if (dq.size() == BUFFER_CAPACITY) {
+                dq.removeFirst();
+            }
+            dq.addLast(ev);
+        }
 
         // Encolar en buffer acotado
         ArrayDeque<Ev> dq = buffers.computeIfAbsent(jugadorId, k -> new ArrayDeque<>(BUFFER_CAPACITY));
