@@ -52,8 +52,12 @@ public class SseService extends AbstractSseEmitterService {
         // El replay real lo dispara el controlador llamando a replayOnSubscribe(...)
     }
 
+    /**
+     * Exposes the subscription endpoint while relying on
+     * {@link AbstractSseEmitterService} to register timeout, error and
+     * completion handlers that clean up emitters.
+     */
     public SseEmitter subscribe(String jugadorId) {
-        // Asegúrate de que AbstractSseEmitterService registre onTimeout/onError/onCompletion -> removeEmitter(jugadorId)
         return super.subscribe(jugadorId);
     }
 
@@ -99,9 +103,10 @@ public class SseService extends AbstractSseEmitterService {
     public void notificarTransaccionAprobada(TransaccionResponse dto) {
         sendEvent(dto.getJugadorId(), "transaccion-aprobada", dto);
     }
-
+    
     /** Enviar evento (o encolar si el usuario aún no está suscrito) */
     public void sendEvent(String jugadorId, String eventName, Object data) {
+        EmitterWrapper wrapper = emitters.get(jugadorId);
         long id = nextId(jugadorId);
         Ev ev = new Ev(id, eventName, data);
 
@@ -110,31 +115,6 @@ public class SseService extends AbstractSseEmitterService {
                 .put(eventName, new LatestEvent(eventName, data));
 
         // Encolar en buffer acotado
-        ArrayDeque<Ev> dq = buffers.computeIfAbsent(jugadorId, k -> new ArrayDeque<>(BUFFER_CAPACITY));
-        synchronized (dq) {
-            if (dq.size() == BUFFER_CAPACITY) {
-                dq.removeFirst();
-            }
-            dq.addLast(ev);
-        }
-
-        // Encolar en buffer acotado
-        ArrayDeque<Ev> dq = buffers.computeIfAbsent(jugadorId, k -> new ArrayDeque<>(BUFFER_CAPACITY));
-        synchronized (dq) {
-            if (dq.size() == BUFFER_CAPACITY) {
-                dq.removeFirst();
-            }
-            dq.addLast(ev);
-        }
-
-    public void sendEvent(String jugadorId, String eventName, Object data) {
-        EmitterWrapper wrapper = emitters.get(jugadorId);
-        long id = nextId(jugadorId);
-        Ev ev = new Ev(id, eventName, data);
-
-        latestByType.computeIfAbsent(jugadorId, k -> new ConcurrentHashMap<>())
-                .put(eventName, new LatestEvent(eventName, data));
-
         ArrayDeque<Ev> dq = buffers.computeIfAbsent(jugadorId, k -> new ArrayDeque<>(BUFFER_CAPACITY));
         synchronized (dq) {
             if (dq.size() == BUFFER_CAPACITY) {
