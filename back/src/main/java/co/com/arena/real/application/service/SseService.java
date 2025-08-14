@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.ArrayDeque;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -20,6 +21,8 @@ public class SseService extends AbstractSseEmitterService {
 
     private record LatestEvent(String name, Object data) {}
     private static final int BUFFER_CAPACITY = 50;
+    private static final Set<String> SNAPSHOT_BLOCKLIST =
+            Set.of("transaccion-aprobada");
 
     // Evento completo para buffer con ID
     private static final class Ev {
@@ -91,6 +94,7 @@ public class SseService extends AbstractSseEmitterService {
         Map<String, LatestEvent> map = latestByType.get(jugadorId);
         if (map != null) {
             for (LatestEvent le : map.values()) {
+                if (SNAPSHOT_BLOCKLIST.contains(le.name())) continue;
                 long id = nextId(jugadorId);
                 trySend(wrapper, jugadorId, new Ev(id, le.name(), le.data()));
             }
