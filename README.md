@@ -8,7 +8,8 @@ This repository contains a Spring Boot backend and a Next.js frontend.
 1. Copy `front/.env.example` to `front/.env.local` and fill in your Firebase and
    API credentials. Set `NEXT_PUBLIC_BACKEND_API_URL` to the base URL of the main
    backend (e.g. `http://localhost:8080`).
-2. Install dependencies and run the frontend:
+2. Copy `back/.env.example` to `back/.env` and configure the backend variables.
+3. Install dependencies and run the frontend:
 
 ```bash
 cd front
@@ -16,7 +17,13 @@ npm install
 npm run dev
 ```
 
-3. The `/chat` page shows all your conversations. When a chat is active, both
+4. Firebase Authentication opens a popup window when signing in with Google. To
+   allow this popup to close correctly, the frontend configures the
+   `Cross-Origin-Opener-Policy` header as `same-origin-allow-popups` in
+   `front/next.config.ts`. If you still see console warnings about the popup not
+   closing, make sure no browser extension is overriding this header.
+
+5. The `/chat` page shows all your conversations. When a chat is active, both
    the top and bottom navigation bars include a chat icon that links directly to
    that conversation. The icon displays a small red badge while the chat is
    active.
@@ -32,24 +39,17 @@ mvn spring-boot:run
 The backend exposes Server-Sent Event (SSE) endpoints for real-time
 notifications.
 
-Build all Java modules in one step:
+## API overview
+
+The backend exposes REST and SSE endpoints.
+
+Build the backend:
 
 ```bash
 mvn install
 ```
 
-This installs `shared-core`, the main backend and `admin-back` into your local
-Maven repository. If the admin backend fails with errors like `package
-co.com.arena.real.application.service does not exist`, verify that the install
-command completed successfully.
-
-If the admin backend fails with errors like `package co.com.arena.real.application.service does not exist`,
-verify that the main backend was installed locally:
-
-```bash
-cd back
-mvn install -DskipTests
-```
+This installs the backend dependencies into your local Maven repository.
 
 Before starting the backend, set the path to your Firebase service account
 credentials using either the custom `FIREBASE_SERVICE_ACCOUNT_FILE` variable or
@@ -88,45 +88,15 @@ Recuerda reiniciar el servidor de desarrollo después de modificar este archivo.
 
 ## Admin console
 
-Two new applications provide an isolated admin panel:
+An admin dashboard lives in the `admin/` folder and uses the same backend.
+Admin endpoints are available under `/api/admin` on the main server (port
+`8080` by default). Start the backend as explained above and then run the admin
+frontend:
 
-- `admin-back` – Spring Boot backend exposing admin endpoints on port `8081`.
-- `admin` – Next.js frontend located in the `admin/` folder.
-
-Run the admin backend:
-
-```bash
-cd admin-back
-mvn spring-boot:run
-```
-
-
-Before running, configure a database connection. Create `admin-back/.env` (you can copy from `.env.example`) and set:
-
-```env
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/arena_real
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=postgres
-ADMIN_SECURITY_JWT_SECRET=changeMe
-ADMIN_CREDENTIALS_USER=admin
-ADMIN_CREDENTIALS_PASSWORD=admin
-```
-The application reads this `.env` file automatically at startup thanks to the
-`spring-dotenv` dependency, so no manual `export` is required. Set
-`dotenv.enabled=true` in your configuration to activate it. Administrative
-operations like approving transactions or validating game results are no longer
-available in the main backend. Use the admin API instead.
-Default values are provided in `admin-back/src/main/resources/application.properties`.
-
-You can obtain a JWT with:
-
-```bash
-curl -X POST -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin"}' \
-  http://localhost:8081/api/admin/auth/login
-```
-
-Run the admin frontend:
+The login uses credentials configured via `admin.credentials` in the backend
+configuration. For local development the default username and password are both
+`admin`. When deploying, override these with the `ADMIN_CREDENTIALS_USER` and
+`ADMIN_CREDENTIALS_PASSWORD` environment variables.
 
 ```bash
 cd admin
@@ -137,21 +107,9 @@ npm run dev
 Copy `admin/.env.example` to `admin/.env.local` and set the API URL:
 
 ```env
-NEXT_PUBLIC_ADMIN_API_URL=http://localhost:8081
+NEXT_PUBLIC_BACKEND_API_URL=http://localhost:8080
 ```
 
-### Troubleshooting 401 errors
-
-If you receive `401` responses from the admin API after logging in, verify:
-
-1. Ensure the values in `admin-back/.env` are correct. The backend loads this
-   file automatically when starting.
-
-2. The login request returns a token and it is stored as `adminToken` in
-   `localStorage`. Use the browser dev tools to inspect this value.
-3. Subsequent requests must include `Authorization: Bearer <token>` in the
-   headers. If the token is missing or expired, remove it with
-   `localStorage.removeItem('adminToken')` and log in again.
 
 ## Maven troubleshooting
 
@@ -170,12 +128,17 @@ that points to an accessible Maven repository.
 
 When an admin marks a transaction as **ENTREGADA** in the admin console:
 
-1. `AdminService` calls `TransaccionService.aprobarTransaccion` in the admin backend.
-2. The admin backend sends two requests to the main backend:
-   - `/api/actualizar-saldo` triggers a balance refresh and sends SSE events.
-   - `/api/internal/notify-transaction-approved` emits a `transaccion-aprobada` event over SSE.
-3. The user client now uses `useTransactionUpdates` to receive these notifications in real time.
+1. `AdminService` calls `TransaccionService.aprobarTransaccion` in the backend.
+2. The backend emits `transaccion-aprobada` and `saldo-actualizar` SSE events so clients update in real time.
+3. The user client now uses `useTransactionUpdates` to receive these notifications.
    If the connection was lost, the hook refreshes data when the page becomes visible or after reconnecting.
+
+## Prize distribution
+
+When an admin distributes a prize from the admin panel:
+
+1. `AdminService` calls `PartidaService.marcarComoValidada` in the backend.
+2. The resulting `TransaccionResponse` triggers `transaccion-aprobada` and `saldo-actualizar` SSE events so the winner's balance updates in real time.
 
 ## Referral system
 
@@ -187,8 +150,8 @@ GET  /api/referrals/earnings/{userId}
 ```
 
 Registering accepts an optional `referralCode`. When a referred player finishes a duel,
-the inviter automatically earns COP 1000. Rewards are credited after the admin
-backend validates the duel. The frontend includes a **Referidos** page at `/referrals` showing your code and total earned.
+the inviter automatically earns COP 1000. Rewards are credited after the backend
+validates the duel. The frontend includes a **Referidos** page at `/referrals` showing your code and total earned.
 ## Firestore chat migration
 
 Some early deployments stored chats under `chats/{chatId}/chats/{subId}`. The frontend only looks at the `chats/` collection, so these documents need to be copied to the root collection. A helper script is available in `front/scripts/migrateChats.ts`.

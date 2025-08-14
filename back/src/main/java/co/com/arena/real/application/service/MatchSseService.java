@@ -3,7 +3,6 @@ package co.com.arena.real.application.service;
 import co.com.arena.real.domain.entity.Jugador;
 import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.infrastructure.dto.rs.MatchSseDto;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.slf4j.Logger;
@@ -14,66 +13,40 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
-public class MatchSseService {
+public class MatchSseService extends AbstractSseEmitterService {
 
     private static final Logger log = LoggerFactory.getLogger(MatchSseService.class);
 
-
-    private static class EmitterWrapper {
-        final SseEmitter emitter;
-        volatile long lastAccess;
-
-        EmitterWrapper(SseEmitter emitter) {
-            this.emitter = emitter;
-            this.lastAccess = System.currentTimeMillis();
-        }
-    }
-
-    private final Map<String, EmitterWrapper> emitters = new ConcurrentHashMap<>();
     private final Map<String, LatestEvent> latestEvents = new ConcurrentHashMap<>();
 
     private record LatestEvent(String name, MatchSseDto dto) {
     }
 
     public SseEmitter subscribe(String jugadorId) {
-        String lock = ("lock_" + jugadorId).intern();
-        synchronized (lock) {
-            EmitterWrapper existing = emitters.remove(jugadorId);
-            if (existing != null) {
-                existing.emitter.complete();
-            }
+        return super.subscribe(jugadorId);
+    }
 
-            SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-            EmitterWrapper wrapper = new EmitterWrapper(emitter);
-            emitters.put(jugadorId, wrapper);
-
-            emitter.onCompletion(() -> removeEmitter(jugadorId));
-            emitter.onTimeout(() -> removeEmitter(jugadorId));
-            emitter.onError(ex -> removeEmitter(jugadorId));
-
-            LatestEvent last = latestEvents.get(jugadorId);
-            if (last != null) {
-                CompletableFuture.runAsync(() -> {
-                    try {
-                        wrapper.emitter.send(SseEmitter.event()
-                                .name(last.name())
-                                .data(last.dto()));
-                        wrapper.lastAccess = System.currentTimeMillis();
-                        latestEvents.remove(jugadorId);
-                    } catch (IOException e) {
-                        removeEmitter(jugadorId);
-                        wrapper.emitter.completeWithError(e);
-                    }
-                });
-            }
-
-            log.info("Nueva conexión SSE para jugador: {}", jugadorId);
-            return emitter;
+    @Override
+    protected void onSubscribe(String jugadorId, EmitterWrapper wrapper) {
+        LatestEvent last = latestEvents.get(jugadorId);
+        if (last != null) {
+            CompletableFuture.runAsync(() -> {
+                try {
+                    wrapper.emitter.send(SseEmitter.event()
+                            .name(last.name())
+                            .data(last.dto()));
+                    wrapper.lastAccess = System.currentTimeMillis();
+                    latestEvents.remove(jugadorId);
+                } catch (IOException e) {
+                    removeEmitter(jugadorId);
+                    wrapper.emitter.completeWithError(e);
+                }
+            });
         }
     }
 
@@ -306,32 +279,5 @@ public class MatchSseService {
         }
     }
 
-    @Scheduled(fixedRate = 15000)
-    public void sendHeartbeats() {
-        emitters.forEach((id, wrapper) -> {
-            try {
-                wrapper.emitter.send(SseEmitter.event().comment("heartbeat"));
-                wrapper.lastAccess = System.currentTimeMillis();
-            } catch (IOException e) {
-                removeEmitter(id);
-            }
-        });
-    }
 
-    @Scheduled(fixedRate = 60000)
-    public void limpiarEmitters() {
-        long now = System.currentTimeMillis();
-        long ttl = 5 * 60 * 1000L;
-        emitters.forEach((id, wrapper) -> {
-            if (now - wrapper.lastAccess > ttl) {
-                removeEmitter(id);
-                wrapper.emitter.complete();
-            }
-        });
-    }
-
-    private void removeEmitter(String jugadorId) {
-        emitters.remove(jugadorId);
-        log.info("Desconectado SSE jugador: {}", jugadorId);
-    }
 }

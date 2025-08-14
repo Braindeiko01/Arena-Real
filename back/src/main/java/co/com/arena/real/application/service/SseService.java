@@ -4,117 +4,148 @@ import co.com.arena.real.infrastructure.dto.rs.TransaccionResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
-public class SseService {
+public class SseService extends AbstractSseEmitterService {
 
     private static final Logger log = LoggerFactory.getLogger(SseService.class);
 
-    private static class EmitterWrapper {
-        final SseEmitter emitter;
-        volatile long lastAccess;
+    private record LatestEvent(String name, Object data) {}
+    private static final int BUFFER_CAPACITY = 50;
+    private static final Set<String> SNAPSHOT_BLOCKLIST =
+            Set.of("transaccion-aprobada");
 
-        EmitterWrapper(SseEmitter emitter) {
-            this.emitter = emitter;
-            this.lastAccess = System.currentTimeMillis();
+    // Evento completo para buffer con ID
+    private static final class Ev {
+        final long id;
+        final String name;
+        final Object data;
+        final long ts;
+        Ev(long id, String name, Object data) {
+            this.id = id;
+            this.name = name;
+            this.data = data;
+            this.ts = System.currentTimeMillis();
         }
     }
 
-    private final Map<String, EmitterWrapper> emitters = new ConcurrentHashMap<>();
+    // Un emisor por jugador (heredado de AbstractSseEmitterService)
+    // protected final Map<String, EmitterWrapper> emitters = ...
+
+    // Secuencia por jugador (para IDs)
+    private final Map<String, AtomicLong> seqByUser = new ConcurrentHashMap<>();
+    // Buffer acotado por jugador para replay con Last-Event-ID
+    private final Map<String, ArrayDeque<Ev>> buffers = new ConcurrentHashMap<>();
+    // Últimos por tipo (snapshot consistente)
+    private final Map<String, Map<String, LatestEvent>> latestByType = new ConcurrentHashMap<>();
+
+    @Override
+    protected void onSubscribe(String jugadorId, EmitterWrapper wrapper) {
+        try {
+            wrapper.emitter.send(SseEmitter.event()
+                    .name("connected")
+                    .data("ok")
+                    .reconnectTime(3000));
+            wrapper.lastAccess = System.currentTimeMillis();
+        } catch (Exception ignored) { }
+        // El replay real lo dispara el controlador llamando a replayOnSubscribe(...)
+    }
 
     public SseEmitter subscribe(String jugadorId) {
-        String lock = ("lock_" + jugadorId).intern();
-        synchronized (lock) {
-            EmitterWrapper existing = emitters.remove(jugadorId);
-            if (existing != null) {
-                existing.emitter.complete();
+        // Asegúrate en AbstractSseEmitterService de registrar onTimeout/onError/onCompletion -> removeEmitter(jugadorId)
+        return super.subscribe(jugadorId);
+    }
+
+    /** Reproduce eventos pendientes al suscribirse/reconectarse */
+    public void replayOnSubscribe(String jugadorId, String lastEventIdStr) {
+        EmitterWrapper wrapper = emitters.get(jugadorId);
+        if (wrapper == null) return;
+
+        Long lastId = null;
+        try {
+            if (lastEventIdStr != null) lastId = Long.parseLong(lastEventIdStr.trim());
+        } catch (NumberFormatException ignored) { }
+
+        // 1) Con Last-Event-ID: reenvía solo los > lastId
+        if (lastId != null) {
+            ArrayDeque<Ev> dq = buffers.get(jugadorId);
+            if (dq != null && !dq.isEmpty()) {
+                synchronized (dq) {
+                    for (Ev ev : dq) {
+                        if (ev.id > lastId) {
+                            trySend(wrapper, jugadorId, ev);
+                        }
+                    }
+                }
+                return;
             }
+        }
 
-            SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-            EmitterWrapper wrapper = new EmitterWrapper(emitter);
-
-            emitter.onCompletion(() -> removeEmitter(jugadorId));
-            emitter.onTimeout(() -> removeEmitter(jugadorId));
-            emitter.onError(e -> removeEmitter(jugadorId));
-
-            emitters.put(jugadorId, wrapper);
-            log.info("Nueva conexión SSE para jugador: {}", jugadorId);
-            return emitter;
+        // 2) Sin Last-Event-ID o buffer vacío: snapshot de últimos por tipo
+        Map<String, LatestEvent> map = latestByType.get(jugadorId);
+        if (map != null) {
+            for (LatestEvent le : map.values()) {
+                if (SNAPSHOT_BLOCKLIST.contains(le.name())) continue;
+                long id = nextId(jugadorId);
+                trySend(wrapper, jugadorId, new Ev(id, le.name(), le.data()));
+            }
         }
     }
 
-    @Scheduled(fixedRate = 15000)
-    public void sendHeartbeats() {
-        emitters.forEach((id, wrapper) -> {
-            try {
-                wrapper.emitter.send(SseEmitter.event().comment("heartbeat"));
-                wrapper.lastAccess = System.currentTimeMillis();
-            } catch (IOException e) {
-                removeEmitter(id);
-            }
-        });
-    }
-
-    @Scheduled(fixedRate = 60000)
-    public void limpiarEmitters() {
-        long now = System.currentTimeMillis();
-        long ttl = 5 * 60 * 1000L;
-        emitters.forEach((id, wrapper) -> {
-            if (now - wrapper.lastAccess > ttl) {
-                removeEmitter(id);
-                wrapper.emitter.complete();
-            }
-        });
-    }
-
+    /** Atajo específico de dominio */
     public void notificarTransaccionAprobada(TransaccionResponse dto) {
-        String jugadorId = dto.getJugadorId();
-
-        EmitterWrapper wrapper = emitters.get(jugadorId);
-        if (wrapper == null) {
-            return;
-        }
-
-        try {
-            log.info("\uD83D\uDCE1 Enviando evento SSE 'transaccion-aprobada' al jugador {}", dto.getJugadorId());
-            wrapper.emitter.send(SseEmitter.event()
-                    .name("transaccion-aprobada")
-                    .data(dto));
-            wrapper.lastAccess = System.currentTimeMillis();
-        } catch (IOException e) {
-            log.error("\u274C Error al enviar evento SSE al jugador {}", dto.getJugadorId(), e);
-            removeEmitter(jugadorId);
-            wrapper.emitter.completeWithError(e);
-        }
+        sendEvent(dto.getJugadorId(), "transaccion-aprobada", dto);
     }
 
+    /** Enviar evento (o encolar si el usuario aún no está suscrito) */
     public void sendEvent(String jugadorId, String eventName, Object data) {
-        EmitterWrapper wrapper = emitters.get(jugadorId);
-        if (wrapper == null) {
-            return;
+        long id = nextId(jugadorId);
+        Ev ev = new Ev(id, eventName, data);
+
+        // Actualizar snapshot por tipo
+        latestByType.computeIfAbsent(jugadorId, k -> new ConcurrentHashMap<>())
+                .put(eventName, new LatestEvent(eventName, data));
+
+        // Encolar en buffer acotado
+        ArrayDeque<Ev> dq = buffers.computeIfAbsent(jugadorId, k -> new ArrayDeque<>(BUFFER_CAPACITY));
+        synchronized (dq) {
+            if (dq.size() == BUFFER_CAPACITY) dq.removeFirst();
+            dq.addLast(ev);
         }
 
+        // Si no hay emisor activo, se entregará al reconectar (replay/snapshot)
+        EmitterWrapper wrapper = emitters.get(jugadorId);
+        if (wrapper == null) return;
+
+        trySend(wrapper, jugadorId, ev);
+    }
+
+    private void trySend(EmitterWrapper wrapper, String jugadorId, Ev ev) {
         try {
             wrapper.emitter.send(SseEmitter.event()
-                    .name(eventName)
-                    .data(data));
+                    .id(Long.toString(ev.id))
+                    .name(ev.name)
+                    .data(ev.data)
+                    .reconnectTime(3000));
             wrapper.lastAccess = System.currentTimeMillis();
-        } catch (IOException e) {
+        } catch (Exception e) { // IOException / IllegalStateException
+            log.error("❌ Error SSE a jugador {} (evento '{}')", jugadorId, ev.name, e);
             removeEmitter(jugadorId);
-            wrapper.emitter.completeWithError(e);
+            try { wrapper.emitter.completeWithError(e); } catch (Exception ignored) { }
+            // No más acciones: el evento ya está en buffer/snapshot para próxima reconexión
         }
     }
 
-    private void removeEmitter(String jugadorId) {
-        emitters.remove(jugadorId);
-        log.info("Desconectado SSE jugador: {}", jugadorId);
+    private long nextId(String jugadorId) {
+        return seqByUser.computeIfAbsent(jugadorId, k -> new AtomicLong(0)).incrementAndGet();
     }
 }

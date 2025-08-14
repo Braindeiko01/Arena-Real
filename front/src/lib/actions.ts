@@ -1,4 +1,4 @@
-'use server'
+'use client'
 
 import type {
   User,
@@ -15,6 +15,25 @@ import type {
   BackendPartidaResultadoRequestDto,
 } from '@/types'
 import { BACKEND_URL } from '@/lib/config'
+import { auth } from '@/lib/firebase'
+
+async function authorizedFetch(input: RequestInfo | URL, init: RequestInit = {}) {
+  let token: string | null = null
+  if (typeof window !== 'undefined') {
+    try {
+      token = await auth.currentUser?.getIdToken() || null
+    } catch {
+      token = null
+    }
+  }
+  const headers = {
+    ...(init.headers || {}),
+    ...(token
+      ? { Authorization: `Bearer ${token}`, 'X-Auth-Provider': 'firebase' }
+      : {}),
+  } as HeadersInit
+  return fetch(input, { ...init, headers })
+}
 
 /* -------------------------
    USUARIO
@@ -33,7 +52,7 @@ export async function registerUserAction(
   }
 
   try {
-    const response = await fetch(`${BACKEND_URL}/api/register`, {
+    const response = await authorizedFetch(`${BACKEND_URL}/api/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(backendPayload),
@@ -85,7 +104,7 @@ export async function getUserDataAction(userId: string): Promise<{ user: User | 
   if (!userId) return { user: null, error: 'Se requiere googleId' }
 
   try {
-    const res = await fetch(`${BACKEND_URL}/api/jugadores/${userId}`)
+    const res = await authorizedFetch(`${BACKEND_URL}/api/jugadores/${userId}`)
     if (!res.ok) {
       if (res.status === 404) return { user: null, error: 'Usuario no encontrado.' }
       const err = await res.json().catch(() => ({}))
@@ -142,7 +161,7 @@ export async function requestTransactionAction(
   }
 
   try {
-    const res = await fetch(`${BACKEND_URL}/api/transacciones`, {
+    const res = await authorizedFetch(`${BACKEND_URL}/api/transacciones`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -164,7 +183,7 @@ export async function getUserTransactionsAction(
   userGoogleId: string
 ): Promise<{ transactions: BackendTransaccionResponseDto[] | null; error: string | null }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/transacciones/jugador/${userGoogleId}`)
+    const res = await authorizedFetch(`${BACKEND_URL}/api/transacciones/jugador/${userGoogleId}`)
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
@@ -182,7 +201,7 @@ export async function getUserDuelsAction(
   userGoogleId: string
 ): Promise<{ duels: BackendPartidaResponseDto[] | null; error: string | null }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/partidas/jugador/${userGoogleId}`)
+    const res = await authorizedFetch(`${BACKEND_URL}/api/partidas/jugador/${userGoogleId}`)
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
@@ -212,7 +231,7 @@ export async function createBetAction(
   }
 
   try {
-    const res = await fetch(`${BACKEND_URL}/api/apuestas`, {
+    const res = await authorizedFetch(`${BACKEND_URL}/api/apuestas`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -248,7 +267,7 @@ export async function matchmakingAction(
       return { match: null, error: err.message || `Error ${res.status} al solicitar duelo.` }
     } */
 
-    const matchRes = await fetch(`${BACKEND_URL}/api/matchmaking/ejecutar`, {
+    const matchRes = await authorizedFetch(`${BACKEND_URL}/api/matchmaking/ejecutar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jugadorId: userGoogleId, modoJuego: gameMode, monto: bet }),
@@ -270,7 +289,7 @@ export async function cancelMatchmakingAction(
   userGoogleId: string
 ): Promise<{ success: boolean; error: string | null }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/matchmaking/cancelar`, {
+    const res = await authorizedFetch(`${BACKEND_URL}/api/matchmaking/cancelar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jugadorId: userGoogleId }),
@@ -293,7 +312,7 @@ export async function declineMatchAction(
   matchId: string
 ): Promise<{ success: boolean; error: string | null }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/matchmaking/declinar`, {
+    const res = await authorizedFetch(`${BACKEND_URL}/api/matchmaking/declinar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jugadorId: userGoogleId, oponenteId: opponentId, partidaId: matchId }),
@@ -315,7 +334,7 @@ export async function acceptMatchAction(
   userGoogleId: string
 ): Promise<{ duel: BackendPartidaResponseDto | null; error: string | null }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/partidas/${matchId}/aceptar/${userGoogleId}`, {
+    const res = await authorizedFetch(`${BACKEND_URL}/api/partidas/${matchId}/aceptar/${userGoogleId}`, {
       method: 'PUT',
     })
 
@@ -336,7 +355,7 @@ export async function assignMatchWinnerAction(
   winnerId: string
 ): Promise<{ duel: BackendPartidaResponseDto | null; error: string | null }> {
   try {
-    const res = await fetch(
+    const res = await authorizedFetch(
       `${BACKEND_URL}/api/partidas/${matchId}/ganador/${winnerId}`,
       { method: 'PUT' }
     )
@@ -359,7 +378,7 @@ export async function submitMatchResultAction(
   screenshot?: string,
 ): Promise<{ duel: BackendPartidaResponseDto | null; error: string | null }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/partidas/${matchId}/resultado`, {
+    const res = await authorizedFetch(`${BACKEND_URL}/api/partidas/${matchId}/resultado`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jugadorId, resultado: result, captura: screenshot }),
@@ -381,7 +400,7 @@ export async function fetchMatchIdByChat(
   chatId: string,
 ): Promise<string | null> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/partidas/chat/${encodeURIComponent(chatId)}`)
+    const res = await authorizedFetch(`${BACKEND_URL}/api/partidas/chat/${encodeURIComponent(chatId)}`)
     if (!res.ok) return null
     const data = (await res.json()) as { id: string }
     return data.id
@@ -394,7 +413,7 @@ export async function getReferralEarningsAction(
   userId: string,
 ): Promise<{ total: number | null; error: string | null }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/referrals/earnings/${userId}`)
+    const res = await authorizedFetch(`${BACKEND_URL}/api/referrals/earnings/${userId}`)
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
       return { total: null, error: err.message || `Error ${res.status}` }

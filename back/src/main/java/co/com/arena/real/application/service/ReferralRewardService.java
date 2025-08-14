@@ -5,6 +5,7 @@ import co.com.arena.real.domain.entity.partida.Partida;
 import co.com.arena.real.domain.entity.referral.ReferralReward;
 import co.com.arena.real.infrastructure.repository.JugadorRepository;
 import co.com.arena.real.infrastructure.repository.ReferralRewardRepository;
+import co.com.arena.real.application.service.SaldoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ public class ReferralRewardService {
 
     private final ReferralRewardRepository rewardRepository;
     private final JugadorRepository jugadorRepository;
+    private final SaldoService saldoService;
 
     @Transactional
     public void processPartida(Partida partida) {
@@ -40,6 +42,7 @@ public class ReferralRewardService {
                     .creditedAt(LocalDateTime.now())
                     .build();
             rewardRepository.save(reward);
+            saldoService.acreditarSaldo(inviter.getId(), REWARD_AMOUNT);
         });
         if (!jugador.isHasPlayed()) {
             jugador.setHasPlayed(true);

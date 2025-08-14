@@ -16,6 +16,7 @@ export default function useFirestoreChats(userId: string | undefined) {
     if (!userId) return;
 
     const q = query(collection(db, 'chats'), where('jugadores', 'array-contains', userId));
+    
     const unsub = onSnapshot(
       q,
       snapshot => {

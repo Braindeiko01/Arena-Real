@@ -25,9 +25,18 @@ logging:
 
 service:
   auth:
-    token: ${SERVICE_AUTH_TOKEN:changeme}
+    token: ${SERVICE_AUTH_TOKEN}
 admin:
   secret:
-    token: ${ADMIN_SECRET_TOKEN:changeme}
+    token: ${ADMIN_SECRET_TOKEN}
+  credentials:
+    user: ${ADMIN_CREDENTIALS_USER:admin}
+    password: ${ADMIN_CREDENTIALS_PASSWORD:admin}
+jwt:
+  secret: ${JWT_SECRET:changeme}
+cors:
+  # Allowed origins for CORS; override with CORS_ALLOWED_ORIGINS env var
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3001}
+     
 firebase:
   enabled: true

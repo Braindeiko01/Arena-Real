@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import { useAuth } from '@/hooks/useAuth';
 import useNotifications from '@/hooks/useNotifications';
 import { BACKEND_URL } from '@/lib/config';
@@ -12,22 +13,28 @@ export interface ApprovedTransaction {
   creadoEn: string;
 }
 
+let source: EventSource | null = null;
+let lastHandled = 0;
+
 export default function useApprovedTransactionsSse() {
   const [transactions, setTransactions] = useState<ApprovedTransaction[]>([]);
   const { user } = useAuth();
   const { addNotification } = useNotifications();
-  const eventSourceRef = useRef<EventSource | null>(null);
-  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!user?.id) return;
 
     const connect = () => {
+      if (source) return source;
       const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
-      const es = new EventSource(url, { withCredentials: true });
-      eventSourceRef.current = es;
+      const es = new EventSourcePolyfill(url);
+      source = es;
 
-      const handler = (event: MessageEvent) => {
+      es.addEventListener('transaccion-aprobada', (event: MessageEvent) => {
+        const id = Number((event as any).lastEventId || 0);
+        if (id <= lastHandled) return;
+        lastHandled = id;
+
         try {
           const data = JSON.parse(event.data) as ApprovedTransaction;
           setTransactions(prev => [data, ...prev]);
@@ -41,28 +48,21 @@ export default function useApprovedTransactionsSse() {
         } catch (err) {
           console.error('Error parsing SSE event', err);
         }
+      });
+
+      es.onerror = () => {
+        /* optional: log */
       };
 
-      es.addEventListener('transaccion-aprobada', handler as EventListener);
-
-      es.onerror = (err) => {
-        console.error('SSE error:', err);
-        es.close();
-        reconnectTimeoutRef.current = setTimeout(connect, 3000);
-      };
+      return es;
     };
 
-    connect();
-
+    const es = connect();
     return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
+      es?.close();
+      source = null;
     };
-  }, [user]);
+  }, [user?.id, addNotification]);
 
   return transactions;
 }

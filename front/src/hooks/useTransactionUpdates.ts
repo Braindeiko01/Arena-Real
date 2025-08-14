@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import useNotifications from '@/hooks/useNotifications';
@@ -33,7 +34,7 @@ export default function useTransactionUpdates() {
 
     const connect = () => {
       const url = `${BACKEND_URL}/api/transacciones/stream/${encodeURIComponent(user.id)}`;
-      const es = new EventSource(url, { withCredentials: true });
+      const es = new EventSourcePolyfill(url, { heartbeatTimeout: 120000 });
       eventSourceRef.current = es;
 
       es.onopen = () => {
@@ -73,7 +74,7 @@ export default function useTransactionUpdates() {
         await refreshUser();
       });
 
-      es.onerror = err => {
+      es.onerror = (err: Event) => {
         console.error('SSE error:', err);
         if (connectedRef.current) {
           toast({
@@ -90,14 +91,14 @@ export default function useTransactionUpdates() {
     connect();
 
     return () => {
-        if (eventSourceRef.current) {
-          eventSourceRef.current.close();
-        }
-        connectedRef.current = false;
-        if (reconnectTimeoutRef.current) {
-          clearTimeout(reconnectTimeoutRef.current);
-        }
-        document.removeEventListener('visibilitychange', onVisibility);
-      };
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+      connectedRef.current = false;
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
   }, [user, refreshUser, updateUser, toast]);
 }

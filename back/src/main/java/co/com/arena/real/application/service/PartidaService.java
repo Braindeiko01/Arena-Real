@@ -27,7 +27,10 @@ import co.com.arena.real.application.service.MatchProposalService;
 import co.com.arena.real.application.service.MatchService;
 import co.com.arena.real.application.service.MatchSseService;
 import co.com.arena.real.application.events.PartidaValidadaEvent;
+import co.com.arena.real.application.events.TransaccionAprobadaEvent;
 import co.com.arena.real.application.service.ReferralRewardService;
+import co.com.arena.real.application.service.SaldoService;
+import co.com.arena.real.infrastructure.mapper.TransaccionMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -57,6 +60,8 @@ public class PartidaService {
     private final MatchSseService matchSseService;
     private final ApplicationEventPublisher eventPublisher;
     private final ReferralRewardService referralRewardService;
+    private final SaldoService saldoService;
+    private final TransaccionMapper transaccionMapper;
 
     private static final Logger log = LoggerFactory.getLogger(PartidaService.class);
 
@@ -64,6 +69,7 @@ public class PartidaService {
         return partidaRepository.findByApuesta_Id(apuestaId).map(partidaMapper::toDto);
     }
 
+    @Transactional(readOnly = true)
     public java.util.List<PartidaResponse> listarHistorial(String jugadorId) {
         return partidaRepository.findByJugadorAndEstado(jugadorId, EstadoPartida.FINALIZADA)
                 .stream()
@@ -147,7 +153,7 @@ public class PartidaService {
     }
 
     @Transactional
-    public PartidaResponse marcarComoValidada(UUID partidaId) {
+    public TransaccionResponse marcarComoValidada(UUID partidaId) {
         Partida partida = partidaRepository.findByIdForUpdate(partidaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Partida no encontrada"));
         partida.setValidadaEn(LocalDateTime.now());
@@ -165,19 +171,20 @@ public class PartidaService {
             premio.setTipo(TipoTransaccion.PREMIO);
             premio.setEstado(EstadoTransaccion.APROBADA);
             premio.setCreadoEn(LocalDateTime.now());
-            transaccionRepository.save(premio);
 
-            jugadorRepository.findById(partida.getGanador().getId()).ifPresent(u -> {
-                u.setSaldo(u.getSaldo().add(premio.getMonto()));
-                jugadorRepository.save(u);
-            });
+            Transaccion savedPremio = transaccionRepository.save(premio);
+
+            saldoService.acreditarSaldo(partida.getGanador().getId(), savedPremio.getMonto());
+
+            TransaccionResponse premioDto = transaccionMapper.toDto(savedPremio);
+            eventPublisher.publishEvent(new TransaccionAprobadaEvent(premioDto));
 
             chatService.cerrarChat(partida.getChatId());
 
             Partida saved = partidaRepository.save(partida);
             PartidaResponse dto = partidaMapper.toDto(saved);
             eventPublisher.publishEvent(new PartidaValidadaEvent(dto));
-            return dto;
+            return premioDto;
         }
 
         partida.setValidada(false);
@@ -190,7 +197,7 @@ public class PartidaService {
         partida.setAceptadoJugador1(false);
         partida.setAceptadoJugador2(false);
         Partida saved = partidaRepository.save(partida);
-        return partidaMapper.toDto(saved);
+        return null;
     }
   
     @Transactional
@@ -233,10 +240,7 @@ public class PartidaService {
         reembolso.setCreadoEn(LocalDateTime.now());
         transaccionRepository.save(reembolso);
 
-        jugadorRepository.findById(jugador.getId()).ifPresent(u -> {
-            u.setSaldo(u.getSaldo().add(monto));
-            jugadorRepository.save(u);
-        });
+        saldoService.acreditarSaldo(jugador.getId(), monto);
     }
 
 }
