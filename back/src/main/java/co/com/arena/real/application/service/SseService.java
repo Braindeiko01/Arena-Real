@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
 import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,12 +20,13 @@ public class SseService extends AbstractSseEmitterService {
 
     private record LatestEvent(String name, Object data) {}
     private static final int BUFFER_CAPACITY = 50;
+
+    // Evento completo para buffer con ID
     private static final class Ev {
         final long id;
         final String name;
         final Object data;
         final long ts;
-
         Ev(long id, String name, Object data) {
             this.id = id;
             this.name = name;
@@ -32,6 +34,7 @@ public class SseService extends AbstractSseEmitterService {
             this.ts = System.currentTimeMillis();
         }
     }
+
     // Un emisor por jugador (heredado de AbstractSseEmitterService)
     // protected final Map<String, EmitterWrapper> emitters = ...
 
@@ -45,33 +48,31 @@ public class SseService extends AbstractSseEmitterService {
     @Override
     protected void onSubscribe(String jugadorId, EmitterWrapper wrapper) {
         try {
-            wrapper.emitter.send(SseEmitter.event().name("connected").data("ok").reconnectTime(3000));
+            wrapper.emitter.send(SseEmitter.event()
+                    .name("connected")
+                    .data("ok")
+                    .reconnectTime(3000));
             wrapper.lastAccess = System.currentTimeMillis();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
         // El replay real lo dispara el controlador llamando a replayOnSubscribe(...)
     }
 
     public SseEmitter subscribe(String jugadorId) {
-        // Asegúrate de que AbstractSseEmitterService registre onTimeout/onError/onCompletion -> removeEmitter(jugadorId)
+        // Asegúrate en AbstractSseEmitterService de registrar onTimeout/onError/onCompletion -> removeEmitter(jugadorId)
         return super.subscribe(jugadorId);
     }
 
     /** Reproduce eventos pendientes al suscribirse/reconectarse */
     public void replayOnSubscribe(String jugadorId, String lastEventIdStr) {
         EmitterWrapper wrapper = emitters.get(jugadorId);
-        if (wrapper == null) {
-            return;
-        }
+        if (wrapper == null) return;
 
         Long lastId = null;
         try {
-            if (lastEventIdStr != null) {
-                lastId = Long.parseLong(lastEventIdStr.trim());
-            }
-        } catch (NumberFormatException ignored) {
-        }
+            if (lastEventIdStr != null) lastId = Long.parseLong(lastEventIdStr.trim());
+        } catch (NumberFormatException ignored) { }
 
+        // 1) Con Last-Event-ID: reenvía solo los > lastId
         if (lastId != null) {
             ArrayDeque<Ev> dq = buffers.get(jugadorId);
             if (dq != null && !dq.isEmpty()) {
@@ -86,6 +87,7 @@ public class SseService extends AbstractSseEmitterService {
             }
         }
 
+        // 2) Sin Last-Event-ID o buffer vacío: snapshot de últimos por tipo
         Map<String, LatestEvent> map = latestByType.get(jugadorId);
         if (map != null) {
             for (LatestEvent le : map.values()) {
@@ -112,40 +114,13 @@ public class SseService extends AbstractSseEmitterService {
         // Encolar en buffer acotado
         ArrayDeque<Ev> dq = buffers.computeIfAbsent(jugadorId, k -> new ArrayDeque<>(BUFFER_CAPACITY));
         synchronized (dq) {
-            if (dq.size() == BUFFER_CAPACITY) {
-                dq.removeFirst();
-            }
+            if (dq.size() == BUFFER_CAPACITY) dq.removeFirst();
             dq.addLast(ev);
         }
 
-        // Encolar en buffer acotado
-        ArrayDeque<Ev> dq = buffers.computeIfAbsent(jugadorId, k -> new ArrayDeque<>(BUFFER_CAPACITY));
-        synchronized (dq) {
-            if (dq.size() == BUFFER_CAPACITY) {
-                dq.removeFirst();
-            }
-            dq.addLast(ev);
-        }
-
-    public void sendEvent(String jugadorId, String eventName, Object data) {
+        // Si no hay emisor activo, se entregará al reconectar (replay/snapshot)
         EmitterWrapper wrapper = emitters.get(jugadorId);
-        long id = nextId(jugadorId);
-        Ev ev = new Ev(id, eventName, data);
-
-        latestByType.computeIfAbsent(jugadorId, k -> new ConcurrentHashMap<>())
-                .put(eventName, new LatestEvent(eventName, data));
-
-        ArrayDeque<Ev> dq = buffers.computeIfAbsent(jugadorId, k -> new ArrayDeque<>(BUFFER_CAPACITY));
-        synchronized (dq) {
-            if (dq.size() == BUFFER_CAPACITY) {
-                dq.removeFirst();
-            }
-            dq.addLast(ev);
-        }
-
-        if (wrapper == null) {
-            return;
-        }
+        if (wrapper == null) return;
 
         trySend(wrapper, jugadorId, ev);
     }
@@ -158,13 +133,11 @@ public class SseService extends AbstractSseEmitterService {
                     .data(ev.data)
                     .reconnectTime(3000));
             wrapper.lastAccess = System.currentTimeMillis();
-        } catch (Exception e) {
+        } catch (Exception e) { // IOException / IllegalStateException
             log.error("❌ Error SSE a jugador {} (evento '{}')", jugadorId, ev.name, e);
             removeEmitter(jugadorId);
-            try {
-                wrapper.emitter.completeWithError(e);
-            } catch (Exception ignored) {
-            }
+            try { wrapper.emitter.completeWithError(e); } catch (Exception ignored) { }
+            // No más acciones: el evento ya está en buffer/snapshot para próxima reconexión
         }
     }
 
@@ -172,4 +145,3 @@ public class SseService extends AbstractSseEmitterService {
         return seqByUser.computeIfAbsent(jugadorId, k -> new AtomicLong(0)).incrementAndGet();
     }
 }
-
