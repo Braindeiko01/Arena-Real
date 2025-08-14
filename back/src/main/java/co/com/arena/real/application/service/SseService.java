@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -121,7 +120,22 @@ public class SseService extends AbstractSseEmitterService {
             dq.addLast(ev);
         }
 
+    public void sendEvent(String jugadorId, String eventName, Object data) {
         EmitterWrapper wrapper = emitters.get(jugadorId);
+        long id = nextId(jugadorId);
+        Ev ev = new Ev(id, eventName, data);
+
+        latestByType.computeIfAbsent(jugadorId, k -> new ConcurrentHashMap<>())
+                .put(eventName, new LatestEvent(eventName, data));
+
+        ArrayDeque<Ev> dq = buffers.computeIfAbsent(jugadorId, k -> new ArrayDeque<>(BUFFER_CAPACITY));
+        synchronized (dq) {
+            if (dq.size() == BUFFER_CAPACITY) {
+                dq.removeFirst();
+            }
+            dq.addLast(ev);
+        }
+
         if (wrapper == null) {
             return;
         }
