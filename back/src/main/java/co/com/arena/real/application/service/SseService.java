@@ -139,7 +139,7 @@ public class SseService extends AbstractSseEmitterService {
             wrapper.lastAccess = System.currentTimeMillis();
         } catch (Exception e) { // IOException / IllegalStateException
             log.error("❌ Error SSE a jugador {} (evento '{}')", jugadorId, ev.name, e);
-            removeEmitter(jugadorId);
+            removeEmitter(jugadorId, wrapper);
             try { wrapper.emitter.completeWithError(e); } catch (Exception ignored) { }
             // No más acciones: el evento ya está en buffer/snapshot para próxima reconexión
         }
