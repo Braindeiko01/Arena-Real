@@ -3,8 +3,10 @@ package co.com.arena.real.application.controller;
 import co.com.arena.real.application.service.MatchSseService;
 import co.com.arena.real.application.service.SseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,17 +20,23 @@ public class SseController {
     private final SseService sseService;
     private final MatchSseService matchSseService;
 
-    @GetMapping("/transacciones/{jugadorId}")
-    public SseEmitter streamTransacciones(@PathVariable String jugadorId) {
-        return sseService.subscribe(jugadorId);
+    @GetMapping(path = "/transacciones/{jugadorId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamTransacciones(
+            @PathVariable String jugadorId,
+            @RequestHeader(value = "Last-Event-ID", required = false) String lastEventId
+    ) {
+        SseEmitter emitter = sseService.subscribe(jugadorId);
+        sseService.replayOnSubscribe(jugadorId, lastEventId);
+        return emitter;
     }
 
-    @GetMapping("/matchmaking/{jugadorId}")
+    @GetMapping(path = "/matchmaking/{jugadorId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamMatch(@PathVariable("jugadorId") String jugadorId) {
         return matchSseService.subscribe(jugadorId);
     }
 
-    @GetMapping("/match")
+    // Legacy: /sse/match?jugadorId=...
+    @GetMapping(path = "/match", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamMatchLegacy(@RequestParam("jugadorId") String jugadorId) {
         return matchSseService.subscribe(jugadorId);
     }
