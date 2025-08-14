@@ -43,7 +43,7 @@ public class MatchSseService extends AbstractSseEmitterService {
                     wrapper.lastAccess = System.currentTimeMillis();
                     latestEvents.remove(jugadorId);
                 } catch (IOException e) {
-                    removeEmitter(jugadorId);
+                    removeEmitter(jugadorId, wrapper);
                     wrapper.emitter.completeWithError(e);
                 }
             });
@@ -112,7 +112,7 @@ public class MatchSseService extends AbstractSseEmitterService {
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
         } catch (IOException e) {
-            removeEmitter(receptorId);
+            removeEmitter(receptorId, wrapper);
             wrapper.emitter.completeWithError(e);
         }
     }
@@ -144,7 +144,7 @@ public class MatchSseService extends AbstractSseEmitterService {
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
         } catch (IOException e) {
-            removeEmitter(receptorId);
+            removeEmitter(receptorId, wrapper);
             wrapper.emitter.completeWithError(e);
         }
     }
@@ -173,7 +173,7 @@ public class MatchSseService extends AbstractSseEmitterService {
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
         } catch (IOException e) {
-            removeEmitter(receptorId);
+            removeEmitter(receptorId, wrapper);
             wrapper.emitter.completeWithError(e);
         }
     }
@@ -201,7 +201,7 @@ public class MatchSseService extends AbstractSseEmitterService {
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
         } catch (IOException e) {
-            removeEmitter(receptorId);
+            removeEmitter(receptorId, wrapper);
             wrapper.emitter.completeWithError(e);
         }
     }
@@ -228,7 +228,7 @@ public class MatchSseService extends AbstractSseEmitterService {
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
         } catch (IOException e) {
-            removeEmitter(receptorId);
+            removeEmitter(receptorId, wrapper);
             wrapper.emitter.completeWithError(e);
         }
     }
@@ -254,7 +254,7 @@ public class MatchSseService extends AbstractSseEmitterService {
             wrapper.lastAccess = System.currentTimeMillis();
             latestEvents.remove(receptorId);
         } catch (IOException e) {
-            removeEmitter(receptorId);
+            removeEmitter(receptorId, wrapper);
             wrapper.emitter.completeWithError(e);
         }
     }
@@ -274,7 +274,7 @@ public class MatchSseService extends AbstractSseEmitterService {
             wrapper.emitter.send(SseEmitter.event().data(payload));
             wrapper.lastAccess = System.currentTimeMillis();
         } catch (IOException e) {
-            removeEmitter(receptorId);
+            removeEmitter(receptorId, wrapper);
             wrapper.emitter.completeWithError(e);
         }
     }

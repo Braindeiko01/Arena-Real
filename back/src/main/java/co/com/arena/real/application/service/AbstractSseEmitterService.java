@@ -37,9 +37,9 @@ public abstract class AbstractSseEmitterService {
             }
         }
 
-        emitter.onCompletion(() -> removeEmitter(jugadorId));
-        emitter.onTimeout(() -> removeEmitter(jugadorId));
-        emitter.onError(ex -> removeEmitter(jugadorId));
+        emitter.onCompletion(() -> removeEmitter(jugadorId, wrapper));
+        emitter.onTimeout(() -> removeEmitter(jugadorId, wrapper));
+        emitter.onError(ex -> removeEmitter(jugadorId, wrapper));
 
         log.info("Nueva conexión SSE para jugador: {}", jugadorId);
         onSubscribe(jugadorId, wrapper);
@@ -53,7 +53,7 @@ public abstract class AbstractSseEmitterService {
                 wrapper.emitter.send(SseEmitter.event().comment("heartbeat"));
                 wrapper.lastAccess = System.currentTimeMillis();
             } catch (Exception e) {
-                removeEmitter(id);
+                removeEmitter(id, wrapper);
             }
         });
     }
@@ -63,16 +63,15 @@ public abstract class AbstractSseEmitterService {
         long now = System.currentTimeMillis();
         emitters.forEach((id, wrapper) -> {
             if (now - wrapper.lastAccess > TTL_MS) {
-                removeEmitter(id);
+                removeEmitter(id, wrapper);
             }
         });
     }
 
-    protected void removeEmitter(String jugadorId) {
-        EmitterWrapper removed = emitters.remove(jugadorId);
-        if (removed != null) {
+    protected void removeEmitter(String jugadorId, EmitterWrapper wrapper) {
+        if (emitters.remove(jugadorId, wrapper)) {
             try {
-                removed.emitter.complete();
+                wrapper.emitter.complete();
             } catch (Exception ignored) {
             }
             log.info("Desconectado SSE jugador: {}", jugadorId);
