@@ -263,12 +263,12 @@ const ChatPageContent = () => {
 
   useEffect(() => {
     if (incompleteData || isLoading || !user || !opponentProfile || startMessageSentRef.current) return;
-    if (messages.length === 0) {
+    if (messages.length === 0 && user.id < validOpponentGoogleId) {
       startMessageSentRef.current = true;
       fetch(`${BACKEND_URL}/api/chats/${encodeURIComponent(validChatId)}/start-message`, { method: 'POST' })
         .catch(err => console.error('Error solicitando mensaje inicial', err));
     }
-  }, [user, opponentProfile, validChatId, validOpponentTag, opponentDisplayName, messages.length, incompleteData, isLoading, BACKEND_URL]);
+  }, [user?.id, opponentProfile, validChatId, validOpponentTag, opponentDisplayName, validOpponentGoogleId, messages.length, incompleteData, isLoading, BACKEND_URL]);
 
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();
