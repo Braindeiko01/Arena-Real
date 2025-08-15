@@ -9,10 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ScrollTextIcon, VictoryIcon, DefeatIcon, InfoIcon } from '@/components/icons/ClashRoyaleIcons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
-import { getUserDuelsAction } from '@/lib/actions';
+import { getUserDuelsAction, getUserTransactionsAction } from '@/lib/actions';
 import { BACKEND_URL } from '@/lib/config';
-
-const COMMISSION_RATE = 0.016;
 const formatCOP = (value: number) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
@@ -52,20 +50,36 @@ const HistoryPageContent = () => {
   useEffect(() => {
     const fetchDuels = async () => {
       if (user?.id) {
-        const result = await getUserDuelsAction(user.id);
-        if (result.duels) {
-          const mapped = result.duels.map((d: BackendPartidaResponseDto) => ({
-            id: d.apuestaId,
-            userId: user.id,
-            matchId: d.id,
-            amount: d.monto,
-            opponentId: d.jugador1Id === user.id ? d.jugador2Id : d.jugador1Id,
-            matchDate: d.validadaEn || d.creada,
-            result: d.ganadorId ? (d.ganadorId === user.id ? 'win' : 'loss') : undefined,
-            status: d.estado as any,
-            modoJuego: d.modoJuego,
-            opponentTag: undefined,
-          })) as Bet[];
+        const [duelResult, txResult] = await Promise.all([
+          getUserDuelsAction(user.id),
+          getUserTransactionsAction(user.id),
+        ]);
+        const prizeTxs =
+          txResult.transactions?.filter(t => t.tipo === 'PREMIO') ?? [];
+        if (duelResult.duels) {
+          const mapped = duelResult.duels.map((d: BackendPartidaResponseDto) => {
+            const matchDate = d.validadaEn || d.creada;
+            let prize: number | undefined;
+            if (d.ganadorId === user.id) {
+              const tx = prizeTxs.find(
+                t => Math.abs(new Date(t.creadoEn).getTime() - new Date(matchDate).getTime()) < 24 * 60 * 60 * 1000,
+              );
+              prize = tx?.monto;
+            }
+            return {
+              id: d.apuestaId,
+              userId: user.id,
+              matchId: d.id,
+              amount: d.monto,
+              opponentId: d.jugador1Id === user.id ? d.jugador2Id : d.jugador1Id,
+              matchDate,
+              result: d.ganadorId ? (d.ganadorId === user.id ? 'win' : 'loss') : undefined,
+              status: d.estado as any,
+              modoJuego: d.modoJuego,
+              opponentTag: undefined,
+              prize,
+            } as Bet;
+          });
           setBets(mapped);
         } else {
           setBets([]);
@@ -101,7 +115,7 @@ const HistoryPageContent = () => {
             .map(s => s.charAt(0).toUpperCase() + s.slice(1))
             .join(' ')
         : 'Pendiente';
-    const prize = bet.result === 'win' ? bet.amount * 2 * (1 - COMMISSION_RATE) : 0;
+    const prize = bet.prize ?? 0;
     return (
       <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
         <CardHeader className="pb-3">
@@ -143,7 +157,7 @@ const HistoryPageContent = () => {
               <p className="text-base">
                 Premio:{' '}
                 <span className="font-semibold text-accent">
-                  {bet.result ? formatCOP(prize) : 'Pendiente'}
+                  {bet.result ? (bet.prize !== undefined ? formatCOP(prize) : 'Pendiente') : 'Pendiente'}
                 </span>
               </p>
               {name && (
