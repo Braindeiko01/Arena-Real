@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { getUserDuelsAction } from '@/lib/actions';
 import { BACKEND_URL } from '@/lib/config';
 
-const COMMISSION_RATE = 0.016;
+const COMMISSION_RATE = 0.16;
 const formatCOP = (value: number) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
