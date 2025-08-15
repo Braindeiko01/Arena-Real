@@ -163,6 +163,7 @@ export interface Bet {
   result?: MatchResult;
   status: BackendApuestaResponseDto['estado'];
   modoJuego: string;
+  prize?: number;
   screenshotUrl?: string;
 }
 
