@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { getUserDuelsAction, getUserTransactionsAction } from '@/lib/actions';
 import { BACKEND_URL } from '@/lib/config';
+
+const COMMISSION_RATE = 0.16;
 const formatCOP = (value: number) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
