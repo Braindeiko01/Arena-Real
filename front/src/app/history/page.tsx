@@ -12,6 +12,14 @@ import { Badge } from '@/components/ui/badge';
 import { getUserDuelsAction } from '@/lib/actions';
 import { BACKEND_URL } from '@/lib/config';
 
+const COMMISSION_RATE = 0.2;
+const formatCOP = (value: number) =>
+  new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+  }).format(value);
+
 const HistoryPageContent = () => {
   const { user, isLoading: authIsLoading } = useAuth();
   const [bets, setBets] = useState<Bet[]>([]);
@@ -78,54 +86,79 @@ const HistoryPageContent = () => {
 
   const wonBets = bets.filter(bet => bet.result === 'win');
   const lostBets = bets.filter(bet => bet.result === 'loss');
-  const pendingBets = bets.filter(bet => !bet.result);
 
   const BetCard = ({ bet }: { bet: Bet }) => {
     const name = bet.opponentId ? opponents[bet.opponentId] : undefined;
+    const statusLabel =
+      bet.result === 'win'
+        ? 'Ganada'
+        : bet.result === 'loss'
+        ? 'Perdida'
+        : bet.status
+        ? bet.status
+            .toLowerCase()
+            .split('_')
+            .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+            .join(' ')
+        : 'Pendiente';
+    const prize = bet.result === 'win' ? bet.amount * 2 * (1 - COMMISSION_RATE) : 0;
     return (
-    <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
-      <CardHeader className="pb-3">
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-xl text-primary">Duelo: {bet.modoJuego}</CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Partida ID: {bet.matchId} <br />
-              Fecha: {new Date(bet.matchDate).toLocaleDateString()}
-            </CardDescription>
+      <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
+        <CardHeader className="pb-3">
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-xl text-primary">Duelo: {bet.modoJuego}</CardTitle>
+              <CardDescription className="text-sm text-muted-foreground">
+                Partida ID: {bet.matchId} <br />
+                Fecha: {new Date(bet.matchDate).toLocaleDateString()}
+              </CardDescription>
+            </div>
+            <Badge
+              variant={
+                bet.result === 'win'
+                  ? 'default'
+                  : bet.result === 'loss'
+                  ? 'destructive'
+                  : 'secondary'
+              }
+              className={`capitalize ${
+                bet.result === 'win'
+                  ? 'bg-green-500 text-white'
+                  : bet.result === 'loss'
+                  ? 'bg-destructive text-destructive-foreground'
+                  : 'bg-muted text-muted-foreground'
+              }`}
+            >
+              {statusLabel}
+            </Badge>
           </div>
-          <Badge
-            variant={
-              bet.result === 'win'
-                ? 'default'
-                : bet.result === 'loss'
-                ? 'destructive'
-                : 'secondary'
-            }
-            className={`capitalize ${
-              bet.result === 'win'
-                ? 'bg-green-500 text-white'
-                : bet.result === 'loss'
-                ? 'bg-destructive text-destructive-foreground'
-                : 'bg-muted text-muted-foreground'
-            }`}
-          >
-            {bet.result || bet.status || 'Pendiente'}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex justify-between items-center">
-          <div>
-            <p className="text-base">Monto: <span className="font-semibold text-accent">{new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(bet.amount)}</span></p>
-            {name && <p className="text-base">Oponente: <span className="font-semibold">{name}</span></p>}
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-base">
+                Costo de inscripción:{' '}
+                <span className="font-semibold text-accent">{formatCOP(bet.amount)}</span>
+              </p>
+              <p className="text-base">
+                Ganancia:{' '}
+                <span className="font-semibold text-accent">
+                  {bet.result ? formatCOP(prize) : 'Pendiente'}
+                </span>
+              </p>
+              {name && (
+                <p className="text-base">
+                  Oponente: <span className="font-semibold">{name}</span>
+                </p>
+              )}
+            </div>
+            {bet.result === 'win' && <VictoryIcon className="h-8 w-8 text-green-500" />}
+            {bet.result === 'loss' && <DefeatIcon className="h-8 w-8 text-destructive" />}
+            {!bet.result && <InfoIcon className="h-8 w-8 text-muted-foreground" />}
           </div>
-          {bet.result === 'win' && <VictoryIcon className="h-8 w-8 text-green-500" />}
-          {bet.result === 'loss' && <DefeatIcon className="h-8 w-8 text-destructive" />}
-          {!bet.result && <InfoIcon className="h-8 w-8 text-muted-foreground" />}
-        </div>
-      </CardContent>
-    </Card>
-  );
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
