@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { getUserDuelsAction } from '@/lib/actions';
 import { BACKEND_URL } from '@/lib/config';
 
-
+const COMMISSION_RATE = 0.016;
 const formatCOP = (value: number) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
@@ -39,7 +39,7 @@ const HistoryPageContent = () => {
               setOpponents(prev => ({ ...prev, [id]: data.nombre }));
             }
           } catch (err) {
-            console.error('Error fetching opponent', err);
+            console.error('Error al obtener oponente', err);
           }
         })
       );
@@ -101,8 +101,7 @@ const HistoryPageContent = () => {
             .map(s => s.charAt(0).toUpperCase() + s.slice(1))
             .join(' ')
         : 'Pendiente';
-
-    const prize = bet.result === 'win' ? bet.amount * 2 : 0;
+    const prize = bet.result === 'win' ? bet.amount * 2 * (1 - COMMISSION_RATE) : 0;
     return (
       <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
         <CardHeader className="pb-3">
