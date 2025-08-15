@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { getUserDuelsAction } from '@/lib/actions';
 import { BACKEND_URL } from '@/lib/config';
 
-const COMMISSION_RATE = 0.2;
+
 const formatCOP = (value: number) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
@@ -101,7 +101,8 @@ const HistoryPageContent = () => {
             .map(s => s.charAt(0).toUpperCase() + s.slice(1))
             .join(' ')
         : 'Pendiente';
-    const prize = bet.result === 'win' ? bet.amount * 2 * (1 - COMMISSION_RATE) : 0;
+
+    const prize = bet.result === 'win' ? bet.amount * 2 : 0;
     return (
       <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
         <CardHeader className="pb-3">
@@ -137,11 +138,11 @@ const HistoryPageContent = () => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-base">
-                Costo de inscripción:{' '}
+                Inscripción:{' '}
                 <span className="font-semibold text-accent">{formatCOP(bet.amount)}</span>
               </p>
               <p className="text-base">
-                Ganancia:{' '}
+                Premio:{' '}
                 <span className="font-semibold text-accent">
                   {bet.result ? formatCOP(prize) : 'Pendiente'}
                 </span>
