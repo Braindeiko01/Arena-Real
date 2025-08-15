@@ -61,12 +61,12 @@ const HistoryPageContent = () => {
         if (duelResult.duels) {
           const mapped = duelResult.duels.map((d: BackendPartidaResponseDto) => {
             const matchDate = d.validadaEn || d.creada;
-            let prize: number | undefined;
+            let prize = 0;
             if (d.ganadorId === user.id) {
               const tx = prizeTxs.find(
                 t => Math.abs(new Date(t.creadoEn).getTime() - new Date(matchDate).getTime()) < 24 * 60 * 60 * 1000,
               );
-              prize = tx?.monto;
+              prize = tx?.monto ?? 0;
             }
             return {
               id: d.apuestaId,
@@ -117,7 +117,6 @@ const HistoryPageContent = () => {
             .map(s => s.charAt(0).toUpperCase() + s.slice(1))
             .join(' ')
         : 'Pendiente';
-    const prize = bet.prize ?? 0;
     return (
       <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
         <CardHeader className="pb-3">
@@ -159,7 +158,7 @@ const HistoryPageContent = () => {
               <p className="text-base">
                 Premio:{' '}
                 <span className="font-semibold text-accent">
-                  {bet.result ? (bet.prize !== undefined ? formatCOP(prize) : 'Pendiente') : 'Pendiente'}
+                  {bet.result ? formatCOP(bet.prize) : 'Pendiente'}
                 </span>
               </p>
               {name && (
