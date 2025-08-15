@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { getUserDuelsAction } from '@/lib/actions';
 import { BACKEND_URL } from '@/lib/config';
 
+
 const formatCOP = (value: number) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
@@ -100,6 +101,7 @@ const HistoryPageContent = () => {
             .map(s => s.charAt(0).toUpperCase() + s.slice(1))
             .join(' ')
         : 'Pendiente';
+
     const prize = bet.result === 'win' ? bet.amount * 2 : 0;
     return (
       <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
