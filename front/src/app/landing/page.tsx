@@ -1,406 +1,191 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-// Si no tienes lucide-react instala con: pnpm add lucide-react (o usa emojis)
-import { Trophy, Users, CircleDollarSign, Menu } from "lucide-react";
+import Link from 'next/link';
+import { useEffect, useRef } from 'react';
+import Navbar from '@/components/landing/Navbar';
+import SwordsIcon from '@/components/landing/SwordsIcon';
+import CountUp from '@/components/landing/CountUp';
+import { Inter, Cinzel } from 'next/font/google';
+import './landing.css';
 
-/**
- * Arena Real – Landing enfocada 100% a conversión
- * - Navbar minimal: solo logo + Entrar / Registrarse (con menú en móvil)
- * - Hero impactante con TÍTULO EN ORO real (gradientes + brillo controlado)
- * - “Shine” respeta prefers-reduced-motion
- * - Métricas + Features concisos
- * - Componentes UI locales (sin @/components/ui/*)
- * - Dev checks seguros (solo en desarrollo) => nunca leen propiedades de null
- */
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const cinzel = Cinzel({ subsets: ['latin'], weight: ['700', '800'], variable: '--font-cinzel' });
 
-/* ====================== UI BASICOS ====================== */
-function Button({
-  children,
-  className = "",
-  variant = "solid",
-  size = "md",
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "solid" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
-}) {
-  const base =
-    "inline-flex items-center justify-center rounded-xl transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed";
-  const sizes = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2",
-    lg: "px-6 py-3 text-base",
-  } as const;
-  const variants = {
-    solid:
-      "bg-yellow-400 text-black hover:bg-yellow-300 focus:ring-yellow-400/50",
-    outline:
-      "border border-yellow-400/50 text-yellow-400 hover:bg-yellow-400/10 focus:ring-yellow-400/40",
-    ghost: "text-yellow-400 hover:bg-yellow-400/10",
-  } as const;
+export default function Page() {
+  const heroParallaxRef = useRef<HTMLDivElement>(null);
 
-  return (
-    <button
-      className={`${base} ${sizes[size]} ${variants[variant]} ${className}`}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
-
-function Card({
-  children,
-  className = "",
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={`rounded-2xl ${className}`}>{children}</div>;
-}
-function CardHeader({
-  children,
-  className = "",
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={`p-5 ${className}`}>{children}</div>;
-}
-function CardTitle({
-  children,
-  className = "",
-}: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={`text-lg font-semibold ${className}`}>{children}</h3>;
-}
-function CardContent({
-  children,
-  className = "",
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={`p-5 pt-0 ${className}`}>{children}</div>;
-}
-
-/** Logo con fallback (si /public/logo-arena.png no existe, muestra “AR” dorado) */
-function FallbackLogo({
-  src = "/logo-arena.png",
-  size = 40,
-}: {
-  src?: string;
-  size?: number;
-}) {
-  const [error, setError] = useState(false);
-  if (error) {
-    return (
-      <div
-        aria-label="logo-fallback"
-        style={{ width: size, height: size }}
-        className="grid place-items-center rounded-full bg-gradient-to-br from-yellow-400 via-amber-400 to-amber-600 text-black font-extrabold"
-      >
-        AR
-      </div>
-    );
-  }
-  return (
-    <img
-      src={src}
-      alt="Arena Real"
-      width={size}
-      height={size}
-      onError={() => setError(true)}
-      className="block object-contain"
-    />
-  );
-}
-
-/* ====================== PAGINA ====================== */
-export default function ArenaRealHome() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const features = [
-    {
-      icon: <Trophy className="h-6 w-6" aria-hidden />,
-      title: "Duelos 1v1",
-      desc: "Reta a otros jugadores y demuestra tu nivel.",
-    },
-    {
-      icon: <Users className="h-6 w-6" aria-hidden />,
-      title: "Comunidad activa",
-      desc: "Encuentra rivales en segundos.",
-    },
-    {
-      icon: <CircleDollarSign className="h-6 w-6" aria-hidden />,
-      title: "Premios reales",
-      desc: "Gana y cobra sin fricciones.",
-    },
-  ];
-
-  // ====== Dev Tests (solo desarrollo) ======
   useEffect(() => {
-    if (typeof window === "undefined" || process.env.NODE_ENV === "production")
-      return;
-    const q = (sel: string) => document.querySelector(sel);
-    console.assert(!!q('[data-testid="btn-entrar"]'), "Botón Entrar debe existir");
-    console.assert(
-      !!q('[data-testid="btn-registrarse"]'),
-      "Botón Registrarse debe existir"
-    );
-    console.assert(
-      document.querySelectorAll('[data-testid="feature-card"]').length ===
-        features.length,
-      `Deben renderizarse ${features.length} features`
-    );
-    const title = q('[data-testid="hero-title"]');
-    if (title && title.textContent)
-      console.assert(
-        title.textContent.includes("ARENA REAL"),
-        "El título debe contener 'ARENA REAL'"
-      );
-    console.assert(
-      document.querySelectorAll('[data-testid="metric-card"]').length === 3,
-      "Deben renderizarse 3 métricas"
-    );
+    const el = heroParallaxRef.current;
+    if (!el) return;
+    const isCoarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (isCoarse || prefersReduced) return;
+    let rect = el.getBoundingClientRect();
+    const onResize = () => { rect = el.getBoundingClientRect(); };
+    const strength = 10;
+    const onMouseMove = (e: MouseEvent) => {
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * strength;
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * strength;
+      el.style.setProperty('--px', x + 'px');
+      el.style.setProperty('--py', y + 'px');
+    };
+    const onLeave = () => { el.style.setProperty('--px', '0px'); el.style.setProperty('--py', '0px'); };
+    window.addEventListener('resize', onResize);
+    el.addEventListener('mousemove', onMouseMove);
+    el.addEventListener('mouseleave', onLeave);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      el.removeEventListener('mousemove', onMouseMove);
+      el.removeEventListener('mouseleave', onLeave);
+    };
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0b0b12] text-slate-100">
-      {/* Fondo decorativo suave */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
-        <svg
-          className="absolute inset-0 h-full w-full opacity-[0.07]"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
-              <path
-                d="M 32 0 L 0 0 0 32"
-                fill="none"
-                stroke="white"
-                strokeWidth="0.5"
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-        <div className="absolute left-1/2 top-[-15%] h-[40rem] w-[40rem] -translate-x-1/2 rounded-full bg-yellow-500/10 blur-3xl" />
-        <div className="absolute right-[-10%] top-1/3 h-[28rem] w-[28rem] rounded-full bg-yellow-600/10 blur-3xl" />
+    <div className={`${inter.variable} ${cinzel.variable}`}>
+      <div className="bg-app" aria-hidden="true">
+        <div className="bg-grid" />
       </div>
 
-      {/* NAVBAR */}
-      <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-[#0b0b12]/80 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
-          <FallbackLogo src="/logo-arena.png" />
-          <div className="hidden gap-3 sm:flex">
-            <Button data-testid="btn-entrar" variant="outline">
-              Entrar
-            </Button>
-            <Button data-testid="btn-registrarse">Registrarse</Button>
-          </div>
-          <button
-            aria-label="Abrir menú"
-            className="sm:hidden text-yellow-400 p-2 rounded-lg hover:bg-yellow-400/10"
-            onClick={() => setMobileOpen((v) => !v)}
+      <Navbar />
+
+      <main className="pt-20 pb-6">
+        <section className="container mx-auto px-5 text-center">
+          <span className="badge-gold">
+            <span className="w-2 h-2 rounded-full bg-[#ffb703] shadow-[0_0_6px_#ffb703]" aria-hidden="true" />
+            EN VIVO · Desafíos abiertos
+          </span>
+
+          <SwordsIcon className="block mx-auto mt-5" width={84} height={68} />
+
+          <h1 className="font-cinzel font-extrabold tracking-wide mt-2 text-[clamp(28px,8vw,46px)]">
+            DESAFÍA LA <span className="neon">ARENA REAL</span>
+          </h1>
+          <p className="max-w-2xl mx-auto text-muted text-[17px] mt-1">
+            Gladiadores, honor y botín. Retos reales con diseño profesional.
+          </p>
+
+          <div
+            ref={heroParallaxRef}
+            className="mt-6 flex flex-wrap items-center justify-center gap-3 transition-transform [transform:translate(var(--px,0),var(--py,0))]"
           >
-            <Menu className="h-6 w-6" />
-          </button>
-        </div>
-
-        {/* Drawer móvil simple */}
-        {mobileOpen && (
-          <div className="sm:hidden border-t border-white/10 px-5 pb-3">
-            <div className="mt-3 grid gap-2">
-              <Button variant="outline">Entrar</Button>
-              <Button>Registrarse</Button>
-            </div>
-          </div>
-        )}
-      </header>
-
-      {/* HERO */}
-      <section className="relative overflow-hidden pt-28">
-        <div className="mx-auto max-w-7xl px-6 py-14 sm:py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
-          >
-            <p className="inline-block rounded-full border border-yellow-400/30 bg-yellow-400/5 px-3 py-1 text-xs tracking-wide text-yellow-300">
-              Duélate hoy — Gana oro
-            </p>
-
-            <h1
-              data-testid="hero-title"
-              className="mt-5 text-5xl font-extrabold tracking-tight sm:text-6xl"
+            <Link
+              href="/auth/login"
+              className="btn btn-solid btn-lg btn-pill px-6 text-[#141414]"
+              style={{ backgroundImage: 'linear-gradient(135deg, var(--gold), var(--gold-2))' }}
             >
-              BIENVENIDO A{" "}
-              <span className="gold-text relative inline-block align-baseline">
-                ARENA REAL
-                <span className="gold-shine" />
-              </span>
-            </h1>
-
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-300">
-              Duelos 1v1, emoción real y recompensas al instante. Únete y conquista la Arena.
-            </p>
-
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button size="lg" className="shadow-lg">
-                ¡Comienza a jugar!
-              </Button>
-              <Button size="lg" variant="outline">
-                Explorar partidas
-              </Button>
-            </div>
-
-            {/* Métricas */}
-            <div className="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
-              {[
-                { icon: Trophy, label: "Duelos activos", value: "+128" },
-                { icon: CircleDollarSign, label: "Premios entregados", value: "+$50K" },
-                { icon: Users, label: "Gladiadores", value: "+2K" },
-              ].map((m, i) => (
-                <div
-                  key={i}
-                  data-testid="metric-card"
-                  className="rounded-2xl border border-yellow-400/30 bg-white/5 p-5 backdrop-blur transition hover:bg-yellow-400/10"
-                >
-                  <div className="flex items-center gap-3 text-yellow-400">
-                    <m.icon className="h-5 w-5" />
-                    <div className="text-2xl font-bold">{m.value}</div>
-                  </div>
-                  <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">
-                    {m.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section className="pb-20 pt-2">
-        <div className="mx-auto max-w-7xl px-6">
-          <h2 className="text-center text-2xl font-semibold text-yellow-400">
-            Vive la experiencia Arena Real
-          </h2>
-
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {features.map((f, i) => (
-              <motion.div
-                key={i}
-                data-testid="feature-card"
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.35, delay: i * 0.05 }}
-              >
-                <Card className="border border-yellow-400/20 bg-white/5 text-slate-100 backdrop-blur">
-                  <CardHeader className="flex flex-row items-center gap-3">
-                    <div className="grid h-10 w-10 place-items-center rounded-xl bg-yellow-400/10 text-yellow-400">
-                      {f.icon}
-                    </div>
-                    <CardTitle className="text-base text-yellow-300">
-                      {f.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-slate-300">{f.desc}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+              Desafiar ahora
+            </Link>
+            <Link
+              href="/auth/login"
+              className="btn btn-ghost btn-lg btn-pill px-6 text-[color:var(--gold)] hover:bg-[rgba(233,196,106,.12)]"
+            >
+              Ver batallas
+            </Link>
           </div>
-        </div>
-      </section>
 
-      {/* CTA FINAL */}
-      <section className="pb-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <Card className="border border-yellow-400/20 bg-gradient-to-br from-yellow-400/10 via-yellow-600/5 to-transparent text-slate-100 backdrop-blur">
-            <CardContent className="p-8 md:p-10">
-              <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <h3 className="text-2xl font-semibold text-yellow-400">
-                    ¿Listo para entrar a la Arena?
-                  </h3>
-                  <p className="mt-1 text-slate-300">
-                    Crea tu cuenta y únete a partidas en vivo.
-                  </p>
-                </div>
-                <div className="flex gap-3">
-                  <Button size="lg">Crear cuenta</Button>
-                  <Button size="lg" variant="outline">
-                    Ver partidas
-                  </Button>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mt-7" role="list">
+            <article className="card" role="listitem">
+              <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
+                <CountUp id="m1" to={128} prefix="+" />
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+              <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">DUELOS ACTIVOS</div>
+            </article>
+            <article className="card" role="listitem">
+              <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
+                +$<CountUp id="m2" to={50} prefix="" />K
+              </div>
+              <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">BOTÍN ENTREGADO</div>
+            </article>
+            <article className="card" role="listitem">
+              <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
+                <CountUp id="m3" to={2000} prefix="+" />
+              </div>
+              <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">GLADIADORES</div>
+            </article>
+          </div>
+        </section>
 
-      {/* EFECTO ORO */}
-      <style jsx>{`
-        .gold-text {
-          padding: 0.1em 0.2em;
-          background-image:
-            linear-gradient(
-              180deg,
-              #fff8d6 0%,
-              #ffe082 18%,
-              #ffc544 35%,
-              #d6a528 52%,
-              #b8871a 66%,
-              #f4d56a 82%,
-              #a06a00 100%
-            ),
-            radial-gradient(
-              120% 120% at 10% 10%,
-              rgba(255, 255, 255, 0.85) 0%,
-              rgba(255, 255, 255, 0) 40%
-            );
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45),
-            0 -1px 0 rgba(160, 90, 0, 0.25), 0 8px 24px rgba(255, 204, 0, 0.25);
-          position: relative;
-        }
-        .gold-text .gold-shine {
-          position: absolute;
-          left: -30%;
-          top: 0;
-          width: 30%;
-          height: 100%;
-          content: "";
-          pointer-events: none;
-          background: linear-gradient(
-            75deg,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.9) 50%,
-            rgba(255, 255, 255, 0) 100%
-          );
-          filter: blur(1px);
-          transform: skewX(-20deg);
-          mix-blend-mode: screen;
-          animation: shine 2.8s linear infinite;
-        }
-        @keyframes shine {
-          0% {
-            left: -30%;
-          }
-          60% {
-            left: 130%;
-          }
-          100% {
-            left: 130%;
-          }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .gold-text .gold-shine {
-            animation: none;
-            display: none;
-          }
-        }
-      `}</style>
+        <div className="sep-curved" aria-hidden="true"></div>
+
+        <section
+          className="container mx-auto px-5 relative rounded-3xl p-6 border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
+          style={{ background: 'linear-gradient(180deg, rgba(18,23,33,.88) 0%, rgba(11,15,20,1) 100%)' }}
+        >
+          <div
+            className="pointer-events-none absolute -inset-x-px -top-px h-36 rounded-t-3xl"
+            style={{ background: 'radial-gradient(120% 80% at 50% 0%, rgba(233,196,106,.18), rgba(233,196,106,0) 70%)' }}
+          />
+          <h2 className="text-center my-2 font-cinzel font-extrabold text-[26px] leading-tight text-[#f0e0a6]">
+            Forja tu leyenda
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <article className="card relative">
+              <svg className="absolute right-3 top-3 opacity-90" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 2l3 6 6 .9-4.5 4.4 1 6.3L12 16l-5.5 3.6 1-6.3L3 8.9 9 8l3-6z" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
+              </svg>
+              <h3 className="m-0 mb-1 font-bold text-[#f0e0a6]">Duelo 1v1</h3>
+              <p className="m-0 text-muted">Reglas claras, reportes rápidos y matchmaking justo.</p>
+            </article>
+            <article className="card relative">
+              <svg className="absolute right-3 top-3 opacity-90" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 21h10M12 3v14M8 9l4-4 4 4" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
+              </svg>
+              <h3 className="m-0 mb-1 font-bold text-[#f0e0a6]">Clasificación</h3>
+              <p className="m-0 text-muted">Coronas y laureles para los mejores. Ranking transparente.</p>
+            </article>
+            <article className="card relative">
+              <svg className="absolute right-3 top-3 opacity-90" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
+                <path d="M3 10h18M8 5h8l1 2H7l1-2z" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
+              </svg>
+              <h3 className="m-0 mb-1 font-bold text-[#f0e0a6]">Botín asegurado</h3>
+              <p className="m-0 text-muted">Pagos sin fricción y verificación segura.</p>
+            </article>
+          </div>
+
+          <div
+            className="mt-8 rounded-3xl p-6 border border-[rgba(233,196,106,.28)]"
+            style={{ background: 'linear-gradient(135deg, rgba(233,196,106,.10), rgba(16,21,33,.25))' }}
+          >
+            <div className="flex flex-col items-center justify-center gap-3 text-center">
+              <div>
+                <h3 className="font-cinzel text-[24px] leading-tight text-[color:var(--gold-3)] m-0">¿Listo para combatir?</h3>
+                <p className="text-muted m-0 mt-2">Únete a los duelos en vivo.</p>
+              </div>
+              <div className="w-full max-w-[340px] grid grid-cols-1 gap-2">
+                <Link
+                  href="/auth/login"
+                  className="btn btn-solid btn-lg btn-pill px-6 text-[#141414] text-center"
+                  style={{ backgroundImage: 'linear-gradient(135deg, var(--gold), var(--gold-2))' }}
+                >
+                  Entrar a la Arena
+                </Link>
+                <Link
+                  href="/auth/login"
+                  className="btn btn-ghost btn-lg btn-pill px-6 text-[color:var(--gold)] hover:bg-[rgba(233,196,106,.12)] text-center"
+                >
+                  Ver batallas
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="my-6 h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(233,196,106,.25), transparent)' }} />
+
+          <footer className="my-9 text-[#a4a6b4] text-[13px]">
+            <div className="container mx-auto px-0 md:px-2 flex items-center justify-between flex-wrap gap-3">
+              <div>© {new Date().getFullYear()} Arena Real</div>
+              <div className="flex gap-3 opacity-90">
+                <a href="#" aria-label="Términos">Términos</a>
+                <span aria-hidden="true">•</span>
+                <a href="#" aria-label="Privacidad">Privacidad</a>
+                <span aria-hidden="true">•</span>
+                <a href="#" aria-label="Soporte">Soporte</a>
+              </div>
+            </div>
+          </footer>
+        </section>
+      </main>
     </div>
   );
 }
-
