@@ -35,7 +35,7 @@ const Navbar = () => {
   const hasActiveChat = Boolean(activeChatId);
 
   const navItems = [
-    { href: '/', label: 'Home', icon: Home },
+    { href: '/home', label: 'Home', icon: Home },
     { href: '/history', label: 'Historial', icon: ScrollText },
     { href: '/chat', label: 'Chats', icon: MessageCircle },
     { href: '/torneos', label: 'Torneos', icon: Trophy },
@@ -48,7 +48,7 @@ const Navbar = () => {
     <header className="bg-gradient-to-r from-blue-500 via-blue-700 to-blue-900 text-white shadow-md animate-gradient-x">
       <div className="container mx-auto flex items-center justify-between py-3">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+        <Link href="/home" className="flex items-center gap-2 font-bold text-lg">
           <Crown className="h-6 w-6" />
           Arena Real
         </Link>
