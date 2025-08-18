@@ -9,10 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ScrollTextIcon, VictoryIcon, DefeatIcon, InfoIcon } from '@/components/icons/ClashRoyaleIcons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
-import { getUserDuelsAction, getUserTransactionsAction } from '@/lib/actions';
+import { getUserDuelsAction } from '@/lib/actions';
 import { BACKEND_URL } from '@/lib/config';
 
-const COMMISSION_RATE = 0.16;
 const formatCOP = (value: number) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
@@ -52,22 +51,10 @@ const HistoryPageContent = () => {
   useEffect(() => {
     const fetchDuels = async () => {
       if (user?.id) {
-        const [duelResult, txResult] = await Promise.all([
-          getUserDuelsAction(user.id),
-          getUserTransactionsAction(user.id),
-        ]);
-        const prizeTxs =
-          txResult.transactions?.filter(t => t.tipo === 'PREMIO') ?? [];
+        const duelResult = await getUserDuelsAction(user.id);
         if (duelResult.duels) {
           const mapped = duelResult.duels.map((d: BackendPartidaResponseDto) => {
             const matchDate = d.validadaEn || d.creada;
-            let prize = 0;
-            if (d.ganadorId === user.id) {
-              const tx = prizeTxs.find(
-                t => Math.abs(new Date(t.creadoEn).getTime() - new Date(matchDate).getTime()) < 24 * 60 * 60 * 1000,
-              );
-              prize = tx?.monto ?? 0;
-            }
             return {
               id: d.apuestaId,
               userId: user.id,
@@ -79,7 +66,7 @@ const HistoryPageContent = () => {
               status: d.estado as any,
               modoJuego: d.modoJuego,
               opponentTag: undefined,
-              prize,
+              prize: d.premio,
             } as Bet;
           });
           setBets(mapped);
