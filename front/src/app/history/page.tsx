@@ -66,7 +66,7 @@ const HistoryPageContent = () => {
               status: d.estado as any,
               modoJuego: d.modoJuego,
               opponentTag: undefined,
-              prize: Number(d.premio ?? 0),
+              prize: d.ganadorId === user.id ? Number(d.premio ?? 0) : 0,
             } as Bet;
           });
           setBets(mapped);
