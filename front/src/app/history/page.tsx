@@ -66,7 +66,7 @@ const HistoryPageContent = () => {
               status: d.estado as any,
               modoJuego: d.modoJuego,
               opponentTag: undefined,
-              prize: d.premio,
+              prize: Number(d.premio ?? 0),
             } as Bet;
           });
           setBets(mapped);
@@ -145,7 +145,7 @@ const HistoryPageContent = () => {
               <p className="text-base">
                 Premio:{' '}
                 <span className="font-semibold text-accent">
-                  {bet.result ? formatCOP(bet.prize) : 'Pendiente'}
+                  {bet.result ? formatCOP(bet.prize ?? 0) : 'Pendiente'}
                 </span>
               </p>
               {name && (
