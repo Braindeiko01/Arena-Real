@@ -142,12 +142,14 @@ const HistoryPageContent = () => {
                 Inscripción:{' '}
                 <span className="font-semibold text-accent">{formatCOP(bet.amount)}</span>
               </p>
-              <p className="text-base">
-                Premio:{' '}
-                <span className="font-semibold text-accent">
-                  {formatCOP(bet.prize ?? 0)}
-                </span>
-              </p>
+              {bet.result !== 'loss' && (
+                <p className="text-base">
+                  Premio:{' '}
+                  <span className="font-semibold text-accent">
+                    {formatCOP(bet.prize ?? 0)}
+                  </span>
+                </p>
+              )}
               {name && (
                 <p className="text-base">
                   Oponente: <span className="font-semibold">{name}</span>
