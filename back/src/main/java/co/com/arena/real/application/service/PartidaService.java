@@ -1,6 +1,7 @@
 package co.com.arena.real.application.service;
 
 import co.com.arena.real.domain.entity.Apuesta;
+import co.com.arena.real.domain.entity.EstadoApuesta;
 import co.com.arena.real.domain.entity.EstadoTransaccion;
 import co.com.arena.real.domain.entity.TipoTransaccion;
 import co.com.arena.real.domain.entity.Transaccion;
@@ -164,6 +165,8 @@ public class PartidaService {
 
             Apuesta apuesta = apuestaRepository.findById(partida.getApuesta().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Apuesta no encontrada"));
+            apuesta.setEstado(EstadoApuesta.ENTREGADA);
+            apuestaRepository.save(apuesta);
 
             Transaccion premio = new Transaccion();
             premio.setJugador(partida.getGanador());
