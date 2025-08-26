@@ -172,7 +172,7 @@ const HistoryPageContent = () => {
           <ScrollTextIcon className="h-8 w-8 text-accent" />
           <CardTitle className="text-3xl font-headline text-primary">Historial de Duelos</CardTitle>
         </div>
-        <CardDescription className="text-muted-foreground text-lg pt-1">Aquí verás tus apuestas y sus resultados.</CardDescription>
+        <CardDescription className="text-muted-foreground text-lg pt-1">Aquí verás tus duelos y sus resultados.</CardDescription>
       </CardHeader>
       <CardContent className="p-6">
         <Tabs defaultValue="all" className="w-full">
@@ -184,21 +184,21 @@ const HistoryPageContent = () => {
           
           <TabsContent value="all">
             {bets.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No tienes apuestas en tu historial todavía.</p>
+              <p className="text-center text-muted-foreground py-8">No tienes Duelos en tu historial todavía.</p>
             ) : (
               bets.map((bet) => <BetCard key={bet.id} bet={bet} />)
             )}
           </TabsContent>
           <TabsContent value="ganadas">
             {wonBets.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No has ganado ninguna apuesta todavía.</p>
+              <p className="text-center text-muted-foreground py-8">No has ganado ningun duelo todavía.</p>
             ) : (
               wonBets.map((bet) => <BetCard key={bet.id} bet={bet} />)
             )}
           </TabsContent>
           <TabsContent value="perdidas">
             {lostBets.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No has perdido ninguna apuesta todavía.</p>
+              <p className="text-center text-muted-foreground py-8">No has perdido ningun duelo todavía.</p>
             ) : (
               lostBets.map((bet) => <BetCard key={bet.id} bet={bet} />)
             )}
