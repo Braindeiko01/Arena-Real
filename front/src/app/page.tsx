@@ -96,8 +96,15 @@
                 Ver batallas
               </Link>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mt-7" role="list">
+          </section>
+          <section
+            className="container mx-auto px-5 mt-8 rounded-3xl border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
+            style={{
+              background:
+                'radial-gradient(120% 80% at 50% 0%, rgba(233,196,106,.15), rgba(233,196,106,0) 70%), linear-gradient(180deg, rgba(18,23,33,1) 0%, rgba(11,15,20,0.95) 100%)',
+            }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto py-8" role="list">
               <article className="card text-center" role="listitem">
                 <Icon src="/icons/espadas.png" alt="Duelos activos" size={56} className="mb-2" />
                 <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
@@ -122,20 +129,13 @@
                 <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">GLADIADORES</div>
               </article>
             </div>
-          </section>
 
-          <section
-            className="container mx-auto px-5 relative -mt-6 rounded-3xl p-6 border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
-            style={{ background: 'linear-gradient(180deg, rgba(18,23,33,.88) 0%, rgba(11,15,20,1) 100%)' }}
-          >
-            <div
-              className="pointer-events-none absolute -inset-x-px -top-px h-36 rounded-t-3xl"
-              style={{ background: 'radial-gradient(120% 80% at 50% 0%, rgba(233,196,106,.28), rgba(233,196,106,0) 70%)' }}
-            />
-            <h2 className="text-center my-2 font-cinzel font-extrabold text-[26px] leading-tight text-[#f0e0a6]">
+            <div className="h-px w-full my-6 bg-gradient-to-r from-transparent via-amber-300/20 to-transparent" />
+
+            <h2 className="text-center font-cinzel font-extrabold text-[26px] text-[#f0e0a6]">
               Forja tu leyenda
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
               <article className="card card-lg relative">
                 <svg className="absolute right-3 top-3 opacity-90" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M12 2l3 6 6 .9-4.5 4.4 1 6.3L12 16l-5.5 3.6 1-6.3L3 8.9 9 8l3-6z" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
