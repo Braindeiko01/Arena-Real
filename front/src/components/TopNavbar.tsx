@@ -19,8 +19,8 @@ const TopNavbar = () => {
   const avatarSrc = (user as any)?.image || user?.avatarUrl;
 
   return (
-    <header className="md:hidden fixed top-0 w-full z-50 shadow-sm bg-gradient-to-r from-blue-500 via-blue-700 to-blue-900 h-16 px-4 py-3 flex justify-between items-center animate-gradient-x">
-      <div className="flex items-center gap-1 text-white font-bold text-lg">
+    <header className="md:hidden navbar h-16 px-4 py-3 flex justify-between items-center">
+      <div className="flex items-center gap-1 font-bold text-lg text-[color:var(--gold)]">
         <Crown className="h-5 w-5" />
         Arena Real
       </div>
@@ -29,14 +29,17 @@ const TopNavbar = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button aria-label="Notificaciones" className="relative">
-              <Bell className="h-5 w-5 text-white" />
+              <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
               )}
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
-            <DropdownMenuItem onSelect={markAllRead} className="text-xs justify-center text-blue-600">
+            <DropdownMenuItem
+              onSelect={markAllRead}
+              className="text-xs justify-center text-[color:var(--gold)]"
+            >
               Marcar todas como leídas
             </DropdownMenuItem>
             <ScrollArea className="h-40">
@@ -59,13 +62,13 @@ const TopNavbar = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 focus-visible:outline-none transition-transform hover:scale-105">
-              <span className="text-white text-sm font-medium">
+              <span className="text-sm font-medium">
                 {user?.username || 'Invitado'}
               </span>
               {avatarSrc ? (
                 <img src={avatarSrc} alt={user?.username} className="w-8 h-8 rounded-full" />
               ) : (
-                <span className="rounded-full bg-white text-blue-600 w-8 h-8 flex items-center justify-center">
+                <span className="rounded-full bg-[var(--gold)] text-[#141414] w-8 h-8 flex items-center justify-center">
                   {user?.username?.[0]?.toUpperCase() || 'U'}
                 </span>
               )}
