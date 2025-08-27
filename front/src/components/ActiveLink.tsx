@@ -23,8 +23,8 @@ const ActiveLink = ({ href, label, icon: Icon, badge, className }: ActiveLinkPro
       className={cn(
         "flex items-center gap-1 rounded-full px-3 py-1 border-b-2 transition-colors duration-200",
         isActive
-          ? "text-blue-300 border-blue-300"
-          : "text-white border-transparent hover:text-blue-300 hover:border-blue-300",
+          ? "text-[color:var(--gold)] border-[color:var(--gold)]"
+          : "text-[color:var(--muted)] border-transparent hover:text-[color:var(--gold)] hover:border-[color:var(--gold)]",
         className
       )}
     >
