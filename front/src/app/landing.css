@@ -82,14 +82,11 @@ body {
 
 /* Cards */
 .card {
-  border-radius: var(--radius);
-  padding: 18px;
-  background: linear-gradient(135deg, rgba(16,21,33,.66), rgba(233,196,106,.06));
-  border: 1px solid rgba(233,196,106,.25);
-  box-shadow: 0 10px 24px rgba(0,0,0,.35);
-  transition: transform .12s ease, box-shadow .12s ease;
+  border-radius: 16px;
+  border: 1px solid rgba(233,196,106,.16);
+  background: linear-gradient(135deg, rgba(255,255,255,.02), rgba(0,0,0,.18));
+  padding: 18px 18px 16px;
 }
-.card:hover { transform: translateY(-2px); }
 
 .sep-curved {
   position: relative; height: 9px; margin: -2px 0 0;
