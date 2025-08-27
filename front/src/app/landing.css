@@ -2,25 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg: #0b0f14;
-  --bg-elev: #121721;
-  --text: #F2F3F7;
-  --muted: #B6BECC;
-  --gold: #E9C46A;
-  --gold-2: #CDA434;
-  --gold-3: #FFF2B2;
-  --radius: 18px;
-  --safe: max(env(safe-area-inset-bottom), 16px);
-}
-
-html, body { 
-  height: 100%; 
-  background: var(--bg); 
-  color: var(--text); 
-}
-body { 
-  @apply font-sans antialiased; 
+html, body {
+  height: 100%;
 }
 
 .bg-app {
