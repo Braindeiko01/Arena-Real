@@ -3,10 +3,25 @@
   import Link from 'next/link';
   import { useEffect, useRef } from 'react';
   import Navbar from '@/components/landing/Navbar';
-  import SwordsIcon from '@/components/landing/SwordsIcon';
   import CountUp from '@/components/landing/CountUp';
   import { Inter, Cinzel } from 'next/font/google';
+  import Image from 'next/image';
   import './landing.css';
+
+  function Icon({
+    src, alt, size = 56, className = '',
+  }: { src: string; alt: string; size?: number; className?: string }) {
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        width={size}
+        height={size}
+        loading="lazy"
+        className={`mx-auto drop-shadow-[0_0_12px_rgba(245,158,11,.35)] ${className}`}
+      />
+    );
+  }
 
   const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
   const cinzel = Cinzel({ subsets: ['latin'], weight: ['700', '800'], variable: '--font-cinzel' });
@@ -55,7 +70,7 @@
               En vivo · Duelos abiertos
             </span>
 
-            <SwordsIcon className="block mx-auto mt-0"  size={94}/>
+            <Icon src="/icons/espadas.png" alt="Espadas" size={94} className="mt-0" />
 
             <h1 className="font-cinzel font-extrabold tracking-wide mt-2 text-[clamp(28px,8vw,46px)]">
               DESAFÍA LA <span className="neon">ARENA REAL</span>
@@ -83,19 +98,24 @@
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mt-7" role="list">
-              <article className="card" role="listitem">
+              <article className="card text-center" role="listitem">
+                <Icon src="/icons/espadas.png" alt="Duelos activos" size={56} className="mb-2" />
                 <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
                   <CountUp id="m1" to={50} prefix="+" />
                 </div>
                 <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">DUELOS ACTIVOS</div>
               </article>
-              <article className="card" role="listitem">
+
+              <article className="card text-center" role="listitem">
+                <Icon src="/icons/cofre.png" alt="Botín entregado" size={56} className="mb-2" />
                 <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
-                  +$<CountUp id="m2" to={200} prefix="" />K
+                  <CountUp id="m2" to={200} prefix="+$" suffix="K" />
                 </div>
                 <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">BOTÍN ENTREGADO</div>
               </article>
-              <article className="card" role="listitem">
+
+              <article className="card text-center" role="listitem">
+                <Icon src="/icons/casco.png" alt="Gladiadores" size={56} className="mb-2" />
                 <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
                   <CountUp id="m3" to={100} prefix="+" />
                 </div>
