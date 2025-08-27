@@ -109,7 +109,7 @@
               <article className="card text-center" role="listitem">
                 <Icon src="/icons/cofre.png" alt="Botín entregado" size={56} className="mb-2" />
                 <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
-                  +$<CountUp id="m2" to={200} />K
+                  <CountUp id="m2" to={200} prefix="+$" suffix="K" />
                 </div>
                 <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">BOTÍN ENTREGADO</div>
               </article>
