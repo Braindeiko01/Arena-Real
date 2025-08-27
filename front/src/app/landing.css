@@ -88,14 +88,8 @@ body {
   padding: 18px 18px 16px;
 }
 
-.sep-curved {
-  position: relative; height: 9px; margin: -2px 0 0;
-  background: lineal-gradient(120% 140% at 50% -20%, rgba(233,196,106,.34) 0%, rgba(233,196,106,.18) 30%, rgba(233,196,106,0) 60%);
-  pointer-events: none;
-}
-.sep-curved::after {
-  content:""; position:absolute; left:0; right:0; bottom:-1px; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0,0,0,.45), transparent);
+.card-lg {
+  padding: 24px 24px 22px;
 }
 
 @media (max-width: 640px) {
