@@ -18,7 +18,7 @@
         width={size}
         height={size}
         loading="lazy"
-        className={`mx-auto drop-shadow-[0_0_12px_rgba(245,158,11,.35)] ${className}`}
+        className={`mx-auto drop-shadow-[0_0_4px_rgba(245,158,11,.35)] ${className}`}
       />
     );
   }
