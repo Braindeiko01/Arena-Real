@@ -124,36 +124,33 @@
             </div>
           </section>
 
-          <div className="sep-curved" aria-hidden="true"></div>
-
-
           <section
-            className="container mx-auto px-5 relative rounded-3xl p-6 border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
+            className="container mx-auto px-5 relative -mt-6 rounded-3xl p-6 border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
             style={{ background: 'linear-gradient(180deg, rgba(18,23,33,.88) 0%, rgba(11,15,20,1) 100%)' }}
           >
             <div
               className="pointer-events-none absolute -inset-x-px -top-px h-36 rounded-t-3xl"
-              style={{ background: 'radial-gradient(120% 80% at 50% 0%, rgba(233,196,106,.18), rgba(233,196,106,0) 70%)' }}
+              style={{ background: 'radial-gradient(120% 80% at 50% 0%, rgba(233,196,106,.28), rgba(233,196,106,0) 70%)' }}
             />
             <h2 className="text-center my-2 font-cinzel font-extrabold text-[26px] leading-tight text-[#f0e0a6]">
               Forja tu leyenda
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <article className="card relative">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <article className="card card-lg relative">
                 <svg className="absolute right-3 top-3 opacity-90" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M12 2l3 6 6 .9-4.5 4.4 1 6.3L12 16l-5.5 3.6 1-6.3L3 8.9 9 8l3-6z" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
                 </svg>
                 <h3 className="m-0 mb-1 font-bold text-[#f0e0a6]">Duelos 1vs1</h3>
                 <p className="m-0 text-muted">Rapidos.</p>
               </article>
-              <article className="card relative">
+              <article className="card card-lg relative">
                 <svg className="absolute right-3 top-3 opacity-90" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M7 21h10M12 3v14M8 9l4-4 4 4" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
                 </svg>
                 <h3 className="m-0 mb-1 font-bold text-[#f0e0a6]">Clasificación</h3>
                 <p className="m-0 text-muted">Coronas y laureles para los mejores. Ranking transparente.</p>
               </article>
-              <article className="card relative">
+              <article className="card card-lg relative">
                 <svg className="absolute right-3 top-3 opacity-90" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
                   <path d="M3 10h18M8 5h8l1 2H7l1-2z" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
