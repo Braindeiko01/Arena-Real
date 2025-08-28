@@ -29,8 +29,7 @@ body { @apply font-sans antialiased; }
   pointer-events: none;
   min-height: 100%;
   background:
-    radial-gradient(38rem 22rem at 50% 18%, rgba(233,196,106,.20) 0%, rgba(233,196,106,0) 60%),
-    linear-gradient(180deg, #101521 0%, #0b0f14 100%);
+    radial-gradient(38rem 22rem at 50% 18%, rgba(233,196,106,.20) 0%, #0b0f14 60%);
 }
 .bg-app::after {
   content:""; position:absolute; inset:0; pointer-events:none;
