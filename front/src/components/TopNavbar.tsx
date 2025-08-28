@@ -22,7 +22,7 @@ const TopNavbar = () => {
   return (
     <header className="md:hidden navbar h-16 px-4 py-3 flex justify-between items-center">
       <div className="flex items-center gap-1 font-bold text-lg text-[color:var(--gold)] fantasy-text">
-        <Image src="/logo.png" alt="Arena Real logo" width={20} height={20} className="h-5 w-5" />
+        <Image src="/logo.png" alt="Arena Real logo" width={32} height={32} className="h-8 w-8" />
         Arena Real
       </div>
 
@@ -62,10 +62,7 @@ const TopNavbar = () => {
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 focus-visible:outline-none transition-transform hover:scale-105">
-              <span className="text-sm font-medium">
-                {user?.username || 'Invitado'}
-              </span>
+            <button className="flex items-center focus-visible:outline-none transition-transform hover:scale-105">
               {avatarSrc ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={avatarSrc} alt={user?.username} className="w-8 h-8 rounded-full" />
