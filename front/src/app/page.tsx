@@ -97,7 +97,17 @@
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mt-7" role="list">
+          </section>
+          <section
+            className="container mx-auto px-5 mt-6 rounded-3xl border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
+            style={{
+              background: `
+      radial-gradient(120% 80% at 50% 0%, rgba(233,196,106,.18), rgba(233,196,106,0) 70%),
+      linear-gradient(180deg, rgba(18,23,33,.88) 0%, rgba(11,15,20,1) 100%)
+    `,
+            }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto py-8" role="list">
               <article className="card text-center" role="listitem">
                 <Icon src="/icons/espadas.png" alt="Duelos activos" size={56} className="mb-2" />
                 <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
@@ -122,35 +132,29 @@
                 <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">GLADIADORES</div>
               </article>
             </div>
-          </section>
 
-          <section
-            className="container mx-auto px-5 relative -mt-6 rounded-3xl p-6 border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
-            style={{ background: 'linear-gradient(180deg, rgba(18,23,33,.88) 0%, rgba(11,15,20,1) 100%)' }}
-          >
-            <div
-              className="pointer-events-none absolute -inset-x-px -top-px h-36 rounded-t-3xl"
-              style={{ background: 'radial-gradient(120% 80% at 50% 0%, rgba(233,196,106,.28), rgba(233,196,106,0) 70%)' }}
-            />
+            <div className="h-px w-full my-4 bg-gradient-to-r from-transparent via-amber-300/20 to-transparent" />
+
             <h2 className="text-center my-2 font-cinzel font-extrabold text-[26px] leading-tight text-[#f0e0a6]">
               Forja tu leyenda
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <article className="card card-lg relative">
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-1 md:px-2">
+              <article className="card relative !bg-transparent !p-5 md:!p-6">
                 <svg className="absolute right-3 top-3 opacity-90" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M12 2l3 6 6 .9-4.5 4.4 1 6.3L12 16l-5.5 3.6 1-6.3L3 8.9 9 8l3-6z" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
                 </svg>
                 <h3 className="m-0 mb-1 font-bold text-[#f0e0a6]">Duelos 1vs1</h3>
                 <p className="m-0 text-muted">Rapidos.</p>
               </article>
-              <article className="card card-lg relative">
+              <article className="card relative !bg-transparent !p-5 md:!p-6">
                 <svg className="absolute right-3 top-3 opacity-90" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M7 21h10M12 3v14M8 9l4-4 4 4" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
                 </svg>
                 <h3 className="m-0 mb-1 font-bold text-[#f0e0a6]">Clasificación</h3>
                 <p className="m-0 text-muted">Coronas y laureles para los mejores. Ranking transparente.</p>
               </article>
-              <article className="card card-lg relative">
+              <article className="card relative !bg-transparent !p-5 md:!p-6">
                 <svg className="absolute right-3 top-3 opacity-90" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
                   <path d="M3 10h18M8 5h8l1 2H7l1-2z" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
@@ -161,7 +165,7 @@
             </div>
 
             <div
-              className="mt-8 rounded-3xl p-6 border border-[rgba(233,196,106,.28)]"
+              className="mt-8 rounded-3xl p-6 border border-[rgba(233,196,106,.28)] mx-1 md:mx-2"
               style={{ background: 'linear-gradient(135deg, rgba(233,196,106,.10), rgba(16,21,33,.25))' }}
             >
               <div className="flex flex-col items-center justify-center gap-3 text-center">
@@ -189,7 +193,7 @@
 
             <div className="my-6 h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(233,196,106,.25), transparent)' }} />
 
-            <footer className="my-9 text-[#a4a6b4] text-[13px]">
+            <footer className="my-9 text-[#a4a6b4] text-[13px] px-1 md:px-2">
               <div className="container mx-auto px-0 md:px-2 flex items-center justify-between flex-wrap gap-3">
                 <div>© {new Date().getFullYear()} Arena Real</div>
                 <div className="flex gap-3 opacity-90">
