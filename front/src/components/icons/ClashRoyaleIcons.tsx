@@ -1,10 +1,17 @@
 
-import { Crown, Shield, Swords, Gem, ShieldCheck, ShieldX, UserCircle, Phone, MessageSquare, Coins, Image as ImageIcon, LogIn, UserPlus, PlayCircle, Landmark, Bot, Info, ScrollText, LogOut, User } from 'lucide-react'; // Added User
+import Image from 'next/image';
+import { Shield, Swords, Gem, ShieldCheck, ShieldX, UserCircle, Phone, MessageSquare, Coins, Image as ImageIcon, LogIn, UserPlus, PlayCircle, Landmark, Bot, Info, ScrollText, LogOut, User } from 'lucide-react'; // Added User
 
 // For specific icons, consider creating actual SVG components if lucide doesn't fit the cartoon style.
 // For now, we map generic concepts to Lucide icons.
 
-export const CrownIcon = (props: React.ComponentProps<typeof Crown>) => <Crown {...props} />;
+export const CrownIcon = ({
+  width = 64,
+  height = 64,
+  ...props
+}: Omit<React.ComponentProps<typeof Image>, 'src' | 'alt'>) => (
+  <Image src="/logo.png" alt="Arena Real logo" width={width} height={height} {...props} />
+);
 export const ShieldIcon = (props: React.ComponentProps<typeof Shield>) => <Shield {...props} />; // Could be player avatar frame
 export const SwordsIcon = (props: React.ComponentProps<typeof Swords>) => <Swords {...props} />; // Represents a match/duel
 export const ChestIcon = (props: React.ComponentProps<typeof Gem>) => <Gem {...props} />; // Represents a reward or bet item

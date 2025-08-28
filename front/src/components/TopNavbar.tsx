@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, Crown } from "lucide-react";
+import Image from "next/image";
+import { Bell } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +22,7 @@ const TopNavbar = () => {
   return (
     <header className="md:hidden navbar h-16 px-4 py-3 flex justify-between items-center">
       <div className="flex items-center gap-1 font-bold text-lg text-[color:var(--gold)] fantasy-text">
-        <Crown className="h-5 w-5" />
+        <Image src="/logo.png" alt="Arena Real logo" width={20} height={20} className="h-5 w-5" />
         Arena Real
       </div>
 
@@ -66,6 +67,7 @@ const TopNavbar = () => {
                 {user?.username || 'Invitado'}
               </span>
               {avatarSrc ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={avatarSrc} alt={user?.username} className="w-8 h-8 rounded-full" />
               ) : (
                 <span className="rounded-full bg-[var(--gold)] text-[#141414] w-8 h-8 flex items-center justify-center">

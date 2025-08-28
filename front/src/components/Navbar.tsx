@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Home,
   Trophy,
   Bell,
   Menu,
-  Crown,
   ScrollText,
   MessageCircle,
   Users,
@@ -52,7 +52,7 @@ const Navbar = () => {
           href="/home"
           className="flex items-center gap-2 font-bold text-lg text-[color:var(--gold)] fantasy-text"
         >
-          <Crown className="h-6 w-6" />
+          <Image src="/logo.png" alt="Arena Real logo" width={24} height={24} className="h-6 w-6" />
           Arena Real
         </Link>
 
