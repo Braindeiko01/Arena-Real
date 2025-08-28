@@ -62,79 +62,75 @@
         </div>
         <Navbar />
         <main className="pt-9 pb-">
-          <section className="container mx-auto px-5 text-center">
-            <span className="badge-gold">
-              <span className="w-2 h-2 rounded-full bg-[#ffb703] shadow-[0_0_6px_#ffb703]" aria-hidden="true" />
-              En vivo · Duelos abiertos
-            </span>
-            <Icon src="/icons/espadas.png" alt="Espadas" size={94} className="mt-0" />
+          <section id="stats" className="relative overflow-visible">
+            <div className="container mx-auto px-5 pt-6 pb-8 text-center">
+              <span className="badge-gold">
+                <span className="w-2 h-2 rounded-full bg-[#ffb703] shadow-[0_0_6px_#ffb703]" aria-hidden="true" />
+                En vivo · Duelos abiertos
+              </span>
+              <Icon src="/icons/espadas.png" alt="Espadas" size={94} className="mt-0" />
 
-            <h1 className="font-cinzel font-extrabold tracking-wide mt-2 text-[clamp(28px,8vw,46px)]">
-              DESAFÍA LA <span className="neon">ARENA REAL</span>
-            </h1>
-            <p className="max-w-2xl mx-auto text-muted text-[17px] mt-1">
-              Gladiador, obten tu botin y demuestra tu honor.
-            </p>
-            <div
-              ref={heroParallaxRef}
-              className="mt-6 flex flex-wrap items-center justify-center gap-3 transition-transform [transform:translate(var(--px,0),var(--py,0))]"
-            >
-              <Link
-                href="/login"
-                className="btn btn-solid btn-lg btn-pill px-6 text-[#141414]"
-                style={{ backgroundImage: 'linear-gradient(135deg, var(--gold), var(--gold-2))' }}
+              <h1 className="font-cinzel font-extrabold tracking-wide mt-2 text-[clamp(28px,8vw,46px)]">
+                DESAFÍA LA <span className="neon">ARENA REAL</span>
+              </h1>
+              <p className="max-w-2xl mx-auto text-muted text-[17px] mt-1">
+                Gladiador, obten tu botin y demuestra tu honor.
+              </p>
+              <div
+                ref={heroParallaxRef}
+                className="mt-6 flex flex-wrap items-center justify-center gap-3 transition-transform [transform:translate(var(--px,0),var(--py,0))]"
               >
-                Desafiar ahora
-              </Link>
-              <Link
-                href="/login"
-                className="btn btn-ghost btn-lg btn-pill px-6 text-[color:var(--gold)] hover:bg-[rgba(233,196,106,.12)]"
-              >
-                Ver batallas
-              </Link>
-            </div>
+                <Link
+                  href="/login"
+                  className="btn btn-solid btn-lg btn-pill px-6 text-[#141414]"
+                  style={{ backgroundImage: 'linear-gradient(135deg, var(--gold), var(--gold-2))' }}
+                >
+                  Desafiar ahora
+                </Link>
+                <Link
+                  href="/login"
+                  className="btn btn-ghost btn-lg btn-pill px-6 text-[color:var(--gold)] hover:bg-[rgba(233,196,106,.12)]"
+                >
+                  Ver batallas
+                </Link>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mt-7" role="list">
-              <article className="card text-center" role="listitem">
-                <Icon src="/icons/espadas.png" alt="Duelos activos" size={56} className="mb-2" />
-                <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
-                  <CountUp id="m1" to={50} prefix="+" />
-                </div>
-                <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">DUELOS ACTIVOS</div>
-              </article>
+              <div className="rounded-3xl bg-[#0E141C] border border-yellow-400/20 p-6 shadow-[0_10px_40px_rgba(0,0,0,.35)] mt-7">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto" role="list">
+                  <article className="card text-center" role="listitem">
+                    <Icon src="/icons/espadas.png" alt="Duelos activos" size={56} className="mb-2" />
+                    <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
+                      <CountUp id="m1" to={50} prefix="+" />
+                    </div>
+                    <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">DUELOS ACTIVOS</div>
+                  </article>
 
-              <article className="card text-center" role="listitem">
-                <Icon src="/icons/cofre.png" alt="Botín entregado" size={56} className="mb-2" />
-                <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
-                  <CountUp id="m2" to={200} prefix="+$" suffix="K" />
-                </div>
-                <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">BOTÍN ENTREGADO</div>
-              </article>
+                  <article className="card text-center" role="listitem">
+                    <Icon src="/icons/cofre.png" alt="Botín entregado" size={56} className="mb-2" />
+                    <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
+                      <CountUp id="m2" to={200} prefix="+$" suffix="K" />
+                    </div>
+                    <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">BOTÍN ENTREGADO</div>
+                  </article>
 
-              <article className="card text-center" role="listitem">
-                <Icon src="/icons/casco.png" alt="Gladiadores" size={56} className="mb-2" />
-                <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
-                  <CountUp id="m3" to={100} prefix="+" />
+                  <article className="card text-center" role="listitem">
+                    <Icon src="/icons/casco.png" alt="Gladiadores" size={56} className="mb-2" />
+                    <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
+                      <CountUp id="m3" to={100} prefix="+" />
+                    </div>
+                    <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">GLADIADORES</div>
+                  </article>
                 </div>
-                <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">GLADIADORES</div>
-              </article>
+              </div>
             </div>
           </section>
 
-          <section
-            className="container mx-auto px-5 relative mt-6 rounded-3xl p-6 border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
-            style={{
-              background: 'linear-gradient(180deg, #0b0f14 0%, rgba(18,23,33,.96) 20%, rgba(11,15,20,1) 100%)'
-            }}
-          >
-            <div
-              className="pointer-events-none absolute -inset-x-px -top-px h-36 rounded-t-3xl"
-              style={{}}
-            />
-            <h2 className="text-center my-2 font-cinzel font-extrabold text-[26px] leading-tight text-[#f0e0a6]">
-              Forja tu leyenda
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <section id="forge" className="container mx-auto px-5 mt-6">
+            <div className="rounded-3xl bg-[#0E141C] border border-yellow-400/20 p-6 ring-1 ring-yellow-400/10 ring-offset-2 ring-offset-[#0B0F17] shadow-[0_8px_30px_rgba(0,0,0,.35)]">
+              <h2 className="text-2xl font-extrabold text-yellow-300 text-center mb-4 font-cinzel">
+                Forja tu leyenda
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <article className="card card-lg relative">
                 <svg className="absolute right-3 top-3 opacity-90" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M12 2l3 6 6 .9-4.5 4.4 1 6.3L12 16l-5.5 3.6 1-6.3L3 8.9 9 8l3-6z" stroke="currentColor" strokeWidth="1.3" color="#CDA434" />
@@ -200,6 +196,7 @@
                 </div>
               </div>
             </footer>
+          </div>
           </section>
         </main>
       </div>
