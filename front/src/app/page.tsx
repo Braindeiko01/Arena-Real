@@ -56,10 +56,8 @@
     }, []);
 
     return (
-      <div className={`${inter.variable} ${cinzel.variable}`}>
-        <div className="bg-app" aria-hidden="true">
-          <div className="bg-grid" />
-        </div>
+      <div className={`relative min-h-screen ${inter.variable} ${cinzel.variable}`}>
+        <div className="bg-app" aria-hidden="true" />
         <Navbar />
         <main className="pt-9 pb-">
           <section className="container mx-auto px-5 text-center">
