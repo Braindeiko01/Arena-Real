@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from "class-variance-authority";
 
 const cartoonButtonVariants = cva(
-  "inline-flex items-center justify-center rounded-lg font-headline text-lg font-semibold tracking-wide transition-transform duration-150 ease-in-out hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:translate-y-0.5 disabled:pointer-events-none disabled:opacity-70",
+  "inline-flex items-center justify-center rounded-lg fantasy-text text-lg font-semibold tracking-wide transition-transform duration-150 ease-in-out hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:translate-y-0.5 disabled:pointer-events-none disabled:opacity-70",
   {
     variants: {
       variant: {

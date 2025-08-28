@@ -185,9 +185,9 @@ export default function RegisterPage() {
       <Card className="w-full max-w-lg shadow-card-medieval border-2 border-accent">
         <CardHeader className="text-center">
           <CrownIcon className="mx-auto h-16 w-16 text-accent mb-4" />
-          <CardTitle className="text-4xl font-headline text-accent">
-            {step === 1 ? "Crea Tu Cuenta" : `Completa tu Perfil, ${googleAuthData?.username || ''}`}
-          </CardTitle>
+            <CardTitle className="text-4xl">
+              {step === 1 ? "Crea Tu Cuenta" : `Completa tu Perfil, ${googleAuthData?.username || ''}`}
+            </CardTitle>
           <CardDescription className="text-muted-foreground text-base">
             {step === 1 ? "¡Únete a Arena Real y empieza a apostar!" : "Necesitamos unos detalles más para empezar."}
           </CardDescription>

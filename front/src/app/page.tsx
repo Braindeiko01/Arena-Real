@@ -69,7 +69,7 @@
             </span>
             <Icon src="/icons/espadas.png" alt="Espadas" size={94} className="mt-0" />
 
-            <h1 className="font-cinzel font-extrabold tracking-wide mt-2 text-[clamp(28px,8vw,46px)]">
+            <h1 className="font-cinzel fantasy-text font-extrabold mt-2 text-[clamp(28px,8vw,46px)]">
               DESAFÍA LA <span className="neon">ARENA REAL</span>
             </h1>
             <p className="max-w-2xl mx-auto text-muted text-[17px] mt-1">
@@ -81,14 +81,14 @@
             >
               <Link
                 href="/login"
-                className="btn btn-solid btn-lg btn-pill px-6 text-[#141414]"
+                className="btn btn-solid btn-lg btn-pill px-6 text-[#141414] fantasy-text"
                 style={{ backgroundImage: 'linear-gradient(135deg, var(--gold), var(--gold-2))' }}
               >
                 Desafiar ahora
               </Link>
               <Link
                 href="/login"
-                className="btn btn-ghost btn-lg btn-pill px-6 text-[color:var(--gold)] hover:bg-[rgba(233,196,106,.12)]"
+                className="btn btn-ghost btn-lg btn-pill px-6 text-[color:var(--gold)] hover:bg-[rgba(233,196,106,.12)] fantasy-text"
               >
                 Ver batallas
               </Link>
@@ -169,14 +169,14 @@
                 <div className="w-full max-w-[340px] grid grid-cols-1 gap-2">
                   <Link
                     href="/login"
-                    className="btn btn-solid btn-lg btn-pill px-6 text-[#141414] text-center"
+                    className="btn btn-solid btn-lg btn-pill px-6 text-[#141414] text-center fantasy-text"
                     style={{ backgroundImage: 'linear-gradient(135deg, var(--gold), var(--gold-2))' }}
                   >
                     Entrar a la Arena
                   </Link>
                   <Link
                     href="/login"
-                    className="btn btn-ghost btn-lg btn-pill px-6 text-[color:var(--gold)] hover:bg-[rgba(233,196,106,.12)] text-center"
+                    className="btn btn-ghost btn-lg btn-pill px-6 text-[color:var(--gold)] hover:bg-[rgba(233,196,106,.12)] text-center fantasy-text"
                   >
                     Ver batallas
                   </Link>
