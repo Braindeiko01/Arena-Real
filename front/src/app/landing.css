@@ -23,49 +23,18 @@ body { @apply font-sans antialiased; }
 
 /* ====== FONDO GLOBAL ====== */
 .bg-app {
-  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  min-height: 100%;
   background:
     radial-gradient(38rem 22rem at 50% 18%, rgba(233,196,106,.20) 0%, rgba(233,196,106,0) 60%),
     linear-gradient(180deg, #101521 0%, #0b0f14 100%);
 }
-.bg-app::before {
-  content: ""; position:absolute; inset:0; pointer-events:none; opacity:.45;
-  background:
-    repeating-conic-gradient(from 0deg at 20% 30%, rgba(255,255,255,.022) 0% 2%, rgba(0,0,0,0) 2% 4%),
-    repeating-linear-gradient(120deg, rgba(255,255,255,.018) 0 2px, rgba(0,0,0,0) 2px 10px);
-  mix-blend-mode: overlay;
-}
 .bg-app::after {
   content:""; position:absolute; inset:0; pointer-events:none;
   background: radial-gradient(circle at 50% 120%, rgba(0,0,0,.0) 0%, rgba(0,0,0,.35) 60%, rgba(0,0,0,.6) 100%);
-}
-
-/* 🔧 CUADRÍCULA con FADE SUPERIOR (evita el corte) */
-.bg-grid {
-  position: absolute;
-  inset: 0;
-  /* capa 1: fade top que oculta la grilla y la va revelando */
-  background-image:
-    linear-gradient(
-      to bottom,
-      var(--bg) 0,
-      var(--bg) clamp(180px, 24vh, 320px),
-      rgba(11,15,20,0) clamp(320px, 42vh, 560px)
-    ),
-    /* capa 2 y 3: líneas de la cuadrícula */
-    linear-gradient(#fff 1px, transparent 1px),
-    linear-gradient(90deg, #fff 1px, transparent 1px);
-  background-size:
-    auto,
-    38px 38px,
-    38px 38px;
-  background-position:
-    top left,
-    top left,
-    top left;
-  /* intensidad de la grilla sin afectar el fade */
-  filter: opacity(0.08);
-  animation: gridMove 40s linear infinite;
 }
 
 /* ====== Botones ====== */
@@ -102,17 +71,11 @@ body { @apply font-sans antialiased; }
 }
 
 /* ====== Cards ====== */
-.card {
+.card { 
   border-radius: 16px;
   border: 1px solid #fff27b1a;
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.418), rgba(0,0,0,.18));
   padding: 19px 19px 19px;
 }
 .card-lg { padding: 24px 24px 22px; }
-
-/* ====== Motion prefs ====== */
-@media (max-width: 640px) { .bg-grid { animation: none; } }
-@media (prefers-reduced-motion: reduce) { .bg-grid { animation: none !important; } }
-
-@keyframes gridMove { to { background-position: 720px 720px; } }
 @keyframes draw { to { stroke-dashoffset: 0; } }
