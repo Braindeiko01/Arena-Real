@@ -81,11 +81,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 font-body animate-fade-in-up">
-      <Card className="w-full max-w-md shadow-card-medieval border-2 border-accent">
-        <CardHeader className="text-center">
-          <CrownIcon className="mx-auto h-16 w-16 text-accent mb-4" />
-          <CardTitle className="text-4xl font-headline text-accent">Iniciar Sesión</CardTitle>
-          <CardDescription className="text-muted-foreground text-base">
+        <Card className="w-full max-w-md shadow-card-medieval border-2 border-accent">
+          <CardHeader className="text-center">
+            <CrownIcon className="mx-auto h-16 w-16 text-accent mb-4" />
+            <CardTitle className="text-4xl">Iniciar Sesión</CardTitle>
+            <CardDescription className="text-muted-foreground text-base">
             Accede a tu cuenta de Arena Real para continuar.
           </CardDescription>
         </CardHeader>
