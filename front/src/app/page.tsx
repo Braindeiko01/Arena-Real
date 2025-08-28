@@ -130,7 +130,7 @@
           >
             <div
               className="pointer-events-none absolute -inset-x-px -top-px h-36 rounded-t-3xl"
-              style={{ background: 'radial-gradient(120% 80% at 50% 0%, rgba(233,196,106,.28), rgba(233,196,106,0) 70%)' }}
+              style={{}}
             />
             <h2 className="text-center my-2 font-cinzel font-extrabold text-[26px] leading-tight text-[#f0e0a6]">
               Forja tu leyenda
