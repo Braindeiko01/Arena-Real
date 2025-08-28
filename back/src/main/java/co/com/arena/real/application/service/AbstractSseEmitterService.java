@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +25,7 @@ public abstract class AbstractSseEmitterService {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     protected SseEmitter subscribe(String jugadorId) {
+
         SseEmitter emitter = new SseEmitter(0L);
         EmitterWrapper wrapper = new EmitterWrapper(emitter);
 

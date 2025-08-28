@@ -24,5 +24,4 @@ import type { NextConfig } from 'next';
     // "Cross-Origin-Opener-Policy policy would block the window.close call" error
     // logged by Firebase Auth when closing its login popup.
   };
-
   export default nextConfig;
