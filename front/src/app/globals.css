@@ -135,3 +135,11 @@
     border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
 }
+
+@layer utilities {
+  .fantasy-text {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 6px rgba(233, 196, 106, 0.6);
+  }
+}
