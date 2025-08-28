@@ -23,7 +23,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (authContext.isAuthenticated) {
-      router.push('/');
+      router.push('/home');
     }
   }, [authContext.isAuthenticated, router]);
 
@@ -63,7 +63,7 @@ export default function LoginPage() {
       } else if (response.user) {
          authContext.login(response.user as User);
          toast({ title: "¡Bienvenido de nuevo!", description: `Hola ${response.user.username}`, variant: "default" });
-         router.push('/');
+         router.push('/home');
       } else {
           toast({ title: "Error", description: response.error || "No se pudo iniciar sesión.", variant: "destructive" });
       }

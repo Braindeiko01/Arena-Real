@@ -79,6 +79,7 @@ export interface BackendPartidaResponseDto {
   creada: string; // date-time
   validadaEn?: string; // date-time
   monto: number;
+  premio: number;
   chatId?: string;
   capturaJugador1?: string;
   capturaJugador2?: string;
@@ -163,6 +164,7 @@ export interface Bet {
   result?: MatchResult;
   status: BackendApuestaResponseDto['estado'];
   modoJuego: string;
+  prize: number;
   screenshotUrl?: string;
 }
 

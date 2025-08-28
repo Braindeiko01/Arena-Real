@@ -31,6 +31,7 @@ public class PartidaResponse implements Serializable {
     private LocalDateTime creada;
     private LocalDateTime validadaEn;
     private java.math.BigDecimal monto;
+    private java.math.BigDecimal premio;
     private String capturaJugador1;
     private String capturaJugador2;
     private String resultadoJugador1;

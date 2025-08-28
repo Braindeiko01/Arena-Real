@@ -55,7 +55,7 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
-      router.push('/');
+      router.push('/home');
     }
   }, [auth.isAuthenticated, router]);
 
@@ -115,7 +115,7 @@ export default function RegisterPage() {
           toast({ title: "Conectado con Google", description: `Hola ${realGoogleData.username}, por favor completa tu perfil.`});
       } else if (response.user){
           auth.login(response.user as User);
-          router.push('/');
+          router.push('/home');
       } else {
           toast({ title: "Error", description: response.error || "No se pudo iniciar sesión.", variant: "destructive" });
       }
@@ -159,7 +159,7 @@ export default function RegisterPage() {
         description: `¡Bienvenido a Arena Real, ${result.user.username}!`,
         variant: "default",
       });
-      router.push('/');
+      router.push('/home');
     } else if (result.error) {
       toast({
         title: "Error de Registro",

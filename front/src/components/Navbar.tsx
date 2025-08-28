@@ -35,7 +35,7 @@ const Navbar = () => {
   const hasActiveChat = Boolean(activeChatId);
 
   const navItems = [
-    { href: '/', label: 'Home', icon: Home },
+    { href: '/home', label: 'Home', icon: Home },
     { href: '/history', label: 'Historial', icon: ScrollText },
     { href: '/chat', label: 'Chats', icon: MessageCircle },
     { href: '/torneos', label: 'Torneos', icon: Trophy },
@@ -45,17 +45,20 @@ const Navbar = () => {
   const { unreadCount } = useNotifications();
 
   return (
-    <header className="bg-gradient-to-r from-blue-500 via-blue-700 to-blue-900 text-white shadow-md animate-gradient-x">
+    <header className="navbar">
       <div className="container mx-auto flex items-center justify-between py-3">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+        <Link
+          href="/home"
+          className="flex items-center gap-2 font-bold text-lg text-[color:var(--gold)]"
+        >
           <Crown className="h-6 w-6" />
           Arena Real
         </Link>
 
         {/* Mobile hamburger */}
         <button
-          className="rounded-md p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden transition-transform hover:scale-105"
+          className="rounded-md p-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden transition-transform hover:scale-105"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -78,7 +81,7 @@ const Navbar = () => {
         {/* Right side icons */}
         {isAuthenticated && user && (
           <div className="hidden items-center gap-4 md:flex">
-            <button className="relative rounded-full p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
+            <button className="relative rounded-full p-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
               <Bell className="h-6 w-6" />
               {unreadCount > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs">

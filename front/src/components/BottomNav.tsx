@@ -29,7 +29,7 @@ const BottomNav = () => {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 w-full z-50 bg-gradient-to-r from-blue-500 via-blue-700 to-blue-900 border-t border-blue-800 h-16 animate-gradient-x">
+    <nav className="md:hidden navbar-bottom h-16">
       <ul className="flex h-full items-center justify-around">
         {navItems.map(({ id, label, href, icon: Icon }) => {
           const isActive = pathname === href || pathname.startsWith(`${href}/`);
@@ -40,8 +40,8 @@ const BottomNav = () => {
                 className={cn(
                   "flex flex-col items-center text-xs transition-all ease-in-out",
                   isActive
-                    ? "text-[#FFD600] scale-110 font-bold"
-                    : "text-white opacity-70 hover:text-blue-300"
+                    ? "text-[color:var(--gold)] scale-110 font-bold"
+                    : "text-[color:var(--muted)] opacity-70 hover:text-[color:var(--gold)]"
                 )}
               >
                 <span className="relative">

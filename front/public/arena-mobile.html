@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1a1324" />
+<title>Arena Real — Móvil Optimizado · Neon Gold</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0b0f14;
+    --bg-elev: #121721;
+    --text: #F2F3F7;
+    --muted: #B6BECC;
+    --gold: #E9C46A;
+    --gold-2: #CDA434;
+    --gold-3: #FFF2B2;
+    --radius: 18px;
+    --shadow-1: 0 10px 24px rgba(0,0,0,.35);
+    --glow: 0 0 10px rgba(245,212,105,.25);
+    --safe: max(env(safe-area-inset-bottom), 16px);
+  }
+  * { box-sizing: border-box }
+  html, body { height:100%; background: var(--bg); color: var(--text); }
+  body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto; line-height:1.5; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+  a { color: inherit; text-decoration: none }
+  img { max-width: 100%; display: block }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 20px }
+
+  /* Background */
+  .bg { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(38rem 22rem at 50% 18%, rgba(233,196,106,.20) 0%, rgba(233,196,106,0) 60%),
+      linear-gradient(180deg, #101521 0%, #0b0f14 100%);
+  }
+  .bg::before { content:""; position:absolute; inset:0; pointer-events:none; opacity:.55;
+    background:
+      repeating-conic-gradient(from 0deg at 20% 30%, rgba(255,255,255,.022) 0% 2%, rgba(0,0,0,0) 2% 4%),
+      repeating-linear-gradient(120deg, rgba(255,255,255,.018) 0 2px, rgba(0,0,0,0) 2px 10px);
+    mix-blend-mode: overlay; }
+  .bg::after { content:""; position:absolute; inset:0; pointer-events:none;
+    background: radial-gradient(circle at 50% 120%, rgba(0,0,0,.0) 0%, rgba(0,0,0,.35) 60%, rgba(0,0,0,.6) 100%); }
+  .grid { position:absolute; inset:0; opacity:.03;
+    background-image:linear-gradient(#fff 1px, transparent 1px),linear-gradient(90deg,#fff 1px, transparent 1px);
+    background-size: 38px 38px; animation: gridMove 40s linear infinite; }
+  @keyframes gridMove { to { background-position: 720px 720px } }
+
+  /* Navbar */
+  .navbar { position: sticky; top:0; z-index:50; backdrop-filter: blur(8px); background: rgba(14,14,22,.9); border-bottom: 1px solid rgba(255,255,255,.06); }
+  .nav-inner { display:flex; align-items:center; justify-content:space-between; padding: 12px 0 }
+  .brand { display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.06em; position:relative }
+  .brand::before { content:""; display:none !important; }
+  .logo { width:44px; height:44px; border-radius:9999px; display:grid; place-items:center; color:#141414; background: linear-gradient(135deg, var(--gold), var(--gold-2)); box-shadow: none; }
+  .nav-ctas { display:flex; gap:10px }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding: 12px 16px;
+    border-radius: 14px; border:1px solid rgba(255,255,255,.08); font-weight:600; cursor:pointer;
+    transition: background .15s ease, border-color .15s ease, transform .1s ease; min-height:48px; -webkit-tap-highlight-color: transparent; }
+  .btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(233,196,106,.35) }
+  .btn-solid { background: linear-gradient(135deg, var(--gold), var(--gold-2)); color:#141414; border-color: transparent }
+  .btn-solid:hover { transform: translateY(-1px) }
+  .btn-ghost { background: rgba(255,255,255,.04); color: var(--gold); border-color: rgba(233,196,106,.35) }
+  .btn-ghost:hover { background: rgba(233,196,106,.12) }
+  .btn-lg { padding: 14px 22px; font-size: 18px }
+  .btn-pill { border-radius: 9999px }
+
+  /* Hero */
+  .hero { padding: 84px 0 24px }
+  .badge { display:inline-flex; align-items:center; gap:8px; background: rgba(233,196,106,.10);
+    border: 1px solid rgba(233,196,106,.32); color: #fff2d0; padding: 6px 12px; border-radius: 9999px; font-weight:600; }
+  .live-dot { width:8px; height:8px; border-radius:9999px; background: #ffb703; box-shadow: 0 0 6px #ffb703 }
+  .title { font-family: Cinzel, serif; font-weight:800; text-align:center; font-size: clamp(28px, 8vw, 46px);
+    letter-spacing: .04em; margin: 10px 0 8px; color: var(--text); }
+  .title .neon { color: var(--gold-3); text-shadow: 0 0 10px rgba(233,196,106,.25), 0 0 22px rgba(233,196,106,.18); }
+  .subtitle { text-align:center; opacity:.9; max-width: 760px; margin: 0 auto; font-size: 17px; color: var(--muted) }
+  .hero-ctas { margin-top: 24px; display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap }
+  .parallax { transform: translate(var(--px,0), var(--py,0)); transition: transform .15s ease-out }
+
+  /* Swords */
+  .swords { display:block; margin: 18px auto 0 }
+  .sword-stroke { stroke-dasharray: 60; stroke-dashoffset: 60; animation: draw 1s ease forwards }
+  .sword-stroke.delay { animation-delay: .25s }
+  @keyframes draw { to { stroke-dashoffset: 0 } }
+
+  /* Metrics */
+  .metrics { display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 900px; margin: 28px auto 0 }
+  .shield { position:relative; border-radius: var(--radius); padding: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    border: 1px solid rgba(233,196,106,.28); box-shadow: var(--shadow-1); }
+  .metric-value { font: 800 28px/1 Cinzel, serif; color: var(--gold-2) }
+  .metric-label { margin-top: 6px; font-size: 11px; letter-spacing: .18em; opacity:.75 }
+
+  /* Ornamental separator */
+  .sep-curved { position: relative; height: 24px; margin: 8px 0 0; /* limpio, sin cortes */
+    background: radial-gradient(120% 140% at 50% -20%, rgba(233,196,106,.34) 0%, rgba(233,196,106,.18) 30%, rgba(233,196,106,0) 60%);
+    pointer-events: none; }
+  .sep-curved::after { content:""; position:absolute; left:0; right:0; bottom:-1px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,0,0,.45), transparent); }
+
+  /* Features */
+  .features-section { position: relative; border-radius: 22px; padding: 24px; margin-top: 0; /* conecta con sep */
+    background: linear-gradient(180deg, rgba(26,19,36,.88) 0%, rgba(13,14,20,1) 100%);
+    border: 1px solid rgba(233,196,106,.16); box-shadow: 0 10px 26px rgba(0,0,0,.35); overflow: hidden; }
+  .features-section::before { content:""; position: absolute; left: -1px; right: -1px; top: -1px; height: 140px;
+    border-radius: 22px 22px 0 0; background: radial-gradient(120% 80% at 50% 0%, rgba(233,196,106,.18), rgba(233,196,106,0) 70%);
+    pointer-events: none; }
+  .section-title { text-align:center; margin: 8px 0 14px; font: 800 26px/1.15 Cinzel, serif; color: #f0e0a6 }
+  .features { display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; background: none }
+  .card { position: relative; border-radius: var(--radius); padding: 18px;
+    background: linear-gradient(135deg, rgba(43,15,63,.35), rgba(233,196,106,.04)); border: 1px solid rgba(233,196,106,.25);
+    box-shadow: var(--shadow-1); transition: transform .12s ease, box-shadow .12s ease }
+  .card:hover { transform: translateY(-2px) }
+  .card h3 { margin: 0 0 6px; color: #f0e0a6; font-weight:700 }
+  .card p { margin: 0; color: var(--muted) }
+  .card .icon { position:absolute; right:14px; top:14px; opacity:.9 }
+
+  /* CTA */
+  .cta { margin: 28px auto 0; border-radius: 22px; padding: 26px; text-align:center;
+    background: linear-gradient(135deg, rgba(233,196,106,.10), rgba(43,15,63,.25)); border: 1px solid rgba(233,196,106,.28); }
+  .cta-flex { display:flex; flex-direction: column; align-items:center; justify-content:center; gap: 10px; }
+  .cta h3 { margin:0; font: 800 24px/1.15 Cinzel, serif; color: var(--gold-3) }
+  .cta p { margin:6px 0 10px; opacity:.9; color: var(--muted) }
+  .cta .btn { width:100%; max-width: 340px; margin: 6px auto; display:block; text-align:center }
+
+  /* Footer */
+  .footer { margin: 36px 0 calc(var(--safe) - 6px); color: #a4a6b4; font-size: 13px }
+  .sep { height:1px; background: linear-gradient(90deg, transparent, rgba(233,196,106,.25), transparent); margin: 22px 0 }
+
+  /* --- Mobile-first tweaks --- */
+  @media (max-width: 900px) {
+    .metrics { grid-template-columns: 1fr; max-width: 640px }
+    .features { grid-template-columns: 1fr }
+    .hero { padding-top: 76px }
+  }
+  @media (max-width: 640px) {
+    .container { padding: 0 16px }
+    .nav-inner { padding: 8px 0 }
+    .brand-sub { display:none }
+    .btn { padding: 10px 14px; font-size: 15px }
+
+    .title { font-size: clamp(26px, 9vw, 40px) }
+    .subtitle { font-size: 16px }
+
+    .hero-ctas { flex-direction: column; width:100% }
+    .hero-ctas .btn { width:100% }
+
+    .shield { padding: 14px }
+    .metric-value { font-size: 24px }
+    .metric-label { font-size: 10px }
+
+    .section-title { font-size: 24px }
+    .card { padding: 16px }
+    .cta-flex { flex-direction: column; align-items: center; text-align: center }
+    .cta .btn { width:100%; max-width: 340px }
+
+    .footer .container { display:flex; flex-direction: column; gap:10px; text-align:center }
+
+    /* lighter effects on small screens for perf */
+    .grid { animation: none }
+    .card, .shield { box-shadow: 0 6px 16px rgba(0,0,0,.28) }
+  }
+
+  /* Respect accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .grid, .sword-stroke, .parallax { animation: none !important; transition: none !important; transform: none !important }
+  }
+</style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="grid"></div>
+    <div class="arena-sill" style="position:absolute; left:0; right:0; bottom:0; height:120px; background: linear-gradient(to top, rgba(0,0,0,.42), transparent 65%); -webkit-mask-image: linear-gradient(to top, black 70%, transparent 100%); mask-image: linear-gradient(to top, black 70%, transparent 100%);"></div>
+  </div>
+
+  <header class="navbar">
+    <div class="container nav-inner">
+      <div class="brand" aria-label="Arena Real">
+        <div class="logo" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path d="M8 8 L28 28 M28 28 L36 20 M28 28 L20 36" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            <path d="M56 8 L36 28 M36 28 L28 20 M36 28 L44 36" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <nav class="nav-ctas" aria-label="Navegación primaria">
+        <a class="btn btn-ghost btn-pill" href="/login">Entrar</a>
+        <a class="btn btn-solid btn-pill" href="/register" aria-label="Registrarse y comenzar duelo">Registrarse</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="hero">
+    <section class="container" id="hero" style="text-align:center">
+      <span class="badge"><span class="live-dot" aria-hidden="true"></span> EN VIVO · Desafíos abiertos</span>
+
+      <svg class="swords" width="84" height="68" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <path class="sword-stroke" d="M8 8 L28 28 M28 28 L36 20 M28 28 L20 36" stroke="currentColor" stroke-width="3" stroke-linecap="round" color="#CDA434"/>
+        <path class="sword-stroke delay" d="M56 8 L36 28 M36 28 L28 20 M36 28 L44 36" stroke="currentColor" stroke-width="3" stroke-linecap="round" color="#CDA434"/>
+      </svg>
+
+      <h1 class="title">DESAFÍA LA <span class="neon">ARENA REAL</span></h1>
+      <p class="subtitle">Gladiadores, honor y botín. Retos reales con diseño profesional.</p>
+
+      <div class="hero-ctas parallax" id="hero-parallax">
+        <a class="btn btn-solid btn-lg btn-pill" href="/login">Desafiar ahora</a>
+        <a class="btn btn-ghost btn-lg btn-pill" href="/login">Ver batallas</a>
+      </div>
+
+      <div class="metrics" role="list">
+        <article class="shield" role="listitem">
+          <div class="metric-value"><span id="m1">+0</span></div>
+          <div class="metric-label">DUELOS ACTIVOS</div>
+        </article>
+        <article class="shield" role="listitem">
+          <div class="metric-value">+$<span id="m2">0</span>K</div>
+          <div class="metric-label">BOTÍN ENTREGADO</div>
+        </article>
+        <article class="shield" role="listitem">
+          <div class="metric-value"><span id="m3">+0</span></div>
+          <div class="metric-label">GLADIADORES</div>
+        </article>
+      </div>
+    </section>
+
+    <div class="sep-curved" aria-hidden="true"></div>
+
+    <section class="container features-section">
+      <h2 class="section-title">Forja tu leyenda</h2>
+      <div class="features">
+        <article class="card">
+          <svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2l3 6 6 .9-4.5 4.4 1 6.3L12 16l-5.5 3.6 1-6.3L3 8.9 9 8l3-6z" stroke="currentColor" stroke-width="1.3" color="#CDA434"/>
+          </svg>
+          <h3>Duelo 1v1</h3>
+          <p>Reglas claras, reportes rápidos y matchmaking justo.</p>
+        </article>
+        <article class="card">
+          <svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M7 21h10M12 3v14M8 9l4-4 4 4" stroke="currentColor" stroke-width="1.3" color="#CDA434"/>
+          </svg>
+          <h3>Clasificación</h3>
+          <p>Coronas y laureles para los mejores. Ranking transparente.</p>
+        </article>
+        <article class="card">
+          <svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.3" color="#CDA434"/>
+            <path d="M3 10h18M8 5h8l1 2H7l1-2z" stroke="currentColor" stroke-width="1.3" color="#CDA434"/>
+          </svg>
+          <h3>Botín asegurado</h3>
+          <p>Pagos sin fricción y verificación segura.</p>
+        </article>
+      </div>
+
+      <div class="cta">
+        <div class="cta-flex">
+          <div>
+            <h3>¿Listo para combatir?</h3>
+            <p>Únete a los duelos en vivo.</p>
+          </div>
+          <div>
+            <a class="btn btn-solid btn-lg btn-pill" href="/login">Entrar a la Arena</a>
+            <a class="btn btn-ghost btn-lg btn-pill" href="/login" style="margin-left:0">Ver batallas</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <footer class="footer">
+        <div class="container" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px">
+          <div>© <span id="year"></span> Arena Real</div>
+          <div style="display:flex; gap:14px; opacity:.9">
+            <a href="#" aria-label="Términos">Términos</a>
+            <span aria-hidden="true">•</span>
+            <a href="#" aria-label="Privacidad">Privacidad</a>
+            <span aria-hidden="true">•</span>
+            <a href="#" aria-label="Soporte">Soporte</a>
+          </div>
+        </div>
+      </footer>
+    </section>
+  </main>
+
+<script>
+  // Parallax desactivado en táctiles o reduced motion
+  (function() {
+    const el = document.getElementById('hero-parallax');
+    if (!el) return;
+    const isCoarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (isCoarse || prefersReduced) return; // no listeners
+
+    let rect = null;
+    const strength = 10;
+    const updateRect = () => rect = el.getBoundingClientRect();
+    updateRect();
+    window.addEventListener('resize', updateRect);
+    el.addEventListener('mousemove', (e) => {
+      if (!rect) return;
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * strength;
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * strength;
+      el.style.setProperty('--px', x + 'px');
+      el.style.setProperty('--py', y + 'px');
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.setProperty('--px', '0px');
+      el.style.setProperty('--py', '0px');
+    });
+  })();
+
+  function countUp(id, to, prefix="+", suffix="") {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const start = performance.now();
+    const duration = 1200;
+    function step(t){
+      const p = Math.min((t - start) / duration, 1);
+      const val = Math.floor(p * to);
+      el.textContent = prefix + val + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  countUp('m1', 128, "+");
+  countUp('m2', 50, "");
+  countUp('m3', 2000, "+");
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

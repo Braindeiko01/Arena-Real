@@ -4,8 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,26 +25,25 @@ public abstract class AbstractSseEmitterService {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     protected SseEmitter subscribe(String jugadorId) {
-        String lock = ("lock_" + jugadorId).intern();
-        synchronized (lock) {
-            EmitterWrapper existing = emitters.remove(jugadorId);
-            if (existing != null) {
-                existing.emitter.complete();
+
+        SseEmitter emitter = new SseEmitter(0L);
+        EmitterWrapper wrapper = new EmitterWrapper(emitter);
+
+        EmitterWrapper prev = emitters.put(jugadorId, wrapper);
+        if (prev != null) {
+            try {
+                prev.emitter.complete();
+            } catch (Exception ignored) {
             }
-
-            SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-            EmitterWrapper wrapper = new EmitterWrapper(emitter);
-
-            emitter.onCompletion(() -> removeEmitter(jugadorId));
-            emitter.onTimeout(() -> removeEmitter(jugadorId));
-            emitter.onError(ex -> removeEmitter(jugadorId));
-
-            emitters.put(jugadorId, wrapper);
-            log.info("Nueva conexión SSE para jugador: {}", jugadorId);
-
-            onSubscribe(jugadorId, wrapper);
-            return emitter;
         }
+
+        emitter.onCompletion(() -> removeEmitter(jugadorId, wrapper));
+        emitter.onTimeout(() -> removeEmitter(jugadorId, wrapper));
+        emitter.onError(ex -> removeEmitter(jugadorId, wrapper));
+
+        log.info("Nueva conexión SSE para jugador: {}", jugadorId);
+        onSubscribe(jugadorId, wrapper);
+        return emitter;
     }
 
     @Scheduled(fixedRate = 15000)
@@ -55,8 +52,8 @@ public abstract class AbstractSseEmitterService {
             try {
                 wrapper.emitter.send(SseEmitter.event().comment("heartbeat"));
                 wrapper.lastAccess = System.currentTimeMillis();
-            } catch (IOException e) {
-                removeEmitter(id);
+            } catch (Exception e) {
+                removeEmitter(id, wrapper);
             }
         });
     }
@@ -66,15 +63,19 @@ public abstract class AbstractSseEmitterService {
         long now = System.currentTimeMillis();
         emitters.forEach((id, wrapper) -> {
             if (now - wrapper.lastAccess > TTL_MS) {
-                removeEmitter(id);
-                wrapper.emitter.complete();
+                removeEmitter(id, wrapper);
             }
         });
     }
 
-    protected void removeEmitter(String jugadorId) {
-        emitters.remove(jugadorId);
-        log.info("Desconectado SSE jugador: {}", jugadorId);
+    protected void removeEmitter(String jugadorId, EmitterWrapper wrapper) {
+        if (emitters.remove(jugadorId, wrapper)) {
+            try {
+                wrapper.emitter.complete();
+            } catch (Exception ignored) {
+            }
+            log.info("Desconectado SSE jugador: {}", jugadorId);
+        }
     }
 
     protected void onSubscribe(String jugadorId, EmitterWrapper wrapper) {

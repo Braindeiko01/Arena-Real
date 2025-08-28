@@ -12,6 +12,13 @@ import { Badge } from '@/components/ui/badge';
 import { getUserDuelsAction } from '@/lib/actions';
 import { BACKEND_URL } from '@/lib/config';
 
+const formatCOP = (value: number) =>
+  new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+  }).format(value);
+
 const HistoryPageContent = () => {
   const { user, isLoading: authIsLoading } = useAuth();
   const [bets, setBets] = useState<Bet[]>([]);
@@ -31,7 +38,7 @@ const HistoryPageContent = () => {
               setOpponents(prev => ({ ...prev, [id]: data.nombre }));
             }
           } catch (err) {
-            console.error('Error fetching opponent', err);
+            console.error('Error al obtener oponente', err);
           }
         })
       );
@@ -44,20 +51,24 @@ const HistoryPageContent = () => {
   useEffect(() => {
     const fetchDuels = async () => {
       if (user?.id) {
-        const result = await getUserDuelsAction(user.id);
-        if (result.duels) {
-          const mapped = result.duels.map((d: BackendPartidaResponseDto) => ({
-            id: d.apuestaId,
-            userId: user.id,
-            matchId: d.id,
-            amount: d.monto,
-            opponentId: d.jugador1Id === user.id ? d.jugador2Id : d.jugador1Id,
-            matchDate: d.validadaEn || d.creada,
-            result: d.ganadorId ? (d.ganadorId === user.id ? 'win' : 'loss') : undefined,
-            status: d.estado as any,
-            modoJuego: d.modoJuego,
-            opponentTag: undefined,
-          })) as Bet[];
+        const duelResult = await getUserDuelsAction(user.id);
+        if (duelResult.duels) {
+          const mapped = duelResult.duels.map((d: BackendPartidaResponseDto) => {
+            const matchDate = d.validadaEn || d.creada;
+            return {
+              id: d.apuestaId,
+              userId: user.id,
+              matchId: d.id,
+              amount: d.monto,
+              opponentId: d.jugador1Id === user.id ? d.jugador2Id : d.jugador1Id,
+              matchDate,
+              result: d.ganadorId ? (d.ganadorId === user.id ? 'win' : 'loss') : undefined,
+              status: d.estado as any,
+              modoJuego: d.modoJuego,
+              opponentTag: undefined,
+              prize: Number(d.premio ?? 0),
+            } as Bet;
+          });
           setBets(mapped);
         } else {
           setBets([]);
@@ -78,54 +89,84 @@ const HistoryPageContent = () => {
 
   const wonBets = bets.filter(bet => bet.result === 'win');
   const lostBets = bets.filter(bet => bet.result === 'loss');
-  const pendingBets = bets.filter(bet => !bet.result);
 
   const BetCard = ({ bet }: { bet: Bet }) => {
     const name = bet.opponentId ? opponents[bet.opponentId] : undefined;
+    const statusLabel =
+      bet.result === 'win'
+        ? 'Ganada'
+        : bet.result === 'loss'
+        ? 'Perdida'
+        : bet.status
+        ? bet.status
+            .toLowerCase()
+            .split('_')
+            .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+            .join(' ')
+        : 'Pendiente';
+    const formattedDate = new Date(bet.matchDate).toLocaleString('es-CO', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
     return (
-    <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
-      <CardHeader className="pb-3">
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-xl text-primary">Duelo: {bet.modoJuego}</CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Partida ID: {bet.matchId} <br />
-              Fecha: {new Date(bet.matchDate).toLocaleDateString()}
-            </CardDescription>
+      <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
+        <CardHeader className="pb-3">
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-xl text-primary">Duelo: {bet.modoJuego}</CardTitle>
+              <CardDescription className="text-sm text-muted-foreground">
+                Partida ID: {bet.matchId} <br />
+                Fecha y hora: {formattedDate}
+              </CardDescription>
+            </div>
+            <Badge
+              variant={
+                bet.result === 'win'
+                  ? 'default'
+                  : bet.result === 'loss'
+                  ? 'destructive'
+                  : 'secondary'
+              }
+              className={`capitalize ${
+                bet.result === 'win'
+                  ? 'bg-green-500 text-white'
+                  : bet.result === 'loss'
+                  ? 'bg-destructive text-destructive-foreground'
+                  : 'bg-muted text-muted-foreground'
+              }`}
+            >
+              {statusLabel}
+            </Badge>
           </div>
-          <Badge
-            variant={
-              bet.result === 'win'
-                ? 'default'
-                : bet.result === 'loss'
-                ? 'destructive'
-                : 'secondary'
-            }
-            className={`capitalize ${
-              bet.result === 'win'
-                ? 'bg-green-500 text-white'
-                : bet.result === 'loss'
-                ? 'bg-destructive text-destructive-foreground'
-                : 'bg-muted text-muted-foreground'
-            }`}
-          >
-            {bet.result || bet.status || 'Pendiente'}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex justify-between items-center">
-          <div>
-            <p className="text-base">Monto: <span className="font-semibold text-accent">{new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(bet.amount)}</span></p>
-            {name && <p className="text-base">Oponente: <span className="font-semibold">{name}</span></p>}
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-base">
+                Inscripción:{' '}
+                <span className="font-semibold text-accent">{formatCOP(bet.amount)}</span>
+              </p>
+              {bet.result !== 'loss' && (
+                <p className="text-base">
+                  Premio:{' '}
+                  <span className="font-semibold text-accent">
+                    {formatCOP(bet.prize ?? 0)}
+                  </span>
+                </p>
+              )}
+              {name && (
+                <p className="text-base">
+                  Oponente: <span className="font-semibold">{name}</span>
+                </p>
+              )}
+            </div>
+            {bet.result === 'win' && <VictoryIcon className="h-8 w-8 text-green-500" />}
+            {bet.result === 'loss' && <DefeatIcon className="h-8 w-8 text-destructive" />}
+            {!bet.result && <InfoIcon className="h-8 w-8 text-muted-foreground" />}
           </div>
-          {bet.result === 'win' && <VictoryIcon className="h-8 w-8 text-green-500" />}
-          {bet.result === 'loss' && <DefeatIcon className="h-8 w-8 text-destructive" />}
-          {!bet.result && <InfoIcon className="h-8 w-8 text-muted-foreground" />}
-        </div>
-      </CardContent>
-    </Card>
-  );
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
@@ -135,7 +176,7 @@ const HistoryPageContent = () => {
           <ScrollTextIcon className="h-8 w-8 text-accent" />
           <CardTitle className="text-3xl font-headline text-primary">Historial de Duelos</CardTitle>
         </div>
-        <CardDescription className="text-muted-foreground text-lg pt-1">Aquí verás tus apuestas y sus resultados.</CardDescription>
+        <CardDescription className="text-muted-foreground text-lg pt-1">Aquí verás tus duelos y sus resultados.</CardDescription>
       </CardHeader>
       <CardContent className="p-6">
         <Tabs defaultValue="all" className="w-full">
@@ -147,21 +188,21 @@ const HistoryPageContent = () => {
           
           <TabsContent value="all">
             {bets.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No tienes apuestas en tu historial todavía.</p>
+              <p className="text-center text-muted-foreground py-8">No tienes Duelos en tu historial todavía.</p>
             ) : (
               bets.map((bet) => <BetCard key={bet.id} bet={bet} />)
             )}
           </TabsContent>
           <TabsContent value="ganadas">
             {wonBets.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No has ganado ninguna apuesta todavía.</p>
+              <p className="text-center text-muted-foreground py-8">No has ganado ningun duelo todavía.</p>
             ) : (
               wonBets.map((bet) => <BetCard key={bet.id} bet={bet} />)
             )}
           </TabsContent>
           <TabsContent value="perdidas">
             {lostBets.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No has perdido ninguna apuesta todavía.</p>
+              <p className="text-center text-muted-foreground py-8">No has perdido ningun duelo todavía.</p>
             ) : (
               lostBets.map((bet) => <BetCard key={bet.id} bet={bet} />)
             )}
