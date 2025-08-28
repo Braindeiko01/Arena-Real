@@ -104,6 +104,10 @@ const HistoryPageContent = () => {
             .map(s => s.charAt(0).toUpperCase() + s.slice(1))
             .join(' ')
         : 'Pendiente';
+    const formattedDate = new Date(bet.matchDate).toLocaleString('es-CO', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
     return (
       <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
         <CardHeader className="pb-3">
@@ -112,7 +116,7 @@ const HistoryPageContent = () => {
               <CardTitle className="text-xl text-primary">Duelo: {bet.modoJuego}</CardTitle>
               <CardDescription className="text-sm text-muted-foreground">
                 Partida ID: {bet.matchId} <br />
-                Fecha: {new Date(bet.matchDate).toLocaleDateString()}
+                Fecha y hora: {formattedDate}
               </CardDescription>
             </div>
             <Badge
