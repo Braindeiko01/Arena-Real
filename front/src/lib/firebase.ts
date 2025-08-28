@@ -3,7 +3,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getMessaging, type Messaging } from 'firebase/messaging';
+import { getMessaging, isSupported, type Messaging } from 'firebase/messaging';
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -21,9 +21,15 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-let messaging: Messaging | undefined;
-if (typeof window !== 'undefined') {
-  messaging = getMessaging(app);
+
+let messagingInstance: Messaging | null = null;
+
+export async function getFirebaseMessaging(): Promise<Messaging | null> {
+  if (messagingInstance) return messagingInstance;
+  if (typeof window === 'undefined') return null;
+  if (!(await isSupported())) return null;
+  messagingInstance = getMessaging(app);
+  return messagingInstance;
 }
 
-export { auth, db, storage, messaging };
+export { auth, db, storage };
