@@ -17,11 +17,25 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Fredoka', 'sans-serif'],
-        headline: ['Fredoka', 'sans-serif'],
+        body: ['Inter', 'ui-sans-serif', 'system-ui'],
+        headline: ['Poppins', 'ui-sans-serif', 'system-ui'],
         code: ['monospace'],
       },
       colors: {
+        bg: '#0B0D0E',
+        panel: '#111315',
+        panel2: '#0E1113',
+        gold: {
+          DEFAULT: '#E8C26E',
+          strong: '#F2D27F',
+        },
+        text: {
+          primary: '#EDEDED',
+          secondary: '#A9AFB6',
+        },
+        stroke: '#2A2F33',
+        success: '#7ED57A',
+        error: '#F16A6A',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -78,8 +92,10 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        '2xl': '1.25rem',
       },
       boxShadow: {
+        soft: '0 8px 24px rgba(0,0,0,0.25)',
         'cartoon': '0 4px 0 hsl(var(--primary-dark)), 0 6px 10px rgba(0,0,0,0.2)',
         'cartoon-sm': '0 2px 0 hsl(var(--primary-dark)), 0 3px 5px rgba(0,0,0,0.15)',
         'cartoon-active': '0 2px 0 hsl(var(--primary-dark)), 0 3px 5px rgba(0,0,0,0.2)',
