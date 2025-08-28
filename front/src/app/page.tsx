@@ -134,7 +134,6 @@
             </div>
 
             <div className="h-px w-full my-4 bg-gradient-to-r from-transparent via-amber-300/20 to-transparent" />
-
             <h2 className="text-center my-2 font-cinzel font-extrabold text-[26px] leading-tight text-[#f0e0a6]">
               Forja tu leyenda
             </h2>
