@@ -60,16 +60,13 @@
         <div className="bg-app" aria-hidden="true">
           <div className="bg-grid" />
         </div>
-
         <Navbar />
-
-        <main className="pt-20 pb-6">
+        <main className="pt-9 pb-">
           <section className="container mx-auto px-5 text-center">
             <span className="badge-gold">
               <span className="w-2 h-2 rounded-full bg-[#ffb703] shadow-[0_0_6px_#ffb703]" aria-hidden="true" />
               En vivo · Duelos abiertos
             </span>
-
             <Icon src="/icons/espadas.png" alt="Espadas" size={94} className="mt-0" />
 
             <h1 className="font-cinzel font-extrabold tracking-wide mt-2 text-[clamp(28px,8vw,46px)]">
@@ -125,8 +122,10 @@
           </section>
 
           <section
-            className="container mx-auto px-5 relative -mt-6 rounded-3xl p-6 border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
-            style={{ background: 'linear-gradient(180deg, rgba(18,23,33,.88) 0%, rgba(11,15,20,1) 100%)' }}
+            className="container mx-auto px-5 relative mt-6 rounded-3xl p-6 border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
+            style={{
+              background: 'linear-gradient(180deg, #0b0f14 0%, rgba(18,23,33,.96) 20%, rgba(11,15,20,1) 100%)'
+            }}
           >
             <div
               className="pointer-events-none absolute -inset-x-px -top-px h-36 rounded-t-3xl"

@@ -14,15 +14,14 @@
   --safe: max(env(safe-area-inset-bottom), 16px);
 }
 
-html, body { 
-  height: 100%; 
-  background: var(--bg); 
-  color: var(--text); 
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
 }
-body { 
-  @apply font-sans antialiased; 
-}
+body { @apply font-sans antialiased; }
 
+/* ====== FONDO GLOBAL ====== */
 .bg-app {
   position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
@@ -40,23 +39,45 @@ body {
   content:""; position:absolute; inset:0; pointer-events:none;
   background: radial-gradient(circle at 50% 120%, rgba(0,0,0,.0) 0%, rgba(0,0,0,.35) 60%, rgba(0,0,0,.6) 100%);
 }
+
+/* 🔧 CUADRÍCULA con FADE SUPERIOR (evita el corte) */
 .bg-grid {
-  position:absolute; inset:0; opacity:.03;
-  background-image:linear-gradient(#fff 1px, transparent 1px),linear-gradient(90deg,#fff 1px, transparent 1px);
-  background-size: 38px 38px;
+  position: absolute;
+  inset: 0;
+  /* capa 1: fade top que oculta la grilla y la va revelando */
+  background-image:
+    linear-gradient(
+      to bottom,
+      var(--bg) 0,
+      var(--bg) clamp(180px, 24vh, 320px),
+      rgba(11,15,20,0) clamp(320px, 42vh, 560px)
+    ),
+    /* capa 2 y 3: líneas de la cuadrícula */
+    linear-gradient(#fff 1px, transparent 1px),
+    linear-gradient(90deg, #fff 1px, transparent 1px);
+  background-size:
+    auto,
+    38px 38px,
+    38px 38px;
+  background-position:
+    top left,
+    top left,
+    top left;
+  /* intensidad de la grilla sin afectar el fade */
+  filter: opacity(0.08);
   animation: gridMove 40s linear infinite;
 }
 
-/* Buttons */
+/* ====== Botones ====== */
 .btn { @apply inline-flex items-center justify-center gap-2 font-semibold min-h-12; }
 .btn-pill { @apply rounded-full; }
 .btn-ghost { @apply border border-white/10 bg-white/5; }
 
-/* Navbar */
+/* ====== Navbar ====== */
 .navbar {
   @apply sticky top-0 z-50;
   backdrop-filter: blur(9px);
-  -webkit-backdrop-filter: blur(8px); /* soporte Safari */
+  -webkit-backdrop-filter: blur(8px);
   background: rgba(12, 12, 20, 0.795);
   border-bottom: 1px solid rgba(250, 240, 99, 0.06);
 }
@@ -67,7 +88,7 @@ body {
   box-shadow: none;
 }
 
-/* Hero */
+/* ====== Hero ====== */
 .badge-gold {
   @apply inline-flex items-center gap-2 rounded-full font-semibold;
   background: rgba(233,196,106,.10);
@@ -80,28 +101,18 @@ body {
   text-shadow: 0 0 9px rgba(233,196,106,.25), 0 0 1px rgba(233,196,106,.18);
 }
 
-/* Cards */
+/* ====== Cards ====== */
 .card {
   border-radius: 16px;
   border: 1px solid #fff27b1a;
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.418), rgba(0,0,0,.18));
   padding: 19px 19px 19px;
 }
+.card-lg { padding: 24px 24px 22px; }
 
-.card-lg {
-  padding: 24px 24px 22px;
-}
+/* ====== Motion prefs ====== */
+@media (max-width: 640px) { .bg-grid { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .bg-grid { animation: none !important; } }
 
-@media (max-width: 640px) {
-  .bg-grid { animation: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .bg-grid { animation: none !important; }
-}
-
-@keyframes gridMove { 
-  to { background-position: 720px 720px; } 
-}
-@keyframes draw { 
-  to { stroke-dashoffset: 0; } 
-}
+@keyframes gridMove { to { background-position: 720px 720px; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
