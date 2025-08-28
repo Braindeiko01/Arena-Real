@@ -61,7 +61,7 @@
           <div className="bg-grid" />
         </div>
         <Navbar />
-        <main className="pt- pb-9">
+        <main className="pt-2 pb-9">
           <section className="container mx-auto px-5 text-center">
             <span className="badge-gold">
               <span className="w-2 h-2 rounded-full bg-[#ffb703] shadow-[0_0_6px_#ffb703]" aria-hidden="true" />
@@ -73,7 +73,7 @@
               DESAFÍA LA <span className="neon">ARENA REAL</span>
             </h1>
             <p className="max-w-2xl mx-auto text-muted text-[17px] mt-1">
-              Gladiador, obten tu botin y demuestra tu honor.
+              Gladiador, demuestra tu honor y gana un botin en el camino.
             </p>
             <div
               ref={heroParallaxRef}
