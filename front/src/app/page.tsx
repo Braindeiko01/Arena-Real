@@ -61,73 +61,68 @@
           <div className="bg-grid" />
         </div>
         <Navbar />
-        <main className="pt-9">
-          <section className="relative overflow-visible">
-            <div className="pointer-events-none absolute inset-0">
-              <div className="h-60 bg-gradient-to-b from-yellow-500/10 via-transparent to-transparent" />
-            </div>
-            <div className="container mx-auto px-5 text-center pb-12">
-              <span className="badge-gold">
-                <span className="w-2 h-2 rounded-full bg-[#ffb703] shadow-[0_0_6px_#ffb703]" aria-hidden="true" />
-                En vivo · Duelos abiertos
-              </span>
-              <Icon src="/icons/espadas.png" alt="Espadas" size={94} className="mt-0" />
+        <main className="pt-9 pb-">
+          <section className="container mx-auto px-5 text-center">
+            <span className="badge-gold">
+              <span className="w-2 h-2 rounded-full bg-[#ffb703] shadow-[0_0_6px_#ffb703]" aria-hidden="true" />
+              En vivo · Duelos abiertos
+            </span>
+            <Icon src="/icons/espadas.png" alt="Espadas" size={94} className="mt-0" />
 
-              <h1 className="font-cinzel font-extrabold tracking-wide mt-2 text-[clamp(28px,8vw,46px)]">
-                DESAFÍA LA <span className="neon">ARENA REAL</span>
-              </h1>
-              <p className="max-w-2xl mx-auto text-muted text-[17px] mt-1">
-                Gladiador, obten tu botin y demuestra tu honor.
-              </p>
-              <div
-                ref={heroParallaxRef}
-                className="mt-6 flex flex-wrap items-center justify-center gap-3 transition-transform [transform:translate(var(--px,0),var(--py,0))]"
+            <h1 className="font-cinzel font-extrabold tracking-wide mt-2 text-[clamp(28px,8vw,46px)]">
+              DESAFÍA LA <span className="neon">ARENA REAL</span>
+            </h1>
+            <p className="max-w-2xl mx-auto text-muted text-[17px] mt-1">
+              Gladiador, obten tu botin y demuestra tu honor.
+            </p>
+            <div
+              ref={heroParallaxRef}
+              className="mt-6 flex flex-wrap items-center justify-center gap-3 transition-transform [transform:translate(var(--px,0),var(--py,0))]"
+            >
+              <Link
+                href="/login"
+                className="btn btn-solid btn-lg btn-pill px-6 text-[#141414]"
+                style={{ backgroundImage: 'linear-gradient(135deg, var(--gold), var(--gold-2))' }}
               >
-                <Link
-                  href="/login"
-                  className="btn btn-solid btn-lg btn-pill px-6 text-[#141414]"
-                  style={{ backgroundImage: 'linear-gradient(135deg, var(--gold), var(--gold-2))' }}
-                >
-                  Desafiar ahora
-                </Link>
-                <Link
-                  href="/login"
-                  className="btn btn-ghost btn-lg btn-pill px-6 text-[color:var(--gold)] hover:bg-[rgba(233,196,106,.12)]"
-                >
-                  Ver batallas
-                </Link>
-              </div>
+                Desafiar ahora
+              </Link>
+              <Link
+                href="/login"
+                className="btn btn-ghost btn-lg btn-pill px-6 text-[color:var(--gold)] hover:bg-[rgba(233,196,106,.12)]"
+              >
+                Ver batallas
+              </Link>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mt-7" role="list">
-                <article className="card text-center" role="listitem">
-                  <Icon src="/icons/espadas.png" alt="Duelos activos" size={56} className="mb-2" />
-                  <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
-                    <CountUp id="m1" to={50} prefix="+" />
-                  </div>
-                  <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">DUELOS ACTIVOS</div>
-                </article>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mt-7" role="list">
+              <article className="card text-center" role="listitem">
+                <Icon src="/icons/espadas.png" alt="Duelos activos" size={56} className="mb-2" />
+                <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
+                  <CountUp id="m1" to={50} prefix="+" />
+                </div>
+                <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">DUELOS ACTIVOS</div>
+              </article>
 
-                <article className="card text-center" role="listitem">
-                  <Icon src="/icons/cofre.png" alt="Botín entregado" size={56} className="mb-2" />
-                  <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
-                    <CountUp id="m2" to={200} prefix="+$" suffix="K" />
-                  </div>
-                  <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">BOTÍN ENTREGADO</div>
-                </article>
+              <article className="card text-center" role="listitem">
+                <Icon src="/icons/cofre.png" alt="Botín entregado" size={56} className="mb-2" />
+                <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
+                  <CountUp id="m2" to={200} prefix="+$" suffix="K" />
+                </div>
+                <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">BOTÍN ENTREGADO</div>
+              </article>
 
-                <article className="card text-center" role="listitem">
-                  <Icon src="/icons/casco.png" alt="Gladiadores" size={56} className="mb-2" />
-                  <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
-                    <CountUp id="m3" to={100} prefix="+" />
-                  </div>
-                  <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">GLADIADORES</div>
-                </article>
-              </div>
+              <article className="card text-center" role="listitem">
+                <Icon src="/icons/casco.png" alt="Gladiadores" size={56} className="mb-2" />
+                <div className="font-cinzel font-extrabold text-[28px] leading-none text-[color:var(--gold-2)]">
+                  <CountUp id="m3" to={100} prefix="+" />
+                </div>
+                <div className="mt-1 text-[11px] tracking-[.18em] opacity-75">GLADIADORES</div>
+              </article>
             </div>
           </section>
 
           <section
-            className="container mx-auto px-5 relative -mt-8 z-10 rounded-3xl p-6 border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
+            className="container mx-auto px-5 relative mt-6 rounded-3xl p-6 border border-[rgba(233,196,106,.16)] shadow-[0_10px_26px_rgba(0,0,0,.35)] overflow-hidden"
             style={{
               background: 'linear-gradient(180deg, #0b0f14 0%, rgba(18,23,33,.96) 20%, rgba(11,15,20,1) 100%)'
             }}
