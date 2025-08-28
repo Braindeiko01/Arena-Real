@@ -181,7 +181,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 font-body animate-fade-in-up">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 font-body animate-fade-in-up">
       <Card className="w-full max-w-lg shadow-card-medieval border-2 border-accent">
         <CardHeader className="text-center">
           <CrownIcon className="mx-auto h-16 w-16 text-accent mb-4" />

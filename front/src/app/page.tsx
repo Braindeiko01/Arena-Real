@@ -4,9 +4,7 @@
   import { useEffect, useRef } from 'react';
   import Navbar from '@/components/landing/Navbar';
   import CountUp from '@/components/landing/CountUp';
-  import { Inter, Cinzel } from 'next/font/google';
   import Image from 'next/image';
-  import './landing.css';
 
   function Icon({
     src, alt, size = 56, className = '',
@@ -22,9 +20,6 @@
       />
     );
   }
-
-  const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-  const cinzel = Cinzel({ subsets: ['latin'], weight: ['700', '800'], variable: '--font-cinzel' });
 
   export default function Page() {
     const heroParallaxRef = useRef<HTMLDivElement>(null);
@@ -56,10 +51,7 @@
     }, []);
 
     return (
-      <div className={`${inter.variable} ${cinzel.variable}`}>
-        <div className="bg-app" aria-hidden="true">
-          <div className="bg-grid" />
-        </div>
+      <div>
         <Navbar />
         <main className="pt-2 pb-9">
           <section className="container mx-auto px-5 text-center">
