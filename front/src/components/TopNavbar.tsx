@@ -20,7 +20,7 @@ const TopNavbar = () => {
 
   return (
     <header className="md:hidden navbar h-16 px-4 py-3 flex justify-between items-center">
-      <div className="flex items-center gap-1 font-bold text-lg text-[color:var(--gold)]">
+      <div className="flex items-center gap-1 font-bold text-lg text-[color:var(--gold)] fantasy-text">
         <Crown className="h-5 w-5" />
         Arena Real
       </div>

@@ -50,7 +50,7 @@ const BottomNav = () => {
                     <span className="absolute -top-1 -right-1 block w-3 h-3 bg-red-500 rounded-full" />
                   )}
                 </span>
-                <span>{label}</span>
+                <span className="fantasy-text">{label}</span>
               </Link>
             </li>
           );

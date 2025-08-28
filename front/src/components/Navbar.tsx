@@ -50,7 +50,7 @@ const Navbar = () => {
         {/* Logo */}
         <Link
           href="/home"
-          className="flex items-center gap-2 font-bold text-lg text-[color:var(--gold)]"
+          className="flex items-center gap-2 font-bold text-lg text-[color:var(--gold)] fantasy-text"
         >
           <Crown className="h-6 w-6" />
           Arena Real
@@ -74,6 +74,7 @@ const Navbar = () => {
               label={label}
               icon={icon}
               badge={href === '/chat' && hasActiveChat}
+              className="fantasy-text"
             />
           ))}
         </nav>
@@ -122,7 +123,7 @@ const Navbar = () => {
                 label={label}
                 icon={icon}
                 badge={href === '/chat' && hasActiveChat}
-                className="gap-2 px-3 py-2"
+                className="gap-2 px-3 py-2 fantasy-text"
               />
             ))}
             {isAuthenticated && user && (
