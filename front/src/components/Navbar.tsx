@@ -52,7 +52,7 @@ const Navbar = () => {
           href="/home"
           className="flex items-center gap-2 font-bold text-lg text-[color:var(--gold)] fantasy-text"
         >
-          <Image src="/logo.png" alt="Arena Real logo" width={24} height={24} className="h-6 w-6" />
+          <Image src="/logo.png" alt="Arena Real logo" width={32} height={32} className="h-8 w-8" />
           Arena Real
         </Link>
 
