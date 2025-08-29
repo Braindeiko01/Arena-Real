@@ -4,97 +4,81 @@
 
 @layer base {
   :root {
+    --bg: #0b0d0e;
+    --panel: #111315;
+    --panel-2: #0e1113;
+    --text: #ededed;
+    --muted: #a9afb6;
+    --stroke: #23272b;
+    --gold: #e8c26e;
+    --gold-strong: #f2d27f;
+    --radius: 16px;
+    --shadow: 0 8px 24px rgba(0,0,0,.25);
+    --success: #7ed57a;
+    --error: #f16a6a;
+    --space: 8px;
+    --safe: max(env(safe-area-inset-bottom), 16px);
+
+    /* shadcn/ui variables mapped to design tokens */
     --background: 213 29% 6%;
     --foreground: 228 24% 96%;
-
-    --card: 220 29% 10%;
-    --card-foreground: 228 24% 96%;
-
-    --popover: 220 29% 10%;
-    --popover-foreground: 228 24% 96%;
-
+    --card: var(--panel);
+    --card-foreground: var(--text);
+    --popover: var(--panel);
+    --popover-foreground: var(--text);
     --primary: 43 74% 66%;
     --primary-foreground: 0 0% 8%;
     --primary-dark: 44 60% 50%;
-
-    --secondary: 220 29% 10%;
-    --secondary-foreground: 228 24% 96%;
-
-    --muted: 218 18% 76%;
-    --muted-foreground: 218 18% 26%;
-
+    --secondary: var(--panel);
+    --secondary-foreground: var(--text);
+    --muted-bg: var(--panel-2);
+    --muted-foreground: var(--muted);
     --accent: 43 74% 66%;
     --accent-foreground: 0 0% 8%;
-
     --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 220 29% 20%;
-    --input: 220 29% 20%;
-    --ring: 43 74% 66%;
-
-    --radius: 18px;
-
-    --bg: #0B0D0E;
-    --panel: #111315;
-    --panel-2: #0E1113;
-    --text-primary: #EDEDED;
-    --text-secondary: #A9AFB6;
-    --gold: #E8C26E;
-    --gold-strong: #F2D27F;
-    --stroke: #2A2F33;
-    --success: #7ED57A;
-    --error: #F16A6A;
-    --radius-2xl: 1.25rem;
-    --shadow-soft: 0 8px 24px rgba(0,0,0,0.25);
-    --safe: max(env(safe-area-inset-bottom), 16px);
+    --border: var(--stroke);
+    --input: var(--stroke);
+    --ring: var(--gold);
   }
 
   .dark {
+    --bg: #0b0d0e;
+    --panel: #111315;
+    --panel-2: #0e1113;
+    --text: #ededed;
+    --muted: #a9afb6;
+    --stroke: #23272b;
+    --gold: #e8c26e;
+    --gold-strong: #f2d27f;
+    --radius: 16px;
+    --shadow: 0 8px 24px rgba(0,0,0,.25);
+    --success: #7ed57a;
+    --error: #f16a6a;
+    --space: 8px;
+    --safe: max(env(safe-area-inset-bottom), 16px);
+
+    /* shadcn/ui variables mapped to design tokens */
     --background: 213 29% 6%;
     --foreground: 228 24% 96%;
-
-    --card: 220 29% 10%;
-    --card-foreground: 228 24% 96%;
-
-    --popover: 220 29% 10%;
-    --popover-foreground: 228 24% 96%;
-
+    --card: var(--panel);
+    --card-foreground: var(--text);
+    --popover: var(--panel);
+    --popover-foreground: var(--text);
     --primary: 43 74% 66%;
     --primary-foreground: 0 0% 8%;
     --primary-dark: 44 60% 50%;
-
-    --secondary: 220 29% 10%;
-    --secondary-foreground: 228 24% 96%;
-
-    --muted: 218 18% 76%;
-    --muted-foreground: 218 18% 26%;
-
+    --secondary: var(--panel);
+    --secondary-foreground: var(--text);
+    --muted-bg: var(--panel-2);
+    --muted-foreground: var(--muted);
     --accent: 43 74% 66%;
     --accent-foreground: 0 0% 8%;
-
     --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 220 29% 20%;
-    --input: 220 29% 20%;
-    --ring: 43 74% 66%;
-
-    --radius: 18px;
-
-    --bg: #0B0D0E;
-    --panel: #111315;
-    --panel-2: #0E1113;
-    --text-primary: #EDEDED;
-    --text-secondary: #A9AFB6;
-    --gold: #E8C26E;
-    --gold-strong: #F2D27F;
-    --stroke: #2A2F33;
-    --success: #7ED57A;
-    --error: #F16A6A;
-    --radius-2xl: 1.25rem;
-    --shadow-soft: 0 8px 24px rgba(0,0,0,0.25);
-    --safe: max(env(safe-area-inset-bottom), 16px);
+    --border: var(--stroke);
+    --input: var(--stroke);
+    --ring: var(--gold);
   }
 }
 
@@ -109,7 +93,21 @@
   body {
     @apply font-body antialiased;
     background: var(--bg);
-    color: var(--text-primary);
+    color: var(--text);
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+    }
   }
 
   @keyframes gradient-x {
@@ -146,6 +144,94 @@
     background: rgba(14, 14, 22, 0.9);
     border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px;
+  }
+  .card--alt { background: var(--panel-2); }
+  .h-stack { display: flex; align-items: center; gap: 8px; }
+  .v-stack { display: flex; flex-direction: column; gap: 8px; }
+  .section { margin: 16px 0; }
+  .title {
+    font-family: Poppins,system-ui,Inter,sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: .3px;
+    color: var(--gold);
+    text-shadow: 0 0 12px rgba(232,194,110,.15);
+  }
+  .subtitle { color: var(--muted); font-size: 14px; line-height: 1.4; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 14px;
+    font-weight: 700;
+    transition: transform .08s, box-shadow .15s, background-color .15s;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn--primary {
+    background: var(--gold);
+    color: var(--bg);
+    box-shadow: 0 6px 0 rgba(232,194,110,.25);
+  }
+  .btn--primary:hover { background: var(--gold-strong); }
+  .btn--outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--gold);
+  }
+  .btn--ghost {
+    background: transparent;
+    border: 1px solid var(--stroke);
+    color: var(--text);
+  }
+  .btn--sm { height: 40px; padding: 0 14px; border-radius: 12px; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: color-mix(in srgb,var(--gold) 15%,transparent);
+    color: var(--gold);
+  }
+  .bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(11,13,14,.92);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid var(--stroke);
+    display: grid;
+    grid-template-columns: repeat(6,1fr);
+    padding: 8px;
+    z-index: 50;
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 11px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px 0;
+  }
+  .tab svg { width: 20px; height: 20px; opacity: .9; }
+  .tab--active { color: var(--gold); }
+  .tab:active { transform: translateY(1px); }
 }
 
 @layer utilities {

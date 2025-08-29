@@ -64,7 +64,7 @@ const ChatListPageContent = () => {
   const pastChats = chats.filter(c => !c.activo);
 
   return (
-    <Card className="shadow-card-medieval border-2 border-primary-dark overflow-hidden">
+    <Card className="overflow-hidden">
       <CardHeader className="bg-primary/10">
         <CardTitle className="text-3xl font-headline text-primary">Chats</CardTitle>
         <CardDescription className="text-muted-foreground text-lg pt-1">
@@ -115,7 +115,13 @@ const ChatListPageContent = () => {
                         <Link href={href} className="flex-1 border rounded-lg p-3 hover:bg-primary/10">
                           <span className="font-medium">{name}</span>
                         </Link>
-                        <Button variant="ghost" size="icon" onClick={() => handleDeleteChat(chat.id)} aria-label="Eliminar chat">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteChat(chat.id)}
+                          aria-label="Eliminar chat"
+                          className="h-10 w-10 p-0 rounded-full"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </li>

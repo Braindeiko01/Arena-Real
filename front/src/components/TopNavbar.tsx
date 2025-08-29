@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Bell } from "lucide-react";
+import { Bell } from "@/components/icons/lazy";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/hooks/useAuth";
 import useNotifications from "@/hooks/useNotifications";
@@ -29,12 +30,17 @@ const TopNavbar = () => {
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button aria-label="Notificaciones" className="relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label="Notificaciones"
+              className="relative p-2 h-10 w-10 rounded-full border-0 gap-0"
+            >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
               )}
-            </button>
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
             <DropdownMenuItem
@@ -62,16 +68,25 @@ const TopNavbar = () => {
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center focus-visible:outline-none transition-transform hover:scale-105">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-0 h-auto w-auto rounded-full gap-0 hover:scale-105"
+            >
               {avatarSrc ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={avatarSrc} alt={user?.username} className="w-8 h-8 rounded-full" />
+                <Image
+                  src={avatarSrc}
+                  alt={user?.username || "avatar"}
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-full"
+                />
               ) : (
                 <span className="rounded-full bg-[var(--gold)] text-[#141414] w-8 h-8 flex items-center justify-center">
                   {user?.username?.[0]?.toUpperCase() || 'U'}
                 </span>
               )}
-            </button>
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem asChild>

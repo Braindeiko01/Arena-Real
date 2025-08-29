@@ -11,7 +11,6 @@ import { CrownIcon, GoogleIcon } from '@/components/icons/ClashRoyaleIcons';
 import { useToast } from "@/hooks/use-toast";
 import { loginWithGoogleAction } from '@/lib/actions';
 import type { User, GoogleAuthValues } from '@/types';
-import { Button } from '@/components/ui/button';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
@@ -36,7 +35,7 @@ export default function LoginPage() {
       const googleUser = result.user;
 
       if (!googleUser.email) {
-        toast({ title: "Error de autenticación", description: "No se pudo obtener el email de la cuenta de Google.", variant: "destructive" });
+        toast({ title: "Error de autenticación", description: "No se pudo obtener el email de la cuenta de Google.", variant: "error" });
         setIsLoading(false);
         return;
       }
@@ -58,18 +57,18 @@ export default function LoginPage() {
             router.push('/register'); 
           } catch (e) {
             console.error("Error setting sessionStorage:", e);
-            toast({ title: "Error de Sesión", description: "No se pudo guardar la información temporal. Intenta de nuevo.", variant: "destructive"});
+            toast({ title: "Error de Sesión", description: "No se pudo guardar la información temporal. Intenta de nuevo.", variant: "error"});
           }
       } else if (response.user) {
          authContext.login(response.user as User);
-         toast({ title: "¡Bienvenido de nuevo!", description: `Hola ${response.user.username}`, variant: "default" });
+         toast({ title: "¡Bienvenido de nuevo!", description: `Hola ${response.user.username}`, variant: "success" });
          router.push('/home');
       } else {
-          toast({ title: "Error", description: response.error || "No se pudo iniciar sesión.", variant: "destructive" });
+          toast({ title: "Error", description: response.error || "No se pudo iniciar sesión.", variant: "error" });
       }
     } catch (error: any) {
       if (error.code !== 'auth/popup-closed-by-user') {
-        toast({ title: "Error de autenticación", description: error.message || "Ocurrió un error inesperado.", variant: "destructive" });
+        toast({ title: "Error de autenticación", description: error.message || "Ocurrió un error inesperado.", variant: "error" });
       }
     }
     setIsLoading(false);
@@ -81,7 +80,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 font-body animate-fade-in-up">
-        <Card className="w-full max-w-md shadow-card-medieval border-2 border-accent">
+        <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CrownIcon className="mx-auto h-16 w-16 text-accent mb-4" />
             <CardTitle className="text-4xl">Iniciar Sesión</CardTitle>
@@ -107,9 +106,12 @@ export default function LoginPage() {
           <p className="text-sm text-muted-foreground">
             ¿No tienes una cuenta?
           </p>
-          <Button variant="link" asChild className="text-primary hover:text-accent font-semibold text-base">
-            <Link href="/register">Regístrate Aquí</Link>
-          </Button>
+          <Link
+            href="/register"
+            className="text-gold hover:text-gold-strong font-semibold text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+          >
+            Regístrate Aquí
+          </Link>
         </CardFooter>
       </Card>
     </div>
