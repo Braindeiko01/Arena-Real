@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import './globals.css';
+import '../globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ReduxProvider } from '@/store/ReduxProvider';
 import TransactionUpdatesListener from '@/components/TransactionUpdatesListener';
@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   description: 'Demuestra tus habilidades contra otros jugadores!',
 };
 
-export default function RootLayout({
+export default function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -25,7 +25,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased">
+      <body data-theme="arena-app" className="font-body antialiased">
         <ReduxProvider>
           <PushNotificationsInitializer />
           <TransactionUpdatesListener />

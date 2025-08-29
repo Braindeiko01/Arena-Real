@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { StatTile } from '@/components/ui/stat-tile';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -36,12 +37,12 @@ const ProfilePageContent = () => {
   const handleEditToggle = () => {
     if (isEditing) {
       if (formData.friendLink && !/^https:\/\/link\.clashroyale\.com\/invite\/friend\/es\?tag=[0289PYLQGRJCUV]{3,}&token=[a-z0-9]+&platform=(android|ios)$/.test(formData.friendLink)) {
-        toast({ title: "Error", description: "El formato del link de amigo de Clash Royale es inválido.", variant: "destructive" });
+        toast({ title: "Error", description: "El formato del link de amigo de Clash Royale es inválido.", variant: "error" });
         return;
       }
 
       if (formData.nequiAccount && !/^\d{7,}$/.test(formData.nequiAccount)) {
-        toast({ title: "Error", description: "El número de teléfono Nequi debe tener al menos 7 dígitos y solo contener números.", variant: "destructive" });
+        toast({ title: "Error", description: "El número de teléfono Nequi debe tener al menos 7 dígitos y solo contener números.", variant: "error" });
         return;
       }
 
@@ -53,9 +54,9 @@ const ProfilePageContent = () => {
           avatarUrl: formData.avatarUrl || user.avatarUrl,
           friendLink: formData.friendLink || '',
         });
-        toast({ title: "¡Perfil Actualizado!", description: "Tus cambios han sido guardados.", variant: "default" });
+        toast({ title: "¡Perfil Actualizado!", description: "Tus cambios han sido guardados.", variant: "success" });
       } else {
-        toast({ title: "Error", description: "Los campos de Tag y Número de teléfono Nequi no pueden estar vacíos.", variant: "destructive" });
+        toast({ title: "Error", description: "Los campos de Tag y Número de teléfono Nequi no pueden estar vacíos.", variant: "error" });
         setFormData({ username: user.username, clashTag: user.clashTag, nequiAccount: user.nequiAccount, avatarUrl: user.avatarUrl, friendLink: user.friendLink });
       }
     } else {
@@ -77,7 +78,7 @@ const ProfilePageContent = () => {
               value={editingValue}
               onChange={onChange}
               placeholder={placeholder}
-              className="text-lg font-semibold border-2 focus:border-accent py-2 mt-1"
+              className="text-lg font-semibold border border-border focus:border-primary py-2 mt-1"
               readOnly={readOnly}
             />
             {description && <p className="text-xs text-muted-foreground mt-1">{description}</p>}
@@ -91,9 +92,9 @@ const ProfilePageContent = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Card className="shadow-card-medieval border-2 border-primary-dark overflow-hidden">
+      <Card className="overflow-hidden">
         <CardHeader className="bg-primary/10 text-center p-6">
-          <Avatar className="h-32 w-32 mx-auto border-4 border-accent shadow-lg mb-4">
+          <Avatar className="h-32 w-32 mx-auto border-4 border-stroke shadow-soft mb-4">
             <AvatarImage src={isEditing ? formData.avatarUrl : user.avatarUrl || `https://placehold.co/128x128.png?text=${user.username?.[0]?.toUpperCase() || 'U'}`} alt={user.username} data-ai-hint="gaming avatar large" />
             <AvatarFallback className="text-5xl bg-primary/30 text-primary-foreground">{user.username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
           </Avatar>
@@ -103,14 +104,14 @@ const ProfilePageContent = () => {
                 name="username" // This will be displayed but not part of the editable form fields controlled by 'isEditing' logic above for now.
                 value={formData.username} // Display current username
                 readOnly // Username is not editable
-                className="text-center text-2xl font-headline text-primary border-2 focus:border-accent py-2 mt-2 bg-muted/50 cursor-not-allowed"
+                className="text-center text-2xl font-headline text-primary border border-border focus:border-primary py-2 mt-2 bg-muted/50 cursor-not-allowed"
               />
               <Input
                 name="avatarUrl"
                 placeholder="URL del Avatar (ej. https://placehold.co/128x128.png)"
                 value={formData.avatarUrl}
                 onChange={handleInputChange}
-                className="text-center text-sm font-semibold border-2 focus:border-accent py-2 mt-2"
+                className="text-center text-sm font-semibold border border-border focus:border-primary py-2 mt-2"
               />
             </>
           ) : (
@@ -153,13 +154,12 @@ const ProfilePageContent = () => {
             placeholder="https://link.clashroyale.com/..."
             description="Necesario para invitar a duelos."
           />
-          <div className="flex items-center space-x-4 py-3">
-            <div className="flex-shrink-0 w-8 h-8 text-primary flex items-center justify-center">💰</div>
-            <div className="flex-grow">
-              <p className="text-sm text-muted-foreground">Saldo</p>
-              <p className="text-lg font-semibold text-accent">{new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(user.balance)}</p>
-            </div>
-          </div>
+          <StatTile
+            icon={<span className="text-2xl">💰</span>}
+            value={new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(user.balance)}
+            label="Saldo"
+            className="py-3"
+          />
         </CardContent>
         <CardFooter className="p-6">
           <CartoonButton

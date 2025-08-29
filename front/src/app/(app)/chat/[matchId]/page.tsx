@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Send, Link as LinkIconLucide, CheckCircle, XCircle, UploadCloud } from 'lucide-react';
+import { Send, LinkIcon, CheckCircle, XCircle, UploadCloud } from '@/components/icons/lazy';
 import { useToast } from "@/hooks/use-toast";
 import useFirestoreChat from '@/hooks/useFirestoreChat';
 import { BACKEND_URL } from '@/lib/config';
@@ -308,7 +308,7 @@ const ChatPageContent = () => {
 
   const handleResultSubmission = async (result: 'win' | 'loss') => {
     if (!user || !user.id || resultSubmitted) {
-      toast({ title: 'Error', description: 'No se puede enviar el resultado sin identificación de usuario.', variant: 'destructive' })
+      toast({ title: 'Error', description: 'No se puede enviar el resultado sin identificación de usuario.', variant: 'error' })
       return
     }
 
@@ -324,7 +324,7 @@ const ChatPageContent = () => {
 
     const validPartidaId = await fetchMatchIdByChat(validChatId)
     if (!validPartidaId) {
-      toast({ title: 'Error', description: 'No se encontró la partida asociada al chat.', variant: 'destructive' })
+      toast({ title: 'Error', description: 'No se encontró la partida asociada al chat.', variant: 'error' })
       return
     }
     if (!partidaId) {
@@ -339,7 +339,7 @@ const ChatPageContent = () => {
     )
 
     if (response.error) {
-      toast({ title: 'Error', description: response.error, variant: 'destructive' })
+      toast({ title: 'Error', description: response.error, variant: 'error' })
       return
     }
     
@@ -348,7 +348,7 @@ const ChatPageContent = () => {
       description: `Reportaste ${
         result === 'win' ? 'una victoria' : 'una derrota'
       }. ${screenshotFile ? 'Comprobante adjuntado.' : 'Sin comprobante.'} Esperando al oponente si es necesario, o verificación del administrador.`,
-      variant: "default",
+      variant: "success",
     });
     
     setResultSubmitted(true);
@@ -381,10 +381,10 @@ const ChatPageContent = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-150px)] md:h-[calc(100vh-180px)]">
-      <Card className="flex-grow flex flex-col shadow-card-medieval border-2 border-primary-dark overflow-hidden">
+      <Card className="flex-grow flex flex-col overflow-hidden">
         <CardHeader className="bg-primary/10 p-4 flex flex-wrap items-center justify-between gap-2 border-b border-border">
           <div className="flex flex-wrap items-center gap-2 min-w-0">
-            <Avatar className="h-10 w-10 border-2 border-accent">
+            <Avatar className="h-10 w-10 border-2 border-stroke">
               <AvatarImage src={opponentAvatar} alt={opponentDisplayName} data-ai-hint="gaming avatar opponent" />
               <AvatarFallback>{opponentDisplayName?.[0] || 'O'}</AvatarFallback>
             </Avatar>
@@ -423,7 +423,7 @@ const ChatPageContent = () => {
                   )}
                 </div>
               ) : (
-                <div className={`max-w-xs md:max-w-md lg:max-w-lg p-3 rounded-2xl shadow-md ${msg.senderId === user.id ? 'bg-primary text-primary-foreground rounded-br-none ml-auto' : 'bg-card text-card-foreground rounded-bl-none mr-auto'}`}>
+                <div className={`max-w-xs md:max-w-md lg:max-w-lg p-3 rounded-2xl shadow-soft ${msg.senderId === user.id ? 'bg-primary text-primary-foreground rounded-br-none ml-auto' : 'bg-card text-card-foreground rounded-bl-none mr-auto'}`}>
                   <p className="text-base break-words">{msg.text}</p>
                   <p className={`text-xs mt-1 ${msg.senderId === user.id ? 'text-primary-foreground/70 text-right' : 'text-muted-foreground/70 text-left'}`}>
                     {new Date(msg.timestamp as string).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -437,8 +437,16 @@ const ChatPageContent = () => {
 
         <div className="border-t border-border p-4 bg-card">
           <form onSubmit={handleSendMessage} className="flex items-center space-x-3">
-            <Button type="button" variant="ghost" size="icon" onClick={handleShareFriendLink} aria-label="Compartir Link de Amigo" disabled={!chatActive}>
-              <LinkIconLucide className="h-6 w-6 text-primary hover:text-accent" />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleShareFriendLink}
+              aria-label="Compartir Link de Amigo"
+              disabled={!chatActive}
+              className="h-10 w-10 p-0 rounded-full"
+            >
+              <LinkIcon className="h-6 w-6 text-primary hover:text-accent" />
             </Button>
             <Input
               type="text"
@@ -458,7 +466,7 @@ const ChatPageContent = () => {
 
       {isSubmittingResult && !resultSubmitted && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in-up">
-          <Card className="w-full max-w-lg shadow-xl border-2 border-accent">
+          <Card className="w-full max-w-lg">
             <CardHeader>
               <CardTitle className="text-3xl font-headline text-accent text-center">Enviar Resultado del Duelo</CardTitle>
               <CardDescription className="text-center text-muted-foreground">Declara el resultado de tu duelo con {opponentDisplayName}.</CardDescription>
@@ -499,7 +507,16 @@ const ChatPageContent = () => {
               </div>
             </CardContent>
             <CardFooter className="p-6 pt-0">
-                <Button variant="outline" onClick={() => { setIsSubmittingResult(false); setScreenshotFile(null); }} className="w-full text-lg py-3">Cancelar</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsSubmittingResult(false);
+                    setScreenshotFile(null);
+                  }}
+                  className="w-full text-lg"
+                >
+                  Cancelar
+                </Button>
             </CardFooter>
           </Card>
         </div>

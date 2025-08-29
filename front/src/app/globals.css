@@ -1,151 +1,93 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 @layer base {
-  :root {
-    --background: 213 29% 6%;
-    --foreground: 228 24% 96%;
-
-    --card: 220 29% 10%;
-    --card-foreground: 228 24% 96%;
-
-    --popover: 220 29% 10%;
-    --popover-foreground: 228 24% 96%;
-
-    --primary: 43 74% 66%;
-    --primary-foreground: 0 0% 8%;
-    --primary-dark: 44 60% 50%;
-
-    --secondary: 220 29% 10%;
-    --secondary-foreground: 228 24% 96%;
-
-    --muted: 218 18% 76%;
-    --muted-foreground: 218 18% 26%;
-
-    --accent: 43 74% 66%;
-    --accent-foreground: 0 0% 8%;
-
-    --destructive: 0 70% 45%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 220 29% 20%;
-    --input: 220 29% 20%;
-    --ring: 43 74% 66%;
-
-    --radius: 18px;
-
-    --bg: #0B0D0E;
-    --panel: #111315;
-    --panel-2: #0E1113;
-    --text-primary: #EDEDED;
-    --text-secondary: #A9AFB6;
-    --gold: #E8C26E;
-    --gold-strong: #F2D27F;
-    --stroke: #2A2F33;
-    --success: #7ED57A;
-    --error: #F16A6A;
-    --radius-2xl: 1.25rem;
-    --shadow-soft: 0 8px 24px rgba(0,0,0,0.25);
-    --safe: max(env(safe-area-inset-bottom), 16px);
+  [data-theme="arena-app"] {
+    --bg:#0B0D0E;
+    --panel:#111315;
+    --panel-2:#0E1113;
+    --text:#EDEDED;
+    --muted:#A9AFB6;
+    --stroke:#23272B;
+    --gold:#E8C26E;
+    --gold-strong:#F2D27F;
+    --success:#7ED57A;
+    --error:#F16A6A;
+    --radius:16px;
+    --shadow:0 8px 24px rgba(0,0,0,.25);
   }
 
-  .dark {
-    --background: 213 29% 6%;
-    --foreground: 228 24% 96%;
-
-    --card: 220 29% 10%;
-    --card-foreground: 228 24% 96%;
-
-    --popover: 220 29% 10%;
-    --popover-foreground: 228 24% 96%;
-
-    --primary: 43 74% 66%;
-    --primary-foreground: 0 0% 8%;
-    --primary-dark: 44 60% 50%;
-
-    --secondary: 220 29% 10%;
-    --secondary-foreground: 228 24% 96%;
-
-    --muted: 218 18% 76%;
-    --muted-foreground: 218 18% 26%;
-
-    --accent: 43 74% 66%;
-    --accent-foreground: 0 0% 8%;
-
-    --destructive: 0 70% 45%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 220 29% 20%;
-    --input: 220 29% 20%;
-    --ring: 43 74% 66%;
-
-    --radius: 18px;
-
-    --bg: #0B0D0E;
-    --panel: #111315;
-    --panel-2: #0E1113;
-    --text-primary: #EDEDED;
-    --text-secondary: #A9AFB6;
-    --gold: #E8C26E;
-    --gold-strong: #F2D27F;
-    --stroke: #2A2F33;
-    --success: #7ED57A;
-    --error: #F16A6A;
-    --radius-2xl: 1.25rem;
-    --shadow-soft: 0 8px 24px rgba(0,0,0,0.25);
-    --safe: max(env(safe-area-inset-bottom), 16px);
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
   html,
   body {
-    height: 100%;
+    height:100%;
   }
-  body {
-    @apply font-body antialiased;
-    background: var(--bg);
-    color: var(--text-primary);
+
+  [data-theme="arena-app"] body {
+    background:var(--bg);
+    color:var(--text);
+  }
+
+  [data-theme="arena-app"] a:focus-visible {
+    outline:2px solid var(--gold);
+    outline-offset:2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation:none !important;
+      transition:none !important;
+    }
   }
 
   @keyframes gradient-x {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
+    0% { background-position:0% 50%; }
+    50% { background-position:100% 50%; }
+    100% { background-position:0% 50%; }
   }
 
   .animate-gradient-x {
-    background-size: 200% 200%;
-    animation: gradient-x 8s ease infinite;
+    background-size:200% 200%;
+    animation:gradient-x 8s ease infinite;
   }
 }
 
+@layer base {
+  /* preserve base layer */
+}
+
 @layer components {
-  .navbar {
-    @apply sticky top-0 z-50;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    background: rgba(14, 14, 22, 0.9);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  [data-theme="arena-app"] .navbar {
+    position:sticky;
+    top:0;
+    z-index:50;
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    background:rgba(14,14,22,0.9);
+    border-bottom:1px solid rgba(255,255,255,0.06);
   }
 
-  .navbar-bottom {
-    @apply fixed bottom-0 w-full z-50;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    background: rgba(14, 14, 22, 0.9);
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-  }
+  [data-theme="arena-app"] .card{background:var(--panel);border:1px solid var(--stroke);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+  [data-theme="arena-app"] .card--alt{background:var(--panel-2)}
+  [data-theme="arena-app"] .h-stack{display:flex;align-items:center;gap:8px}
+  [data-theme="arena-app"] .v-stack{display:flex;flex-direction:column;gap:8px}
+  [data-theme="arena-app"] .section{margin:16px 0}
+  [data-theme="arena-app"] .title{font-family:Poppins,system-ui,Inter,sans-serif;font-weight:800;font-size:22px;letter-spacing:.3px;color:var(--gold);text-shadow:0 0 12px rgba(232,194,110,.15)}
+  [data-theme="arena-app"] .subtitle{color:var(--muted);font-size:14px;line-height:1.4}
+  [data-theme="arena-app"] .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 16px;border-radius:14px;font-weight:700;transition:transform .08s,box-shadow .15s,background-color .15s}
+  [data-theme="arena-app"] .btn:active{transform:translateY(1px)}
+  [data-theme="arena-app"] .btn--primary{background:var(--gold);color:var(--bg);box-shadow:0 6px 0 rgba(232,194,110,.25)}
+  [data-theme="arena-app"] .btn--primary:hover{background:var(--gold-strong)}
+  [data-theme="arena-app"] .btn--outline{background:transparent;color:var(--text);border:1px solid var(--gold)}
+  [data-theme="arena-app"] .btn--ghost{background:transparent;border:1px solid var(--stroke);color:var(--text)}
+  [data-theme="arena-app"] .btn--sm{height:40px;padding:0 14px;border-radius:12px}
+  [data-theme="arena-app"] .badge{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:12px;padding:6px 10px;border-radius:999px;background:color-mix(in srgb,var(--gold) 15%,transparent);color:var(--gold)}
+  [data-theme="arena-app"] .bottom-nav{position:fixed;left:0;right:0;bottom:0;background:rgba(11,13,14,.92);backdrop-filter:blur(6px);border-top:1px solid var(--stroke);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px;z-index:50}
+  [data-theme="arena-app"] .tab{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);font-size:11px;min-width:44px;min-height:44px;padding:8px 0}
+  [data-theme="arena-app"] .tab svg{width:20px;height:20px;opacity:.9}
+  [data-theme="arena-app"] .tab--active{color:var(--gold)}
+  [data-theme="arena-app"] .tab:active{transform:translateY(1px)}
 }
 
 @layer utilities {
