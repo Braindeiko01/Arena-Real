@@ -11,8 +11,8 @@ interface StatTileProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const StatTile = React.forwardRef<HTMLDivElement, StatTileProps>(
   ({ icon, value, label, align = "start", className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex items-center gap-3", className)} {...props}>
-      {icon && <div className="text-gold flex-none">{icon}</div>}
+    <div ref={ref} className={cn("flex items-center gap-2", className)} {...props}>
+      {icon && <div className="text-gold flex-none w-5 h-5">{icon}</div>}
       <div className={cn("flex flex-col", align === "end" ? "items-end text-right" : "items-start") }>
         <span className="text-2xl font-bold leading-none">{value}</span>
         <span className="text-sm text-muted-foreground">{label}</span>

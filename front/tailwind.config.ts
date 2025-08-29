@@ -24,11 +24,7 @@ export default {
       colors: {
         bg: 'var(--bg)',
         panel: 'var(--panel)',
-        panel2: 'var(--panel-2)',
-        gold: {
-          DEFAULT: 'var(--gold)',
-          strong: 'var(--gold-strong)',
-        },
+        'panel-2': 'var(--panel-2)',
         text: {
           DEFAULT: 'var(--text)',
           primary: 'var(--text)',
@@ -39,6 +35,10 @@ export default {
           foreground: 'var(--muted)',
         },
         stroke: 'var(--stroke)',
+        gold: {
+          DEFAULT: 'var(--gold)',
+          strong: 'var(--gold-strong)',
+        },
         success: 'var(--success)',
         error: 'var(--error)',
         background: 'var(--bg)',

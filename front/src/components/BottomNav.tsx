@@ -9,7 +9,6 @@ import {
   MessageCircle,
   ScrollText,
   Trophy,
-  Menu as MenuIcon,
   Users,
 } from "@/components/icons/lazy";
 import { cn } from "@/lib/utils";
@@ -25,7 +24,6 @@ const BottomNav = () => {
     { id: "historial", label: "Historial", href: "/history", icon: ScrollText },
     { id: "torneo", label: "Torneo", href: "/torneos", icon: Trophy },
     { id: "referidos", label: "Referidos", href: "/referrals", icon: Users },
-    { id: "menu", label: "Menú", href: "/menu", icon: MenuIcon },
   ];
 
   return (
@@ -42,7 +40,7 @@ const BottomNav = () => {
                 <span className="relative">
                   <Icon />
                   {id === "chat" && hasActiveChat && (
-                    <span className="absolute -top-1 -right-1 block w-3 h-3 bg-red-500 rounded-full" />
+                    <span className="absolute -top-1 -right-1 block w-3 h-3 bg-error rounded-full" />
                   )}
                 </span>
                 <span className="fantasy-text">{label}</span>

@@ -1,7 +1,7 @@
 "use client";
 
 import AppLayout from '@/components/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { getReferralEarningsAction } from '@/lib/actions';

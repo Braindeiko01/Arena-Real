@@ -1,22 +1,18 @@
+import '../globals.css';
 import type { Metadata } from 'next';
-import './globals.css';
-import { Toaster } from '@/components/ui/toaster';
-import { ReduxProvider } from '@/store/ReduxProvider';
-import TransactionUpdatesListener from '@/components/TransactionUpdatesListener';
-import PushNotificationsInitializer from '@/components/PushNotificationsInitializer';
 
 export const metadata: Metadata = {
   title: 'Arena Real - Torneos CR Colombia',
   description: 'Demuestra tus habilidades contra otros jugadores!',
 };
 
-export default function RootLayout({
+export default function MarketingLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -25,14 +21,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased">
-        <ReduxProvider>
-          <PushNotificationsInitializer />
-          <TransactionUpdatesListener />
-          {children}
-          <Toaster />
-        </ReduxProvider>
-      </body>
+      <body className="landing">{children}</body>
     </html>
   );
 }
