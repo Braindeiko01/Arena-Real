@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/hooks/useAuth";
 import useNotifications from "@/hooks/useNotifications";
@@ -82,7 +82,7 @@ const TopNavbar = () => {
                   className="w-8 h-8 rounded-full"
                 />
               ) : (
-                <span className="rounded-full bg-[var(--gold)] text-[#141414] w-8 h-8 flex items-center justify-center">
+                <span className="rounded-full bg-[var(--gold)] text-bg w-8 h-8 flex items-center justify-center">
                   {user?.username?.[0]?.toUpperCase() || 'U'}
                 </span>
               )}

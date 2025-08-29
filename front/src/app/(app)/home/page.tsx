@@ -11,11 +11,11 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from '@/components/ui/card';
-import { StatTile } from '@/components/ui/stat-tile';
+} from '@/components/ui/Card';
+import { StatTile } from '@/components/ui/StatTile';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { CartoonButton } from '@/components/ui/CartoonButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -499,10 +499,10 @@ const HomePageContent = () => {
             </AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle className="text-2xl md:text-3xl">
+        <CardTitle className="text-[22px]">
               {user.username}
             </CardTitle>
-            <CardDescription className="text-base md:text-lg">
+            <CardDescription>
               ¡Bienvenido de nuevo, Gladiador!
             </CardDescription>
           </div>
@@ -548,9 +548,9 @@ const HomePageContent = () => {
       <Card className="max-w-[920px] mx-auto">
         <CardHeader className="items-center text-center space-y-3">
           <Badge className="gap-2">
-            <Swords className="h-4 w-4" /> En vivo · Duelos
+            <Swords className="h-5 w-5" /> En vivo · Duelos
           </Badge>
-          <CardTitle className="text-3xl font-headline text-gold">
+          <CardTitle className="text-[22px] font-headline text-gold">
             Buscar Duelo
           </CardTitle>
           <CardDescription className="text-center">
