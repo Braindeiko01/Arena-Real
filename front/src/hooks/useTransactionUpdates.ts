@@ -49,7 +49,7 @@ export default function useTransactionUpdates() {
         try {
           const data = JSON.parse(event.data);
           const msg = `Tu transacción ${data.id} ha sido aprobada.`;
-          toast({ title: 'Actualización de Transacción', description: msg });
+          toast({ title: 'Actualización de Transacción', description: msg, variant: 'success' });
           addNotification(msg);
           await refreshUser();
         } catch (err) {
@@ -80,6 +80,7 @@ export default function useTransactionUpdates() {
           toast({
             title: 'Error de Transacciones',
             description: 'Conexión interrumpida. Reintentando...',
+            variant: 'error',
           });
         }
         disconnectedRef.current = true;

@@ -109,7 +109,7 @@ const HistoryPageContent = () => {
       timeStyle: 'short',
     });
     return (
-      <Card className="mb-4 shadow-md border-border hover:shadow-lg transition-shadow duration-200">
+      <Card className="mb-4 shadow-soft border-border transition-shadow duration-200">
         <CardHeader className="pb-3">
           <div className="flex justify-between items-start">
             <div>
@@ -120,19 +120,12 @@ const HistoryPageContent = () => {
               </CardDescription>
             </div>
             <Badge
-              variant={
-                bet.result === 'win'
-                  ? 'default'
-                  : bet.result === 'loss'
-                  ? 'destructive'
-                  : 'secondary'
-              }
               className={`capitalize ${
                 bet.result === 'win'
-                  ? 'bg-green-500 text-white'
+                  ? '!bg-success !text-bg'
                   : bet.result === 'loss'
-                  ? 'bg-destructive text-destructive-foreground'
-                  : 'bg-muted text-muted-foreground'
+                  ? '!bg-error !text-bg'
+                  : ''
               }`}
             >
               {statusLabel}
@@ -170,7 +163,7 @@ const HistoryPageContent = () => {
   };
 
   return (
-    <Card className="shadow-card-medieval border-2 border-primary-dark overflow-hidden">
+    <Card className="overflow-hidden">
       <CardHeader className="bg-primary/10">
         <div className="flex items-center space-x-3">
           <ScrollTextIcon className="h-8 w-8 text-accent" />
@@ -181,9 +174,9 @@ const HistoryPageContent = () => {
       <CardContent className="p-6">
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6 p-1.5 bg-secondary rounded-lg gap-1.5">
-            <TabsTrigger value="all" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-md hover:bg-primary/20">Todos ({bets.length})</TabsTrigger>
-            <TabsTrigger value="ganadas" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-green-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-primary/20">Ganadas ({wonBets.length})</TabsTrigger>
-            <TabsTrigger value="perdidas" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-destructive data-[state=active]:text-destructive-foreground data-[state=active]:shadow-md hover:bg-primary/20">Perdidas ({lostBets.length})</TabsTrigger>
+            <TabsTrigger value="all" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-soft hover:bg-primary/20">Todos ({bets.length})</TabsTrigger>
+            <TabsTrigger value="ganadas" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-green-500 data-[state=active]:text-white data-[state=active]:shadow-soft hover:bg-primary/20">Ganadas ({wonBets.length})</TabsTrigger>
+            <TabsTrigger value="perdidas" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-destructive data-[state=active]:text-destructive-foreground data-[state=active]:shadow-soft hover:bg-primary/20">Perdidas ({lostBets.length})</TabsTrigger>
           </TabsList>
           
           <TabsContent value="all">

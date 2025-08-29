@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ActiveLinkProps {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   badge?: boolean;
   className?: string;
 }

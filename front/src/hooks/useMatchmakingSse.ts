@@ -204,7 +204,7 @@ export default function useMatchmakingSse(
 
       es.onerror = (err: Event) => {
         console.error('Error en la conexión SSE de matchmaking:', err);
-        toast({ title: 'Error de Matchmaking', description: 'La conexión se interrumpió. Reintentando...' });
+        toast({ title: 'Error de Matchmaking', description: 'La conexión se interrumpió. Reintentando...', variant: 'error' });
         es.close();
         reconnectTimeoutRef.current = setTimeout(() => connect(), 3000);
       };

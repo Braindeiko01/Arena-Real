@@ -95,7 +95,7 @@ export default function RegisterPage() {
       const googleUser = result.user;
 
       if (!googleUser.email) {
-        toast({ title: "Error de autenticación", description: "No se pudo obtener el email de la cuenta de Google.", variant: "destructive" });
+        toast({ title: "Error de autenticación", description: "No se pudo obtener el email de la cuenta de Google.", variant: "error" });
         setIsLoading(false);
         return;
       }
@@ -117,12 +117,12 @@ export default function RegisterPage() {
           auth.login(response.user as User);
           router.push('/home');
       } else {
-          toast({ title: "Error", description: response.error || "No se pudo iniciar sesión.", variant: "destructive" });
+          toast({ title: "Error", description: response.error || "No se pudo iniciar sesión.", variant: "error" });
       }
 
     } catch (error: any) {
        if (error.code !== 'auth/popup-closed-by-user') {
-        toast({ title: "Error de autenticación", description: error.message || "Ocurrió un error inesperado.", variant: "destructive" });
+        toast({ title: "Error de autenticación", description: error.message || "Ocurrió un error inesperado.", variant: "error" });
       }
     }
     
@@ -132,7 +132,7 @@ export default function RegisterPage() {
 
   const onSubmitProfile: SubmitHandler<CompleteProfileFormValues> = async (profileData) => {
     if (!googleAuthData) {
-      toast({ title: "Error", description: "No se encontraron datos de Google. Por favor, intenta de nuevo.", variant: "destructive"});
+      toast({ title: "Error", description: "No se encontraron datos de Google. Por favor, intenta de nuevo.", variant: "error"});
       setStep(1);
       return;
     }
@@ -157,14 +157,14 @@ export default function RegisterPage() {
       toast({
         title: "¡Registro Exitoso!",
         description: `¡Bienvenido a Arena Real, ${result.user.username}!`,
-        variant: "default",
+        variant: "success",
       });
       router.push('/home');
     } else if (result.error) {
       toast({
         title: "Error de Registro",
         description: result.error,
-        variant: "destructive",
+        variant: "error",
       });
       if (result.error.includes("ya está registrado") || result.error.includes("ya está en uso")) {
         setStep(1); 
@@ -182,7 +182,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 font-body animate-fade-in-up">
-      <Card className="w-full max-w-lg shadow-card-medieval border-2 border-accent">
+      <Card className="w-full max-w-lg">
         <CardHeader className="text-center">
           <CrownIcon className="mx-auto h-16 w-16 text-accent mb-4" />
             <CardTitle className="text-4xl">
@@ -262,11 +262,17 @@ export default function RegisterPage() {
                     </FormItem>
                   )}
                 />
-                <CartoonButton type="submit" variant="accent" className="w-full mt-8" disabled={isLoading} iconLeft={<RegisterIcon />}>
-                  {isLoading ? 'Registrando...' : 'Completar Registro y Jugar'}
+                <CartoonButton
+                  type="submit"
+                  variant="accent"
+                  className="w-full mt-8"
+                  disabled={isLoading}
+                  iconLeft={<RegisterIcon />}
+                >
+                  {isLoading ? "Registrando..." : "Completar Registro y Jugar"}
                 </CartoonButton>
-                 <Button variant="outline" onClick={handleCancelAndGoBack} className="w-full mt-3">
-                    Cancelar y Volver
+                <Button variant="outline" onClick={handleCancelAndGoBack} className="w-full mt-3">
+                  Cancelar y Volver
                 </Button>
               </form>
             </Form>
@@ -276,9 +282,12 @@ export default function RegisterPage() {
           <p className="text-sm text-muted-foreground">
             ¿Ya tienes una cuenta?
           </p>
-          <Button variant="link" asChild className="text-primary hover:text-accent font-semibold text-base">
-            <Link href="/login">Inicia Sesión Aquí</Link>
-          </Button>
+          <Link
+            href="/login"
+            className="text-gold hover:text-gold-strong font-semibold text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+          >
+            Inicia Sesión Aquí
+          </Link>
         </CardFooter>
       </Card>
     </div>
