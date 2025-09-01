@@ -509,36 +509,35 @@ const HomePageContent = () => {
         </div>
         <Card
           variant="alt"
-          className="flex items-center justify-between p-4 md:p-6"
+          className="flex flex-col items-center text-center p-6 gap-4"
         >
-          <StatTile
-            icon={<SaldoIcon className="h-5 w-5" />}
-            value={new Intl.NumberFormat('es-CO', {
+          <SaldoIcon className="h-6 w-6 text-gold-1" />
+          <span className="text-5xl font-bold text-gold-1 leading-none drop-shadow-[0_0_6px_var(--glow)]">
+            {new Intl.NumberFormat('es-CO', {
               style: 'currency',
               currency: 'COP',
               minimumFractionDigits: 0,
             }).format(user.balance)}
-            label="Saldo actual"
-          />
-          <div className="flex gap-2">
+          </span>
+          <span className="text-xs text-text-3 uppercase">Saldo actual</span>
+          <div className="mt-4 flex w-full flex-col gap-3">
             <Button
               variant="primary"
-              size="sm"
               onClick={handleOpenDepositModal}
               aria-busy={isDepositLoading}
               disabled={isDepositLoading}
-              className="shadow-glow"
+              className="w-full rounded-full h-12 text-lg shadow-glow"
             >
               Depositar
             </Button>
             <Button
-              variant="outline"
-              size="sm"
+              variant="primary"
               onClick={handleOpenWithdrawModal}
               aria-busy={isWithdrawLoading}
               disabled={
                 user.balance === 0 || !user.nequiAccount || isWithdrawLoading
               }
+              className="w-full rounded-full h-12 text-lg shadow-glow"
             >
               Retirar
             </Button>
