@@ -79,16 +79,16 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="max-w-[1200px] mx-auto px-4 md:px-6 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-screen animate-fade-in-up">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 font-body animate-fade-in-up">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CrownIcon className="mx-auto h-16 w-16 text-accent mb-4" />
-            <CardTitle className="text-2xl md:text-3xl lg:text-4xl leading-tight">Iniciar Sesión</CardTitle>
-            <CardDescription className="text-sm md:text-base leading-relaxed text-muted-foreground">
-              Accede a tu cuenta de Arena Real para continuar.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center space-y-4">
+            <CardTitle className="text-4xl">Iniciar Sesión</CardTitle>
+            <CardDescription className="text-muted-foreground text-base">
+            Accede a tu cuenta de Arena Real para continuar.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6 text-center space-y-4">
           <CartoonButton 
             onClick={handleGoogleLogin} 
             className="w-full" 
@@ -102,16 +102,18 @@ export default function LoginPage() {
             El inicio de sesión tradicional con teléfono y contraseña no está disponible. Por favor, usa Google.
           </p>
         </CardContent>
-          <CardFooter className="flex flex-col items-center space-y-1">
-            <p className="text-sm text-muted-foreground">¿No tienes una cuenta?</p>
-            <Link
-              href="/register"
-              className="text-gold hover:text-gold-strong font-semibold text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-            >
-              Regístrate Aquí
-            </Link>
-          </CardFooter>
-        </Card>
-    </main>
+        <CardFooter className="flex flex-col items-center space-y-1 mt-4">
+          <p className="text-sm text-muted-foreground">
+            ¿No tienes una cuenta?
+          </p>
+          <Link
+            href="/register"
+            className="text-gold hover:text-gold-strong font-semibold text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+          >
+            Regístrate Aquí
+          </Link>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }

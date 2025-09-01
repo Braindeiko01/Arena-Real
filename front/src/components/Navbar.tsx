@@ -46,8 +46,8 @@ const Navbar = () => {
   const { unreadCount } = useNotifications();
 
   return (
-    <header className="sticky top-0 z-40 bg-bg-0/80 backdrop-blur border-b border-line hidden md:block">
-      <div className="max-w-[1200px] mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
+    <header className="navbar">
+      <div className="container mx-auto flex items-center justify-between py-3">
         {/* Logo */}
         <Link
           href="/home"
@@ -126,7 +126,7 @@ const Navbar = () => {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="border-t border-white/20 pb-4 md:hidden">
-          <nav className="max-w-[1200px] mx-auto px-4 md:px-6 flex flex-col gap-2 pt-4">
+          <nav className="container mx-auto flex flex-col gap-2 pt-4">
             {navItems.map(({ href, label, icon }) => (
               <ActiveLink
                 key={href}

@@ -10,13 +10,17 @@ import AuthGuard from './AuthGuard';
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <AuthGuard>
-      <div className="theme-arena bg-bg-0 text-text-1 flex flex-col min-h-screen font-body">
-        <TopNavbar />
-        <Navbar />
-        <main className="flex-grow max-w-[1200px] mx-auto px-4 md:px-6 pb-20 md:pb-0">
+      <div className="flex flex-col min-h-screen bg-bg-0 text-text-1 font-body">
+        <div className="md:hidden">
+          <TopNavbar />
+        </div>
+        <div className="hidden md:block">
+          <Navbar />
+        </div>
+        <main className="flex-grow container mx-auto px-4 pt-16 pb-24 md:pt-8 md:pb-8 md:px-6 lg:px-8 lg:py-10 animate-fade-in-up">
           {children}
         </main>
-        <footer className="bg-bg-1 text-center py-4 text-sm text-text-2 font-headline z-0">
+        <footer className="bg-bg-1 text-center py-4 text-sm text-text-2 font-headline">
           Arena Real &copy; {new Date().getFullYear()}
         </footer>
         <BottomNav />

@@ -27,8 +27,8 @@ const BottomNav = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 md:hidden h-16 bg-bg-0/90 backdrop-blur border-t border-line [padding-bottom:env(safe-area-inset-bottom)] z-40">
-      <ul className="max-w-[1200px] mx-auto px-4 md:px-6 h-full flex items-center justify-between gap-3">
+    <nav className="bottom-nav md:hidden">
+      <ul className="contents">
         {navItems.map(({ id, label, href, icon: Icon }) => {
           const isActive = pathname === href || pathname.startsWith(`${href}/`);
           return (

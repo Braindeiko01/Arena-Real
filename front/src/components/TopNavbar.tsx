@@ -21,14 +21,13 @@ const TopNavbar = () => {
   const avatarSrc = (user as any)?.image || user?.avatarUrl;
 
   return (
-    <header className="sticky top-0 z-40 bg-bg-0/80 backdrop-blur border-b border-line md:hidden">
-      <div className="max-w-[1200px] mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-1 font-bold text-lg text-[color:var(--gold)] fantasy-text">
-          <Image src="/logo.png" alt="Arena Real logo" width={32} height={32} className="h-8 w-8" />
-          Arena Real
-        </div>
+    <header className="md:hidden navbar h-16 px-4 py-3 flex justify-between items-center">
+      <div className="flex items-center gap-1 font-bold text-lg text-[color:var(--gold)] fantasy-text">
+        <Image src="/logo.png" alt="Arena Real logo" width={32} height={32} className="h-8 w-8" />
+        Arena Real
+      </div>
 
-        <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -96,7 +95,6 @@ const TopNavbar = () => {
             <DropdownMenuItem onClick={logout}>Cerrar sesión</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
       </div>
     </header>
   );
