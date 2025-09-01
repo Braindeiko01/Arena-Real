@@ -29,7 +29,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body data-theme="arena-app" className="font-body antialiased">
+      <body
+        data-theme="theme-arena"
+        className="font-body antialiased bg-bg-0 text-text-1"
+      >
         <ReduxProvider>
           <PushNotificationsInitializer />
           <TransactionUpdatesListener />

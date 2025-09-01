@@ -22,6 +22,19 @@ export default {
         code: ['monospace'],
       },
       colors: {
+        /* Design tokens */
+        'bg-0': 'var(--bg-0)',
+        'bg-1': 'var(--bg-1)',
+        'bg-2': 'var(--bg-2)',
+        'gold-1': 'var(--gold-1)',
+        'gold-2': 'var(--gold-2)',
+        'gold-3': 'var(--gold-3)',
+        'text-1': 'var(--text-1)',
+        'text-2': 'var(--text-2)',
+        'text-3': 'var(--text-3)',
+        line: 'var(--line)',
+        glow: 'var(--glow)',
+        /* Legacy aliases */
         bg: 'var(--bg)',
         panel: 'var(--panel)',
         'panel-2': 'var(--panel-2)',
@@ -70,7 +83,7 @@ export default {
         },
         border: 'var(--stroke)',
         input: 'var(--stroke)',
-        ring: 'var(--gold)',
+        ring: 'var(--gold-1)',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
@@ -90,12 +103,15 @@ export default {
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
-        '2xl': 'calc(var(--radius) + 4px)',
+        xl: 'var(--radius-xl)',
+        '2xl': 'var(--radius-2xl)',
+        lg: 'var(--radius-xl)',
+        md: 'calc(var(--radius-xl) - 2px)',
+        sm: 'calc(var(--radius-xl) - 4px)',
       },
       boxShadow: {
+        glow: 'var(--shadow-glow)',
+        inset: 'var(--shadow-inset)',
         soft: 'var(--shadow)',
         cartoon: '0 4px 0 hsl(var(--primary-dark)), 0 6px 10px rgba(0,0,0,0.2)',
         'cartoon-sm':

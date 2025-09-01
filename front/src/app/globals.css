@@ -4,47 +4,64 @@
 
 /* ✅ Tema SOLO para el app (NO landing) */
 @layer base {
-  [data-theme='arena-app'] {
-    --bg: #0b0f14;
-    --bg-end: #111418;
-    --panel: #111315;
-    --panel-2: #0e1113;
-    --text: #ededed;
-    --muted: #a9afb6;
-    --stroke: #23272b;
-    --gold: #ffd369;
-    --gold-strong: #d4af37;
-    --gold-dark: #b98c2a;
+  [data-theme='theme-arena'] {
+    /* Design tokens */
+    --bg-0: #0b0f14;
+    --bg-1: #111418;
+    --bg-2: #0f141a;
+    --gold-1: #ffd369;
+    --gold-2: #d4af37;
+    --gold-3: #b98c2a;
+    --text-1: #ece8d9;
+    --text-2: #c9c6b8;
+    --text-3: #8f8b79;
+    --line: rgba(255, 255, 255, 0.08);
+    --glow: rgba(212, 175, 55, 0.45);
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+    --shadow-glow: 0 10px 30px -20px var(--glow);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    /* Legacy variables for existing styles */
+    --bg: var(--bg-0);
+    --bg-end: var(--bg-1);
+    --panel: var(--bg-1);
+    --panel-2: var(--bg-2);
+    --text: var(--text-1);
+    --muted: var(--text-2);
+    --stroke: var(--line);
+    --gold: var(--gold-1);
+    --gold-strong: var(--gold-2);
+    --gold-dark: var(--gold-3);
     --success: #7ed57a;
     --error: #f16a6a;
-    --radius: 16px;
-    --shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    --radius: var(--radius-xl);
+    --shadow: var(--shadow-glow);
     /* shadcn/ui variables mapped to design tokens */
-    --background: 213 29% 6%;
-    --foreground: 228 24% 96%;
+    --background: var(--bg-0);
+    --foreground: var(--text-1);
     --card: var(--panel);
     --card-foreground: var(--text);
     --popover: var(--panel);
     --popover-foreground: var(--text);
     --primary: 42 100% 71%;
-    --primary-foreground: 0 0% 8%;
+    --primary-foreground: 0 0% 0%;
     --primary-dark: 41 63% 45%;
     --secondary: var(--panel);
     --secondary-foreground: var(--text);
     --muted-bg: var(--panel-2);
     --muted-foreground: var(--muted);
     --accent: 42 100% 71%;
-    --accent-foreground: 0 0% 8%;
+    --accent-foreground: 0 0% 0%;
     --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 100%;
     --border: var(--stroke);
     --input: var(--stroke);
-    --ring: var(--gold);
-    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-end) 100%);
-    color: var(--text);
+    --ring: var(--gold-2);
+    background: linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 100%);
+    color: var(--text-1);
   }
 
-  [data-theme='arena-app'] * {
+  [data-theme='theme-arena'] * {
     @apply border-border;
   }
 
@@ -89,36 +106,36 @@
 }
 
 @layer components {
-  [data-theme='arena-app'] .navbar {
+  [data-theme='theme-arena'] .navbar {
     @apply sticky top-0 z-50;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    background: color-mix(in srgb, var(--bg) 90%, transparent);
-    border-bottom: 1px solid var(--stroke);
+    background: color-mix(in srgb, var(--bg-0) 90%, transparent);
+    border-bottom: 1px solid var(--line);
   }
 
-  [data-theme='arena-app'] .card {
-    background: var(--panel);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  [data-theme='theme-arena'] .card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+    box-shadow: var(--shadow-glow);
     padding: 16px;
   }
-  [data-theme='arena-app'] .card--alt {
-    background: var(--panel-2);
+  [data-theme='theme-arena'] .card--alt {
+    background: var(--bg-2);
   }
 
-  [data-theme='arena-app'] .title {
-    color: var(--gold);
+  [data-theme='theme-arena'] .title {
+    color: var(--gold-1);
     font-weight: 800;
     letter-spacing: 0.3px;
-    text-shadow: 0 0 12px rgba(232, 194, 110, 0.15);
+    text-shadow: 0 0 12px var(--glow);
   }
-  [data-theme='arena-app'] .subtitle {
-    color: var(--muted);
+  [data-theme='theme-arena'] .subtitle {
+    color: var(--text-2);
   }
 
-  [data-theme='arena-app'] .btn {
+  [data-theme='theme-arena'] .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -133,42 +150,42 @@
       box-shadow 0.2s,
       background-color 0.2s;
   }
-  [data-theme='arena-app'] .btn:hover {
+  [data-theme='theme-arena'] .btn:hover {
     transform: scale(1.02);
-    box-shadow: 0 0 12px rgba(255, 211, 105, 0.4);
+    box-shadow: 0 0 12px var(--glow);
   }
-  [data-theme='arena-app'] .btn:active {
+  [data-theme='theme-arena'] .btn:active {
     transform: scale(0.98) translateY(1px);
   }
-  [data-theme='arena-app'] .btn:focus-visible {
-    outline: 2px solid var(--gold);
+  [data-theme='theme-arena'] .btn:focus-visible {
+    outline: 2px solid var(--gold-1);
     outline-offset: 2px;
   }
-  [data-theme='arena-app'] .btn--primary {
-    background: linear-gradient(180deg, #ffd369 0%, #d4af37 100%);
-    color: #000;
-    border: 1px solid var(--gold-dark);
+  [data-theme='theme-arena'] .btn--primary {
+    background: linear-gradient(180deg, var(--gold-1) 0%, var(--gold-2) 100%);
+    color: black;
+    border: 1px solid var(--gold-3);
   }
-  [data-theme='arena-app'] .btn--primary:hover {
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+  [data-theme='theme-arena'] .btn--primary:hover {
+    box-shadow: 0 0 15px var(--glow);
   }
-  [data-theme='arena-app'] .btn--outline {
+  [data-theme='theme-arena'] .btn--outline {
     background: transparent;
-    color: var(--gold);
-    border: 1px solid var(--gold);
+    color: var(--gold-1);
+    border: 1px solid var(--gold-1);
   }
-  [data-theme='arena-app'] .btn--ghost {
+  [data-theme='theme-arena'] .btn--ghost {
     background: transparent;
-    border: 1px solid var(--stroke);
-    color: var(--text);
+    border: 1px solid var(--line);
+    color: var(--text-1);
   }
-  [data-theme='arena-app'] .btn--sm {
+  [data-theme='theme-arena'] .btn--sm {
     height: 40px;
     padding: 0 14px;
     border-radius: 12px;
   }
 
-  [data-theme='arena-app'] .badge {
+  [data-theme='theme-arena'] .badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -176,50 +193,52 @@
     font-size: 12px;
     padding: 8px 16px;
     border-radius: 999px;
-    background: color-mix(in srgb, var(--gold) 15%, transparent);
-    color: var(--gold);
+    background: color-mix(in srgb, var(--gold-1) 15%, transparent);
+    color: var(--gold-1);
   }
 
-  [data-theme='arena-app'] .bottom-nav {
+  [data-theme='theme-arena'] .bottom-nav {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    background: color-mix(in srgb, var(--bg-0) 92%, transparent);
     backdrop-filter: blur(6px);
-    border-top: 1px solid var(--stroke);
+    border-top: 1px solid var(--line);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     padding: 8px;
     z-index: 50;
   }
   @media (min-width: 768px) {
-    [data-theme='arena-app'] .bottom-nav {
+    [data-theme='theme-arena'] .bottom-nav {
       display: none;
     }
   }
-  [data-theme='arena-app'] .tab {
+  [data-theme='theme-arena'] .tab {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    color: var(--muted);
+    color: var(--text-3);
     font-size: 11px;
     min-width: 44px;
     min-height: 44px;
     padding: 8px 0;
+    transition: transform 0.2s, color 0.2s;
   }
-  [data-theme='arena-app'] .tab svg {
+  [data-theme='theme-arena'] .tab svg {
     width: 20px;
     height: 20px;
     opacity: 0.9;
   }
-  [data-theme='arena-app'] .tab--active {
-    color: var(--gold);
-    text-shadow: 0 0 8px rgba(255, 211, 105, 0.4);
+  [data-theme='theme-arena'] .tab--active {
+    color: var(--gold-1);
+    text-shadow: 0 0 8px var(--glow);
+    transform: scale(1.05);
   }
-  [data-theme='arena-app'] .tab:active {
-    transform: translateY(1px);
+  [data-theme='theme-arena'] .tab:active {
+    transform: scale(0.95);
   }
 }
 
@@ -227,6 +246,6 @@
   .fantasy-text {
     font-family: 'Cinzel', serif;
     letter-spacing: 0.05em;
-    text-shadow: 0 0 6px rgba(233, 196, 106, 0.6);
+    text-shadow: 0 0 6px var(--glow);
   }
 }

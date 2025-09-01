@@ -19,11 +19,12 @@ const ActiveLink = ({ href, label, icon: Icon, badge, className }: ActiveLinkPro
   return (
     <Link
       href={href}
+      aria-label={label}
       className={cn(
-        "flex items-center gap-1 rounded-full px-3 py-1 border-b-2 transition-colors duration-200",
+        "flex items-center gap-1 rounded-full px-3 py-1 transition-colors",
         isActive
-          ? "text-[color:var(--gold)] border-[color:var(--gold)]"
-          : "text-[color:var(--muted)] border-transparent hover:text-[color:var(--gold)] hover:border-[color:var(--gold)]",
+          ? "bg-gold-1/20 text-gold-1"
+          : "text-text-3 hover:text-gold-1 hover:bg-gold-1/10",
         className
       )}
     >
