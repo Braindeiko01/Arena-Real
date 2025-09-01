@@ -61,6 +61,7 @@ export default function LoginPage() {
           }
       } else if (response.user) {
          authContext.login(response.user as User);
+         await authContext.refreshUser();
          toast({ title: "¡Bienvenido de nuevo!", description: `Hola ${response.user.username}`, variant: "success" });
          router.push('/home');
       } else {
