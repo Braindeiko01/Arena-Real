@@ -32,7 +32,6 @@ public class JugadorService {
         jugador.setReferralCode(java.util.UUID.randomUUID().toString());
         if (dto.getReferralCode() != null && !dto.getReferralCode().isBlank()) {
             jugadorRepository.findByReferralCode(dto.getReferralCode())
-                    .filter(Jugador::isHasPlayed)
                     .ifPresent(inviter -> jugador.setReferredBy(inviter.getId()));
         }
         Jugador saved = jugadorRepository.save(jugador);
