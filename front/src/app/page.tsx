@@ -285,11 +285,11 @@ const HomePageContent = () => {
             </div>
           </div>
           <div className="text-right">
-            <div className="flex items-center justify-end text-2xl font-bold text-accent">
-              <SaldoIcon className="h-7 w-7 mr-2" />
+            <div className="flex items-center justify-end text-4xl font-headline text-primary-light">
+              <SaldoIcon className="h-8 w-8 mr-2 text-primary-light" />
               {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(user.balance)}
             </div>
-            <p className="text-sm text-muted-foreground">Saldo Actual</p>
+            <p className="text-base text-text-secondary">Saldo Actual</p>
           </div>
         </CardHeader>
         <CardContent className="p-6">
@@ -318,7 +318,7 @@ const HomePageContent = () => {
         </CardContent>
       </Card>
 
-      <Card className="bg-card/80 backdrop-blur-sm shadow-card-medieval border-2 border-primary-dark">
+        <Card className="bg-card/80 backdrop-blur-sm shadow-card-medieval border-2 border-primary">
         <CardHeader>
           <CardTitle className="text-3xl font-headline text-primary flex items-center justify-center">
             <FindMatchIcon className="mr-3 h-8 w-8 text-accent" />
@@ -330,14 +330,14 @@ const HomePageContent = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6 flex justify-center">
-          <CartoonButton
-            onClick={handleOpenModeModal}
-            className="w-full sm:w-auto"
-            iconLeft={<Swords className="h-6 w-6" />}
-            disabled={user.balance < 6000}
-          >
-            Buscar Oponente
-          </CartoonButton>
+            <CartoonButton
+              onClick={handleOpenModeModal}
+              className="w-full sm:w-auto text-2xl"
+              iconLeft={<Swords className="h-6 w-6" />}
+              disabled={user.balance < 6000}
+            >
+              Buscar Oponente
+            </CartoonButton>
         </CardContent>
       </Card>
 
