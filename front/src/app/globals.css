@@ -193,6 +193,11 @@
     padding: 8px;
     z-index: 50;
   }
+  @media (min-width: 768px) {
+    [data-theme='arena-app'] .bottom-nav {
+      display: none;
+    }
+  }
   [data-theme='arena-app'] .tab {
     display: flex;
     flex-direction: column;
