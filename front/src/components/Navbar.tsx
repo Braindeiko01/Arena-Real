@@ -39,21 +39,21 @@ const Navbar = () => {
   const notifications = 0;
 
   return (
-    <header className="bg-[#3973FF] text-white shadow-md">
+    <header className="bg-background/90 text-white shadow-gold border-b border-white/10">
       <div className="container mx-auto flex items-center justify-between py-3">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <Crown className="h-6 w-6" />
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg text-primary-light">
+          <Crown className="h-6 w-6 text-primary-light" />
           Arena Real
         </Link>
 
         {/* Mobile hamburger */}
         <button
-          className="rounded-md p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden transition-transform hover:scale-105"
+          className="rounded-md p-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:hidden transition-transform transform scale-[0.98] hover:scale-[1.02]"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
-          <Menu className="h-6 w-6" />
+          <Menu className="h-6 w-6 text-primary-light" />
         </button>
 
         {/* Navigation links */}
@@ -62,7 +62,7 @@ const Navbar = () => {
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-1 rounded-full px-3 py-1 text-white hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white active:bg-white/30"
+              className="flex items-center gap-1 rounded-full px-3 py-1 text-white transform scale-[0.98] hover:scale-[1.02] hover:text-primary-light hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:bg-white/10"
             >
               <Icon className="h-4 w-4" />
               {label}
@@ -73,8 +73,8 @@ const Navbar = () => {
         {/* Right side icons */}
         {isAuthenticated && user && (
           <div className="hidden items-center gap-4 md:flex">
-            <button className="relative rounded-full p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
-              <Bell className="h-6 w-6" />
+            <button className="relative rounded-full p-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-transform transform scale-[0.98] hover:scale-[1.02]">
+              <Bell className="h-6 w-6 text-primary-light" />
               {notifications > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs">
                   {notifications}
@@ -83,7 +83,7 @@ const Navbar = () => {
             </button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
+                <button className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-transform transform scale-[0.98] hover:scale-[1.02]">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.avatarUrl} alt={user.username} />
                     <AvatarFallback>{user.username?.[0] || 'U'}</AvatarFallback>
@@ -105,13 +105,13 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t border-white/20 pb-4 md:hidden">
+        <div className="border-t border-white/10 pb-4 md:hidden bg-background">
           <nav className="container mx-auto flex flex-col gap-2 pt-4">
             {navItems.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
                 href={href}
-                className="flex items-center gap-2 rounded-full px-3 py-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="flex items-center gap-2 rounded-full px-3 py-2 text-white transform scale-[0.98] hover:scale-[1.02] hover:bg-white/10 hover:text-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <Icon className="h-5 w-5" />
                 {label}
@@ -119,8 +119,8 @@ const Navbar = () => {
             ))}
             {isAuthenticated && user && (
               <div className="flex items-center gap-3 pt-2">
-                <button className="relative rounded-full p-2 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
-                  <Bell className="h-6 w-6" />
+                <button className="relative rounded-full p-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-transform transform scale-[0.98] hover:scale-[1.02]">
+                  <Bell className="h-6 w-6 text-primary-light" />
                   {notifications > 0 && (
                     <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs">
                       {notifications}
@@ -129,7 +129,7 @@ const Navbar = () => {
                 </button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-transform hover:scale-105">
+                    <button className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-transform transform scale-[0.98] hover:scale-[1.02]">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={user.avatarUrl} alt={user.username} />
                         <AvatarFallback>{user.username?.[0] || 'U'}</AvatarFallback>

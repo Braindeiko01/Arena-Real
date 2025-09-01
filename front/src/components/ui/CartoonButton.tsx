@@ -6,14 +6,18 @@ import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from "class-variance-authority";
 
 const cartoonButtonVariants = cva(
-  "inline-flex items-center justify-center rounded-lg font-headline text-lg font-semibold tracking-wide transition-transform duration-150 ease-in-out hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:translate-y-0.5 disabled:pointer-events-none disabled:opacity-70",
+  "inline-flex items-center justify-center rounded-lg font-headline text-lg font-semibold tracking-wide transform scale-[0.98] transition-transform duration-150 ease-in-out hover:scale-[1.02] hover:shadow-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:translate-y-0.5 disabled:pointer-events-none disabled:opacity-70",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground border-b-4 border-primary-dark shadow-cartoon hover:brightness-110 active:shadow-cartoon-active active:border-b-2",
-        secondary: "bg-secondary text-secondary-foreground border-b-4 border-[hsl(var(--secondary))] shadow-cartoon hover:brightness-110 active:shadow-cartoon-active active:border-b-2", // Example, define secondary-dark if needed
-        accent: "bg-accent text-accent-foreground border-b-4 border-[hsl(var(--accent))] shadow-cartoon hover:brightness-110 active:shadow-cartoon-active active:border-b-2", // Example, define accent-dark if needed
-        destructive: "bg-destructive text-destructive-foreground border-b-4 border-[hsl(var(--destructive))] shadow-cartoon hover:brightness-110 active:shadow-cartoon-active active:border-b-2", // Example, define destructive-dark if needed
+        default:
+          "bg-gradient-to-b from-primary-light to-primary text-black border-b-4 border-primary-dark",
+        secondary:
+          "border border-primary text-primary bg-transparent border-b-4 hover:bg-primary/10",
+        accent:
+          "bg-accent text-black border-b-4 border-primary-dark",
+        destructive:
+          "bg-destructive text-destructive-foreground border-b-4 border-[hsl(var(--destructive))]",
       },
       size: {
         default: "px-8 py-4 text-xl", // Large buttons

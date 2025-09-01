@@ -25,22 +25,22 @@ const BottomNav = () => {
   const [active, setActive] = useState("jugar");
 
   return (
-    <nav className="md:hidden fixed bottom-0 w-full z-50 bg-[#3973FF] border-t border-blue-800 h-16">
+    <nav className="md:hidden fixed bottom-0 w-full z-50 bg-background/90 border-t border-white/10 h-16">
       <ul className="flex h-full items-center justify-around">
         {navItems.map(({ id, label, href, icon: Icon }) => {
           const isActive = active === id;
           return (
             <li key={id}>
-              <Link
-                href={href}
-                onClick={() => setActive(id)}
-                className={cn(
-                  "flex flex-col items-center text-xs transition-all ease-in-out",
-                  isActive
-                    ? "text-[#FFD600] scale-110 font-bold"
-                    : "text-white opacity-70"
-                )}
-              >
+                <Link
+                  href={href}
+                  onClick={() => setActive(id)}
+                  className={cn(
+                    "flex flex-col items-center text-xs transition-all ease-in-out transform scale-[0.98] hover:scale-[1.02]",
+                    isActive
+                      ? "text-primary-light drop-shadow-[0_0_6px_rgba(255,211,105,0.6)]"
+                      : "text-white/70"
+                  )}
+                >
                 <Icon className="w-6 h-6 mb-1" />
                 <span>{label}</span>
               </Link>
