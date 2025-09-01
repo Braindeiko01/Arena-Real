@@ -181,18 +181,18 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 font-body animate-fade-in-up">
+    <main className="max-w-[1200px] mx-auto px-4 md:px-6 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-screen animate-fade-in-up">
       <Card className="w-full max-w-lg">
         <CardHeader className="text-center">
           <CrownIcon className="mx-auto h-16 w-16 text-accent mb-4" />
-            <CardTitle className="text-4xl">
+            <CardTitle className="text-2xl md:text-3xl lg:text-4xl leading-tight">
               {step === 1 ? "Crea Tu Cuenta" : `Completa tu Perfil, ${googleAuthData?.username || ''}`}
             </CardTitle>
-          <CardDescription className="text-muted-foreground text-base">
+          <CardDescription className="text-sm md:text-base leading-relaxed text-muted-foreground">
             {step === 1 ? "¡Únete a Arena Real y empieza a apostar!" : "Necesitamos unos detalles más para empezar."}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           {step === 1 && (
             <CartoonButton 
               onClick={handleGoogleSignIn} 
@@ -278,7 +278,7 @@ export default function RegisterPage() {
             </Form>
           )}
         </CardContent>
-        <CardFooter className="flex flex-col items-center space-y-1 mt-4">
+        <CardFooter className="flex flex-col items-center space-y-1">
           <p className="text-sm text-muted-foreground">
             ¿Ya tienes una cuenta?
           </p>
@@ -290,6 +290,6 @@ export default function RegisterPage() {
           </Link>
         </CardFooter>
       </Card>
-    </div>
+    </main>
   );
 }
