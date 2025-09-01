@@ -29,6 +29,7 @@ import {
   Banknote,
   Loader2,
 } from '@/components/icons/lazy';
+import HelmetIcon from '@/components/icons/Helmet';
 import {
   requestTransactionAction,
   matchmakingAction,
@@ -470,7 +471,7 @@ const HomePageContent = () => {
         toast({
           title: 'Error al cancelar',
           description: result.error,
-        variant: 'error',
+          variant: 'error',
         });
       } else {
         toast({
@@ -499,12 +500,11 @@ const HomePageContent = () => {
             </AvatarFallback>
           </Avatar>
           <div>
-        <CardTitle className="text-[22px]">
+            <CardTitle className="text-[22px] font-headline flex items-center gap-2">
+              <HelmetIcon className="h-6 w-6 text-gold" />
               {user.username}
             </CardTitle>
-            <CardDescription>
-              ¡Bienvenido de nuevo, Gladiador!
-            </CardDescription>
+            <CardDescription>¡Bienvenido de nuevo, Gladiador!</CardDescription>
           </div>
         </div>
         <Card
@@ -554,14 +554,15 @@ const HomePageContent = () => {
             Buscar Duelo
           </CardTitle>
           <CardDescription className="text-center">
-            Inscripción $6.000 COP. Ganador recibe $10.800 COP. Requiere saldo ≥ $6.000.
+            Inscripción $6.000 COP. Ganador recibe $10.800 COP. Requiere saldo ≥
+            $6.000.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center">
           <Button
             variant="primary"
             onClick={handleOpenModeModal}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto px-8 py-4 text-xl font-headline"
             disabled={user.balance < 6000}
           >
             <Swords className="h-5 w-5" /> Buscar Oponente

@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
-import useActiveChat from "@/hooks/useActiveChat";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import useActiveChat from '@/hooks/useActiveChat';
 import {
-  Home,
+  Shield,
   MessageCircle,
   ScrollText,
   Trophy,
-  Users,
-} from "@/components/icons/lazy";
-import { cn } from "@/lib/utils";
+  Award,
+} from '@/components/icons/lazy';
+import { cn } from '@/lib/utils';
 
 const BottomNav = () => {
   const pathname = usePathname();
@@ -19,11 +19,11 @@ const BottomNav = () => {
   const { activeChatId } = useActiveChat(user?.id);
   const hasActiveChat = Boolean(activeChatId);
   const navItems = [
-    { id: "inicio", label: "Inicio", href: "/home", icon: Home },
-    { id: "chat", label: "Chat", href: "/chat", icon: MessageCircle },
-    { id: "historial", label: "Historial", href: "/history", icon: ScrollText },
-    { id: "torneo", label: "Torneo", href: "/torneos", icon: Trophy },
-    { id: "referidos", label: "Referidos", href: "/referrals", icon: Users },
+    { id: 'inicio', label: 'Inicio', href: '/home', icon: Shield },
+    { id: 'chat', label: 'Chat', href: '/chat', icon: MessageCircle },
+    { id: 'historial', label: 'Historial', href: '/history', icon: ScrollText },
+    { id: 'torneo', label: 'Torneo', href: '/torneos', icon: Trophy },
+    { id: 'referidos', label: 'Referidos', href: '/referrals', icon: Award },
   ];
 
   return (
@@ -35,11 +35,11 @@ const BottomNav = () => {
             <li key={id}>
               <Link
                 href={href}
-                className={cn("tab", isActive && "tab--active")}
+                className={cn('tab', isActive && 'tab--active')}
               >
                 <span className="relative">
                   <Icon />
-                  {id === "chat" && hasActiveChat && (
+                  {id === 'chat' && hasActiveChat && (
                     <span className="absolute -top-1 -right-1 block w-3 h-3 bg-error rounded-full" />
                   )}
                 </span>

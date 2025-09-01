@@ -1,4 +1,4 @@
-import type {Config} from 'tailwindcss';
+import type { Config } from 'tailwindcss';
 
 export default {
   darkMode: ['class'],
@@ -10,15 +10,15 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: '2rem',
       screens: {
-        "2xl": "1400px",
+        '2xl': '1400px',
       },
     },
     extend: {
       fontFamily: {
         body: ['Inter', 'ui-sans-serif', 'system-ui'],
-        headline: ['Poppins', 'ui-sans-serif', 'system-ui'],
+        headline: ['Cinzel', 'serif'],
         code: ['monospace'],
       },
       colors: {
@@ -97,9 +97,11 @@ export default {
       },
       boxShadow: {
         soft: 'var(--shadow)',
-        'cartoon': '0 4px 0 hsl(var(--primary-dark)), 0 6px 10px rgba(0,0,0,0.2)',
-        'cartoon-sm': '0 2px 0 hsl(var(--primary-dark)), 0 3px 5px rgba(0,0,0,0.15)',
-        'cartoon-active': '0 2px 0 hsl(var(--primary-dark)), 0 3px 5px rgba(0,0,0,0.2)',
+        cartoon: '0 4px 0 hsl(var(--primary-dark)), 0 6px 10px rgba(0,0,0,0.2)',
+        'cartoon-sm':
+          '0 2px 0 hsl(var(--primary-dark)), 0 3px 5px rgba(0,0,0,0.15)',
+        'cartoon-active':
+          '0 2px 0 hsl(var(--primary-dark)), 0 3px 5px rgba(0,0,0,0.2)',
         'card-medieval': '5px 5px 0px 0px hsl(var(--border))',
       },
       keyframes: {
@@ -126,7 +128,7 @@ export default {
         'fade-in-up': {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
-        }
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
