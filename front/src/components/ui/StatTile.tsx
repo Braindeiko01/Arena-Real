@@ -16,17 +16,17 @@ export const StatTile = React.forwardRef<HTMLDivElement, StatTileProps>(
       className={cn('flex items-center gap-2', className)}
       {...props}
     >
-      {icon && <div className="text-gold flex-none w-5 h-5">{icon}</div>}
+      {icon && <div className="text-gold-1 flex-none w-5 h-5">{icon}</div>}
       <div
         className={cn(
           'flex flex-col',
           align === 'end' ? 'items-end text-right' : 'items-start'
         )}
       >
-        <span className="text-3xl font-headline text-gold leading-none">
+        <span className="text-[36px] font-bold text-gold-1 leading-none drop-shadow-[0_0_6px_var(--glow)]">
           {value}
         </span>
-        <span className="text-sm text-muted-foreground">{label}</span>
+        <span className="text-xs text-text-3 uppercase">{label}</span>
       </div>
     </div>
   )

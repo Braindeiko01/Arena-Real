@@ -522,11 +522,12 @@ const HomePageContent = () => {
           />
           <div className="flex gap-2">
             <Button
-              variant="ghost"
+              variant="primary"
               size="sm"
               onClick={handleOpenDepositModal}
               aria-busy={isDepositLoading}
               disabled={isDepositLoading}
+              className="shadow-glow"
             >
               Depositar
             </Button>
@@ -548,12 +549,12 @@ const HomePageContent = () => {
       <Card className="max-w-[920px] mx-auto">
         <CardHeader className="items-center text-center space-y-3">
           <Badge className="gap-2">
-            <Swords className="h-5 w-5" /> En vivo · Duelos
+            <Swords className="h-5 w-5 text-gold-1" aria-label="duelos" /> En vivo · Duelos
           </Badge>
-          <CardTitle className="text-[22px] font-headline text-gold">
+          <CardTitle className="text-4xl font-headline text-gold-1">
             Buscar Duelo
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-center text-text-2">
             Inscripción $6.000 COP. Ganador recibe $10.800 COP. Requiere saldo ≥
             $6.000.
           </CardDescription>
@@ -562,10 +563,10 @@ const HomePageContent = () => {
           <Button
             variant="primary"
             onClick={handleOpenModeModal}
-            className="w-full sm:w-auto px-8 py-4 text-xl font-headline"
+            className="w-full sm:w-auto px-8 py-4 text-xl font-headline shadow-glow"
             disabled={user.balance < 6000}
           >
-            <Swords className="h-5 w-5" /> Buscar Oponente
+            <Swords className="h-5 w-5" aria-hidden="true" /> Buscar Oponente
           </Button>
         </CardContent>
       </Card>
