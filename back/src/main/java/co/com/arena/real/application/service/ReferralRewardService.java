@@ -33,7 +33,7 @@ public class ReferralRewardService {
         if (jugador == null || jugador.getReferredBy() == null) {
             return;
         }
-        jugadorRepository.findById(jugador.getReferredBy()).ifPresent(inviter -> {
+        jugadorRepository.findById(jugador.getReferredBy()).filter(Jugador::isHasPlayed).ifPresent(inviter -> {
             ReferralReward reward = ReferralReward.builder()
                     .inviter(inviter)
                     .referred(jugador)
