@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
   Home,
   Trophy,
   Bell,
-  Menu,
   ScrollText,
   MessageCircle,
   Users,
@@ -22,6 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/Button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import ActiveLink from './ActiveLink';
 
 // Simple auth hook to access user data
@@ -31,7 +30,6 @@ import useNotifications from '@/hooks/useNotifications';
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const { activeChatId } = useActiveChat(user?.id);
   const hasActiveChat = Boolean(activeChatId);
 
@@ -43,7 +41,7 @@ const Navbar = () => {
     { href: '/referrals', label: 'Referidos', icon: Users },
   ];
 
-  const { unreadCount } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
 
   return (
     <header className="navbar">
@@ -56,17 +54,6 @@ const Navbar = () => {
           <Image src="/logo.png" alt="Arena Real logo" width={32} height={32} className="h-8 w-8" />
           Arena Real
         </Link>
-
-        {/* Mobile hamburger */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-          className="md:hidden p-2 h-10 w-10 rounded-md border-0 gap-0 hover:bg-gold/10 hover:scale-105"
-        >
-          <Menu className="h-6 w-6" />
-        </Button>
 
         {/* Navigation links */}
         <nav className="hidden gap-4 md:flex">
@@ -85,18 +72,48 @@ const Navbar = () => {
         {/* Right side icons */}
         {isAuthenticated && user && (
           <div className="hidden items-center gap-4 md:flex">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="relative p-2 h-10 w-10 rounded-full border-0 gap-0 hover:bg-gold/10 hover:scale-105"
-            >
-              <Bell className="h-6 w-6" />
-              {unreadCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs">
-                  {unreadCount}
-                </span>
-              )}
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label="Notificaciones"
+                  className="relative p-2 h-10 w-10 rounded-full border-0 gap-0 hover:bg-gold/10 hover:scale-105"
+                >
+                  <Bell className="h-6 w-6" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs">
+                      {unreadCount}
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuItem
+                  onSelect={markAllRead}
+                  className="text-xs justify-center text-[color:var(--gold)]"
+                >
+                  Marcar todas como leídas
+                </DropdownMenuItem>
+                <ScrollArea className="h-40">
+                  {notifications.length === 0 ? (
+                    <div className="p-2 text-sm text-center text-muted-foreground">
+                      Sin notificaciones
+                    </div>
+                  ) : (
+                    notifications.map(n => (
+                      <DropdownMenuItem
+                        key={n.id}
+                        onSelect={() => markAsRead(n.id)}
+                        className={n.read ? '' : 'font-bold'}
+                      >
+                        {n.message}
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </ScrollArea>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -123,61 +140,6 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="border-t border-white/20 pb-4 md:hidden">
-          <nav className="container mx-auto flex flex-col gap-2 pt-4">
-            {navItems.map(({ href, label, icon }) => (
-              <ActiveLink
-                key={href}
-                href={href}
-                label={label}
-                icon={icon}
-                badge={href === '/chat' && hasActiveChat}
-                className="gap-2 px-3 py-2 fantasy-text"
-              />
-            ))}
-            {isAuthenticated && user && (
-              <div className="flex items-center gap-3 pt-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="relative p-2 h-10 w-10 rounded-full border-0 gap-0 hover:bg-gold/10 hover:scale-105"
-                >
-                  <Bell className="h-6 w-6" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs">
-                      {unreadCount}
-                    </span>
-                  )}
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-0 h-auto w-auto rounded-full gap-0 hover:scale-105"
-                    >
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatarUrl} alt={user.username} />
-                        <AvatarFallback>{user.username?.[0] || 'U'}</AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuLabel>Mi cuenta</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile">Perfil</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={logout}>Cerrar sesión</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            )}
-          </nav>
-        </div>
-      )}
     </header>
   );
 };
