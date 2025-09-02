@@ -24,7 +24,7 @@ const AppLayout = ({ children, mainClassName }: AppLayoutProps) => {
         </div>
         <main
           className={cn(
-            'flex-grow container mx-auto px-4 pt-16 pb-24 md:pt-8 md:pb-8 md:px-6 lg:px-8 lg:py-10 animate-fade-in-up',
+            'flex-grow container mx-auto px-4 pt-20 pb-24 md:pt-8 md:pb-8 md:px-6 lg:px-8 lg:py-10 animate-fade-in-up',
             mainClassName
           )}
         >

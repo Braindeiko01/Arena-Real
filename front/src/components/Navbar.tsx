@@ -45,7 +45,7 @@ const Navbar = () => {
 
   return (
     <header className="navbar sticky top-0 z-50">
-      <div className="container mx-auto flex items-center justify-between py-3">
+      <div className="container mx-auto flex items-center justify-between py-4">
         {/* Logo */}
         <Link
           href="/home"
