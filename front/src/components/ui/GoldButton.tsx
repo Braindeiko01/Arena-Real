@@ -1,0 +1,18 @@
+'use client';
+
+import { ButtonHTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+interface GoldButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {}
+
+export function GoldButton({ className, ...props }: GoldButtonProps) {
+  return (
+    <button
+      className={cn(
+        'w-full select-none rounded-xl px-5 py-3 text-base font-semibold text-[#15181D] transition-all duration-200 [background:linear-gradient(180deg,#F6E7AA,#F5D36C_40%,#D9A441)] shadow-[0_6px_16px_rgba(0,0,0,.35)] hover:-translate-y-0.5 hover:shadow-[0_10px_26px_rgba(245,211,108,.20)] active:translate-y-0 active:brightness-95 focus:outline-none focus:ring-2 focus:ring-[#F5D36C]/50 disabled:opacity-50 disabled:pointer-events-none',
+        className
+      )}
+      {...props}
+    />
+  );
+}
