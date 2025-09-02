@@ -7,18 +7,18 @@
   [data-theme='theme-arena'] {
     /* Design tokens */
     --bg-0: #0b0f14;
-    --bg-1: #111418;
+    --bg-1: #0e1318;
     --bg-2: #0f141a;
-    --gold-1: #ffd369;
-    --gold-2: #d4af37;
-    --gold-3: #b98c2a;
+    --gold-1: #f5d36c;
+    --gold-2: #d9a441;
+    --gold-3: #b8860b;
     --text-1: #ece8d9;
-    --text-2: #c9c6b8;
-    --text-3: #8f8b79;
-    --line: rgba(255, 255, 255, 0.08);
-    --glow: rgba(212, 175, 55, 0.45);
-    --radius-xl: 0.75rem;
-    --radius-2xl: 1rem;
+    --text-2: #c9cfd6;
+    --text-3: #8a919e;
+    --line: #232830;
+    --glow: rgba(245, 211, 108, 0.45);
+    --radius-xl: 1rem;
+    --radius-2xl: 1.25rem;
     --shadow-glow: 0 10px 30px -20px var(--glow);
     --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     /* Legacy variables for existing styles */

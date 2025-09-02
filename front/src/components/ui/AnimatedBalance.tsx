@@ -20,7 +20,7 @@ export function AnimatedBalance({ value }: AnimatedBalanceProps) {
   }, [value]);
 
   return (
-    <span className="text-5xl font-bold text-gold-1 leading-none drop-shadow-[0_0_6px_var(--glow)]">
+    <span className="text-[40px] font-bold text-gold-1 leading-none drop-shadow-[0_0_6px_var(--glow)]">
       {new Intl.NumberFormat('es-CO', {
         style: 'currency',
         currency: 'COP',
