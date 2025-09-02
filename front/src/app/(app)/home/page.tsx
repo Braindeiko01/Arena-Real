@@ -357,7 +357,7 @@ const HomePageContent = () => {
     if (result.transaction) {
       toast({
         title: '¡Solicitud de Depósito Recibida!',
-        description: `Has solicitado un depósito de ${new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(amount)}. Tu comprobante (${depositScreenshotFile.name}) está siendo revisado. Tu saldo se actualizará una vez verificado (ID Transacción: ${result.transaction.id}).`,
+        description: `Has solicitado un depósito de ${new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(amount)}. Tu comprobante está siendo revisado. Tu saldo se actualizará una vez verificado (ID Transacción: ${result.transaction.id}).`,
         variant: 'success',
       });
       await refreshUser();
