@@ -485,11 +485,11 @@ const HomePageContent = () => {
     }
   };
 
-  return (
-    <div className="space-y-8">
-      <Card className="space-y-4 p-4 md:p-6">
-        <div className="flex items-center gap-4">
-          <Avatar className="h-16 w-16">
+    return (
+      <div className="space-y-6">
+        <Card className="space-y-4 p-5 md:p-6">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-12 w-12 ring-2 ring-[#F5D36C]/30">
             <AvatarImage
               src={
                 user.avatarUrl ||
@@ -498,7 +498,7 @@ const HomePageContent = () => {
               alt={user.username}
               data-ai-hint="gaming avatar"
             />
-            <AvatarFallback className="text-3xl">
+            <AvatarFallback className="text-xl">
               {user.username?.[0] || 'U'}
             </AvatarFallback>
           </Avatar>
@@ -510,14 +510,14 @@ const HomePageContent = () => {
             <CardDescription>¡Bienvenido de nuevo, Gladiador!</CardDescription>
           </div>
         </div>
-        <Card
-          variant="alt"
-          className="flex flex-col items-center text-center p-6 gap-4 card-saldo-animate"
-        >
-          <SaldoIcon className="h-6 w-6 text-gold-1" />
-          <AnimatedBalance value={user.balance} />
-          <span className="text-xs text-text-3 uppercase">Saldo actual</span>
-          <div className="mt-4 flex w-full flex-col gap-3">
+          <Card
+            variant="alt"
+            className="flex flex-col items-center text-center p-6 gap-4 card-saldo-animate"
+          >
+            <SaldoIcon className="h-6 w-6 text-gold-1" />
+            <AnimatedBalance value={user.balance} />
+            <span className="text-sm text-[#8A919E] uppercase tracking-[0.02em]">Saldo actual</span>
+            <div className="mt-4 flex w-full flex-col gap-3">
             <GoldButton
               onClick={handleOpenDepositModal}
               aria-busy={isDepositLoading}
@@ -540,39 +540,39 @@ const HomePageContent = () => {
         </Card>
       </Card>
 
-      <Card className="max-w-[920px] mx-auto">
-        <CardHeader className="items-center text-center space-y-3">
-          <Badge className="gap-2">
-            <Swords className="h-5 w-5 text-gold-1" aria-label="duelos" />
-            <motion.span
-              animate={{ scale: [1, 1.3, 1] }}
-              transition={{
-                repeat: Infinity,
-                duration: 1.2,
-                ease: 'easeInOut',
-              }}
-              className="inline-flex h-2 w-2 rounded-full bg-[#E24D4D]"
-            />
-            En vivo · Duelos
-          </Badge>
-          <CardTitle className="text-4xl font-headline text-gold-1">
-            Buscar Duelo
-          </CardTitle>
-          <CardDescription className="text-center text-text-2">
-            Inscripción $6.000 COP. Ganador recibe $10.800 COP. Requiere saldo ≥
-            $6.000.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex justify-center">
-          <DuelCTAButton
-            onClick={handleOpenModeModal}
-            className="sm:w-auto px-8 py-4 text-xl font-headline"
-            disabled={user.balance < 6000}
-          >
-            <Swords className="h-5 w-5" aria-hidden="true" /> Buscar Oponente
-          </DuelCTAButton>
-        </CardContent>
-      </Card>
+        <Card className="max-w-[920px] mx-auto">
+          <CardHeader className="items-center text-center space-y-3">
+            <Badge className="gap-2 rounded-[12px] bg-[#1A1F26] text-[#D9A441]">
+              <Swords className="h-5 w-5 text-gold-1" aria-label="duelos" />
+              <motion.span
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.2,
+                  ease: 'easeInOut',
+                }}
+                className="inline-flex h-2 w-2 rounded-full bg-[#E24D4D]"
+              />
+              En vivo · Duelos
+            </Badge>
+            <CardTitle className="text-3xl font-headline text-gold-1">
+              Buscar Duelo
+            </CardTitle>
+            <CardDescription className="text-center text-[#C9CFD6] text-sm">
+              Inscripción $6.000 COP. Ganador recibe $10.800 COP. Requiere saldo ≥
+              $6.000.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <DuelCTAButton
+              onClick={handleOpenModeModal}
+              className="sm:w-auto px-8 text-lg font-headline flex items-center gap-2"
+              disabled={user.balance < 6000}
+            >
+              <Swords className="h-5 w-5" aria-hidden="true" /> Buscar Oponente
+            </DuelCTAButton>
+          </CardContent>
+        </Card>
 
       {/* Mode Select Modal */}
       {isModeModalOpen && (
