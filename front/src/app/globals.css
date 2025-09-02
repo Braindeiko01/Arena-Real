@@ -7,20 +7,22 @@
   [data-theme='theme-arena'] {
     /* Design tokens */
     --bg-0: #0b0f14;
-    --bg-1: #111418;
+    --bg-1: #0e1318;
     --bg-2: #0f141a;
-    --gold-1: #ffd369;
-    --gold-2: #d4af37;
-    --gold-3: #b98c2a;
+    --gold-1: #f5d36c;
+    --gold-2: #d9a441;
+    --gold-3: #b8860b;
     --text-1: #ece8d9;
-    --text-2: #c9c6b8;
-    --text-3: #8f8b79;
-    --line: rgba(255, 255, 255, 0.08);
-    --glow: rgba(212, 175, 55, 0.45);
-    --radius-xl: 0.75rem;
-    --radius-2xl: 1rem;
+    --text-2: #c9cfd6;
+    --text-3: #8a919e;
+    --line: #232830;
+    --glow: rgba(245, 211, 108, 0.45);
+    --radius-xl: 1rem;
+    --radius-2xl: 1.25rem;
     --shadow-glow: 0 10px 30px -20px var(--glow);
     --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --shadow-cta: 0 6px 16px rgba(0, 0, 0, 0.35),
+      0 8px 24px rgba(245, 211, 108, 0.12);
     /* Legacy variables for existing styles */
     --bg: var(--bg-0);
     --bg-end: var(--bg-1);
@@ -134,7 +136,6 @@
     background: var(--bg-1);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-glow);
     padding: 16px;
   }
   [data-theme='theme-arena'] .card--alt {
@@ -158,7 +159,7 @@
     gap: 8px;
     height: 44px;
     padding: 0 16px;
-    border-radius: 14px;
+    border-radius: var(--radius-2xl);
     font-weight: 700;
     transform: scale(0.98);
     transition:
@@ -168,7 +169,7 @@
   }
   [data-theme='theme-arena'] .btn:hover {
     transform: scale(1.02);
-    box-shadow: 0 0 12px var(--glow);
+    box-shadow: 0 0 24px rgba(245, 211, 108, 0.25);
   }
   [data-theme='theme-arena'] .btn:active {
     transform: scale(0.98) translateY(1px);
@@ -181,9 +182,10 @@
     background: linear-gradient(180deg, var(--gold-1) 0%, var(--gold-2) 100%);
     color: black;
     border: 1px solid var(--gold-3);
+    box-shadow: var(--shadow-cta);
   }
   [data-theme='theme-arena'] .btn--primary:hover {
-    box-shadow: 0 0 15px var(--glow);
+    box-shadow: 0 0 24px rgba(245, 211, 108, 0.25);
   }
   [data-theme='theme-arena'] .btn--outline {
     background: transparent;
