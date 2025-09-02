@@ -44,7 +44,7 @@ const Navbar = () => {
   const { notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
 
   return (
-    <header className="navbar">
+    <header className="navbar sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between py-3">
         {/* Logo */}
         <Link
