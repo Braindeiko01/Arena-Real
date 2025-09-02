@@ -120,13 +120,13 @@ const HistoryPageContent = () => {
               </CardDescription>
             </div>
             <Badge
-              className={`capitalize ${
+              className={
                 bet.result === 'win'
                   ? '!bg-success !text-bg'
                   : bet.result === 'loss'
                   ? '!bg-error !text-bg'
                   : ''
-              }`}
+              }
             >
               {statusLabel}
             </Badge>
