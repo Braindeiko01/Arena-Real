@@ -31,20 +31,26 @@ public class ReferralRewardService {
     }
 
     private void creditForPlayer(Jugador jugador, Partida partida) {
-        if (jugador == null || jugador.getReferredBy() == null) {
+        if (jugador == null) {
             return;
         }
-        jugadorRepository.findById(jugador.getReferredBy()).filter(Jugador::isHasPlayed).ifPresent(inviter -> {
-            ReferralReward reward = ReferralReward.builder()
-                    .inviter(inviter)
-                    .referred(jugador)
-                    .partida(partida)
-                    .amount(REWARD_AMOUNT)
-                    .creditedAt(LocalDateTime.now())
-                    .build();
-            rewardRepository.save(reward);
-            saldoService.acreditarSaldo(inviter.getId(), REWARD_AMOUNT);
-        });
+
+        if (jugador.getReferredBy() != null) {
+            jugadorRepository.findById(jugador.getReferredBy())
+                    .filter(Jugador::isHasPlayed)
+                    .ifPresent(inviter -> {
+                        ReferralReward reward = ReferralReward.builder()
+                                .inviter(inviter)
+                                .referred(jugador)
+                                .partida(partida)
+                                .amount(REWARD_AMOUNT)
+                                .creditedAt(LocalDateTime.now())
+                                .build();
+                        rewardRepository.save(reward);
+                        saldoService.acreditarSaldo(inviter.getId(), REWARD_AMOUNT);
+                    });
+        }
+
         if (!jugador.isHasPlayed()) {
             jugador.setHasPlayed(true);
             jugadorRepository.save(jugador);
