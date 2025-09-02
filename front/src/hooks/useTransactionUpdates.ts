@@ -74,6 +74,17 @@ export default function useTransactionUpdates() {
         await refreshUser();
       });
 
+      es.addEventListener('referral-registered', (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data) as { id: string; nombre: string };
+          const msg = `El usuario ${data.nombre} ha usado tu código de referido.`;
+          toast({ title: 'Nuevo referido', description: msg, variant: 'success' });
+          addNotification(msg);
+        } catch (err) {
+          console.error('Error procesando evento de referido', err);
+        }
+      });
+
       es.onerror = (err: Event) => {
         console.error('SSE error:', err);
         if (connectedRef.current) {
