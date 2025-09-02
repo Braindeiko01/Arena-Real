@@ -59,7 +59,12 @@ public class ChatService {
     }
 
     public UUID crearChat(String jugador1Id, String jugador2Id) {
-        return crearChatParaPartida(jugador1Id, jugador2Id);
+        return chatRepository.findBetween(jugador1Id, jugador2Id)
+                .map(chat -> {
+                    log.info("Reutilizando chat existente {} entre {} y {}", chat.getId(), jugador1Id, jugador2Id);
+                    return chat.getId();
+                })
+                .orElseGet(() -> crearChatParaPartida(jugador1Id, jugador2Id));
     }
 
     public void cerrarChat(UUID chatId) {
