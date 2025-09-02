@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -37,6 +37,8 @@ const completeProfileSchema = z.object({
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlRef = searchParams.get('ref') || '';
   const auth = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -49,9 +51,15 @@ export default function RegisterPage() {
       username: '',
       phone: '',
       friendLink: '',
-      referralCode: '',
+      referralCode: urlRef,
     },
   });
+
+  useEffect(() => {
+    if (urlRef) {
+      form.setValue('referralCode', urlRef);
+    }
+  }, [urlRef, form]);
 
   useEffect(() => {
     if (auth.isAuthenticated) {
@@ -82,10 +90,10 @@ export default function RegisterPage() {
         username: googleAuthData.username || '',
         phone: '',
         friendLink: '',
-        referralCode: '',
+        referralCode: urlRef,
       });
     }
-  }, [step, googleAuthData, form]);
+  }, [step, googleAuthData, form, urlRef]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -177,7 +185,7 @@ export default function RegisterPage() {
     setStep(1);
     setGoogleAuthData(null);
     sessionStorage.removeItem('pendingGoogleAuthData');
-    form.reset({ username: '', phone: '', friendLink: '', referralCode: '' });
+    form.reset({ username: '', phone: '', friendLink: '', referralCode: urlRef });
   }
 
   return (

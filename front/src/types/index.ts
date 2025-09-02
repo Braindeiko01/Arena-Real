@@ -104,6 +104,11 @@ export interface BackendMatchmakingResponseDto {
   jugadorOponenteAvatarUrl?: string;
 }
 
+export interface BackendReferralDetail {
+  referredName: string;
+  amount: number;
+}
+
 
 // Tipos de la Aplicación Frontend
 
@@ -187,4 +192,9 @@ export interface Notification {
   message: string;
   read: boolean;
   createdAt: string;
+}
+
+export interface ReferralDetail {
+  name: string;
+  amount: number;
 }
