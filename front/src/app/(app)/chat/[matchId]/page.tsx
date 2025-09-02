@@ -527,8 +527,15 @@ const ChatPageContent = () => {
 
 
 export default function ChatPage() {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   return (
-    <AppLayout>
+    <AppLayout mainClassName="flex flex-col items-center justify-center p-0 overflow-hidden">
       <ChatPageContent />
     </AppLayout>
   );
