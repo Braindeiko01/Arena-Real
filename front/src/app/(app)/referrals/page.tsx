@@ -7,19 +7,23 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { Copy as CopyIcon } from 'lucide-react';
-import { getReferralEarningsAction } from '@/lib/actions';
+import { getReferralDetailsAction, getReferralEarningsAction } from '@/lib/actions';
+import type { ReferralDetail } from '@/types';
 
 export default function ReferralsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [total, setTotal] = useState<number | null>(null);
   const [referralLink, setReferralLink] = useState('');
+  const [referrals, setReferrals] = useState<ReferralDetail[]>([]);
 
   useEffect(() => {
     const load = async () => {
       if (!user) return;
       const result = await getReferralEarningsAction(user.id);
       if (result.total !== null) setTotal(result.total);
+      const details = await getReferralDetailsAction(user.id);
+      if (details.referrals) setReferrals(details.referrals);
       if (typeof window !== 'undefined') {
         setReferralLink(`${window.location.origin}/register?ref=${user.referralCode}`);
       }
@@ -57,7 +61,33 @@ export default function ReferralsPage() {
               <CopyIcon className="h-4 w-4" />
             </Button>
           </div>
-          <p>Total ganado: {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(total ?? 0)}</p>
+          <p>
+            Total ganado:{' '}
+            {new Intl.NumberFormat('es-CO', {
+              style: 'currency',
+              currency: 'COP',
+              minimumFractionDigits: 0,
+            }).format(total ?? 0)}
+          </p>
+          {referrals.length > 0 && (
+            <div className="mt-4">
+              <p className="font-semibold">Usuarios referidos</p>
+              <ul className="space-y-1">
+                {referrals.map((r) => (
+                  <li key={r.name} className="flex justify-between">
+                    <span>{r.name}</span>
+                    <span>
+                      {new Intl.NumberFormat('es-CO', {
+                        style: 'currency',
+                        currency: 'COP',
+                        minimumFractionDigits: 0,
+                      }).format(r.amount)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </CardContent>
       </Card>
     </AppLayout>

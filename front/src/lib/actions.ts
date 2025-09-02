@@ -13,6 +13,8 @@ import type {
   BackendMatchmakingResponseDto,
   RegistrarUsuarioRequest,
   BackendPartidaResultadoRequestDto,
+  BackendReferralDetail,
+  ReferralDetail,
 } from '@/types'
 import { BACKEND_URL } from '@/lib/config'
 import { auth } from '@/lib/firebase'
@@ -422,5 +424,26 @@ export async function getReferralEarningsAction(
     return { total: data.total, error: null }
   } catch (err: any) {
     return { total: null, error: err.message || 'Error de red.' }
+  }
+}
+
+export async function getReferralDetailsAction(
+  userId: string,
+): Promise<{ referrals: ReferralDetail[]; error: string | null }> {
+  try {
+    const res = await authorizedFetch(
+      `${BACKEND_URL}/api/referrals/referred/${userId}`,
+    )
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      return { referrals: [], error: err.message || `Error ${res.status}` }
+    }
+    const data = (await res.json()) as BackendReferralDetail[]
+    return {
+      referrals: data.map((d) => ({ name: d.referredName, amount: d.amount })),
+      error: null,
+    }
+  } catch (err: any) {
+    return { referrals: [], error: err.message || 'Error de red.' }
   }
 }

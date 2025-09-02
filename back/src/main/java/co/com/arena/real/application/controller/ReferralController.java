@@ -4,6 +4,7 @@ import co.com.arena.real.application.service.JugadorService;
 import co.com.arena.real.application.service.ReferralRewardService;
 import co.com.arena.real.infrastructure.dto.rq.JugadorRequest;
 import co.com.arena.real.infrastructure.dto.rs.JugadorResponse;
+import co.com.arena.real.infrastructure.dto.rs.ReferralEarningResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -34,6 +36,17 @@ public class ReferralController {
     public ResponseEntity<Map<String, Object>> earnings(@PathVariable String userId) {
         BigDecimal total = rewardService.earningsForUser(userId);
         return ResponseEntity.ok(Map.of("total", total));
+    }
+
+    @GetMapping("/referrals/referred/{userId}")
+    public ResponseEntity<List<ReferralEarningResponse>> referred(@PathVariable String userId) {
+        List<ReferralEarningResponse> response = rewardService.rewardsForUser(userId).stream()
+                .map(r -> ReferralEarningResponse.builder()
+                        .referredName(r.getReferred().getNombre())
+                        .amount(r.getAmount())
+                        .build())
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
 }
