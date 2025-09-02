@@ -38,6 +38,7 @@ body { @apply font-sans antialiased; }
 
 /* ====== Botones ====== */
 .btn { @apply inline-flex items-center justify-center gap-2 font-semibold min-h-12; }
+.btn-lg { @apply text-lg px-6 py-3; }
 .btn-pill { @apply rounded-full; }
 .btn-ghost { @apply border border-white/10 bg-white/5; }
 

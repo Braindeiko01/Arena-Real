@@ -166,7 +166,7 @@
                   <h3 className="font-cinzel text-[24px] leading-tight text-[color:var(--gold-3)] m-0">¿Listo para combatir?</h3>
                   <p className="text-muted m-0 mt-2">Únete a los duelos en vivo.</p>
                 </div>
-                <div className="w-full max-w-[340px] grid grid-cols-1 gap-2">
+                <div className="w-full max-w-md grid grid-cols-1 gap-2">
                   <Link
                     href="/login"
                     className="btn btn-solid btn-lg btn-pill px-6 text-[#141414] text-center fantasy-text"
