@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -18,6 +19,7 @@ public class JugadorService {
 
     private final JugadorRepository jugadorRepository;
     private final JugadorMapper jugadorMapper;
+    private final SseService sseService;
 
     public JugadorResponse registrarJugador(JugadorRequest dto) {
         if (jugadorRepository.existsByEmail(dto.getEmail())) {
@@ -30,11 +32,21 @@ public class JugadorService {
         // Mapeo de DTO A entidad
         Jugador jugador = jugadorMapper.toEntity(dto);
         jugador.setReferralCode(java.util.UUID.randomUUID().toString());
+        Jugador invitador = null;
         if (dto.getReferralCode() != null && !dto.getReferralCode().isBlank()) {
-            jugadorRepository.findByReferralCode(dto.getReferralCode())
-                    .ifPresent(inviter -> jugador.setReferredBy(inviter.getId()));
+            invitador = jugadorRepository.findByReferralCode(dto.getReferralCode()).orElse(null);
+            if (invitador != null) {
+                jugador.setReferredBy(invitador.getId());
+            }
         }
         Jugador saved = jugadorRepository.save(jugador);
+        if (invitador != null) {
+            Map<String, String> payload = Map.of(
+                    "id", saved.getId(),
+                    "nombre", saved.getNombre()
+            );
+            sseService.sendEvent(invitador.getId(), "referral-registered", payload);
+        }
         return jugadorMapper.toDto(saved);
     }
 
