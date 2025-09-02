@@ -558,18 +558,33 @@ const HomePageContent = () => {
             <CardTitle className="text-3xl font-headline text-gold-1">
               Buscar Duelo
             </CardTitle>
-            <CardDescription className="text-center text-[#C9CFD6] text-sm">
-              Inscripción $6.000 COP. Ganador recibe $10.800 COP. Requiere saldo ≥
-              $6.000.
-            </CardDescription>
           </CardHeader>
-          <CardContent className="flex justify-center">
+          <CardContent className="flex flex-col items-center gap-4">
+            <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+              <div className="flex flex-col items-center gap-1 rounded-md bg-[#1A1F26] p-3">
+                <p className="text-sm text-muted-foreground">Inscripción</p>
+                <div className="flex items-center gap-1">
+                  <Coins className="h-4 w-4 text-gold-1" />
+                  <p className="text-lg font-headline text-gold-1">$6.000</p>
+                </div>
+              </div>
+              <div className="flex flex-col items-center gap-1 rounded-md bg-[#1A1F26] p-3">
+                <p className="text-sm text-muted-foreground">Premio</p>
+                <div className="flex items-center gap-1">
+                  <Coins className="h-4 w-4 text-gold-1" />
+                  <p className="text-lg font-headline text-gold-1">$10.800 COP</p>
+                </div>
+              </div>
+            </div>
+            <p className="text-center text-[#C9CFD6] text-sm">
+              Requiere saldo ≥ $6.000.
+            </p>
             <DuelCTAButton
               onClick={handleOpenModeModal}
               className="sm:w-auto px-8 text-lg font-headline flex items-center gap-2"
               disabled={user.balance < 6000}
             >
-              <Swords className="h-5 w-5" aria-hidden="true" /> Buscar Oponente
+              <Swords className="h-5 w-5" aria-hidden="true" /> UNIRSE AL DUELO
             </DuelCTAButton>
           </CardContent>
         </Card>
