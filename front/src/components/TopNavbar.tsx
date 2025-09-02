@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/Button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import useNotifications from "@/hooks/useNotifications";
 
@@ -18,7 +19,10 @@ const TopNavbar = () => {
   const { user, logout } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllRead } =
     useNotifications();
-  const avatarSrc = (user as any)?.image || user?.avatarUrl;
+  const avatarSrc =
+    user?.avatarUrl && !user.avatarUrl.includes('googleusercontent')
+      ? user.avatarUrl
+      : undefined;
 
   return (
     <header className="md:hidden navbar h-16 px-4 py-3 flex justify-between items-center">
@@ -73,19 +77,18 @@ const TopNavbar = () => {
               size="sm"
               className="p-0 h-auto w-auto rounded-full gap-0 hover:scale-105"
             >
-              {avatarSrc ? (
-                <Image
-                  src={avatarSrc}
-                  alt={user?.username || "avatar"}
-                  width={32}
-                  height={32}
-                  className="w-8 h-8 rounded-full"
-                />
-              ) : (
-                <span className="rounded-full bg-[var(--gold)] text-bg w-8 h-8 flex items-center justify-center">
+              <Avatar className="h-8 w-8">
+                {avatarSrc && (
+                  <AvatarImage
+                    src={avatarSrc}
+                    alt={user?.username || 'avatar'}
+                    data-ai-hint="gaming avatar"
+                  />
+                )}
+                <AvatarFallback>
                   {user?.username?.[0]?.toUpperCase() || 'U'}
-                </span>
-              )}
+                </AvatarFallback>
+              </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
