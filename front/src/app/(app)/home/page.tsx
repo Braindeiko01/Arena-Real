@@ -486,7 +486,7 @@ const HomePageContent = () => {
   };
 
     return (
-      <div className="space-y-6">
+      <div className="w-full max-w-[920px] space-y-6">
         <Card className="space-y-4 p-5 md:p-6">
           <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12 ring-2 ring-[#F5D36C]/30">
@@ -888,7 +888,7 @@ const HomePageContent = () => {
 
 export default function HomePage() {
   return (
-    <AppLayout>
+    <AppLayout mainClassName="flex flex-col items-center justify-center animate-none">
       <HomePageContent />
     </AppLayout>
   );
