@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/Card';
 import { StatTile } from '@/components/ui/StatTile';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { CartoonButton } from '@/components/ui/CartoonButton';
 import { Input } from '@/components/ui/input';
@@ -40,6 +39,10 @@ import {
 import useMatchmakingSse, { MatchEventData } from '@/hooks/useMatchmakingSse';
 import { setLocalStorageItem } from '@/lib/storage';
 import { ACTIVE_CHAT_KEY } from '@/hooks/useActiveChat';
+import { GoldButton } from '@/components/ui/GoldButton';
+import { DuelCTAButton } from '@/components/ui/DuelCTAButton';
+import { AnimatedBalance } from '@/components/ui/AnimatedBalance';
+import { motion } from 'framer-motion';
 
 const HomePageContent = () => {
   const { user, refreshUser } = useAuth();
@@ -509,38 +512,30 @@ const HomePageContent = () => {
         </div>
         <Card
           variant="alt"
-          className="flex flex-col items-center text-center p-6 gap-4"
+          className="flex flex-col items-center text-center p-6 gap-4 card-saldo-animate"
         >
           <SaldoIcon className="h-6 w-6 text-gold-1" />
-          <span className="text-5xl font-bold text-gold-1 leading-none drop-shadow-[0_0_6px_var(--glow)]">
-            {new Intl.NumberFormat('es-CO', {
-              style: 'currency',
-              currency: 'COP',
-              minimumFractionDigits: 0,
-            }).format(user.balance)}
-          </span>
+          <AnimatedBalance value={user.balance} />
           <span className="text-xs text-text-3 uppercase">Saldo actual</span>
           <div className="mt-4 flex w-full flex-col gap-3">
-            <Button
-              variant="primary"
+            <GoldButton
               onClick={handleOpenDepositModal}
               aria-busy={isDepositLoading}
               disabled={isDepositLoading}
-              className="w-full rounded-full h-12 text-lg shadow-glow"
+              className="h-12 text-lg"
             >
               Depositar
-            </Button>
-            <Button
-              variant="primary"
+            </GoldButton>
+            <GoldButton
               onClick={handleOpenWithdrawModal}
               aria-busy={isWithdrawLoading}
               disabled={
                 user.balance === 0 || !user.nequiAccount || isWithdrawLoading
               }
-              className="w-full rounded-full h-12 text-lg shadow-glow"
+              className="h-12 text-lg"
             >
               Retirar
-            </Button>
+            </GoldButton>
           </div>
         </Card>
       </Card>
@@ -548,7 +543,17 @@ const HomePageContent = () => {
       <Card className="max-w-[920px] mx-auto">
         <CardHeader className="items-center text-center space-y-3">
           <Badge className="gap-2">
-            <Swords className="h-5 w-5 text-gold-1" aria-label="duelos" /> En vivo · Duelos
+            <Swords className="h-5 w-5 text-gold-1" aria-label="duelos" />
+            <motion.span
+              animate={{ scale: [1, 1.3, 1] }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.2,
+                ease: 'easeInOut',
+              }}
+              className="inline-flex h-2 w-2 rounded-full bg-[#E24D4D]"
+            />
+            En vivo · Duelos
           </Badge>
           <CardTitle className="text-4xl font-headline text-gold-1">
             Buscar Duelo
@@ -559,14 +564,13 @@ const HomePageContent = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center">
-          <Button
-            variant="primary"
+          <DuelCTAButton
             onClick={handleOpenModeModal}
-            className="w-full sm:w-auto px-8 py-4 text-xl font-headline shadow-glow"
+            className="sm:w-auto px-8 py-4 text-xl font-headline"
             disabled={user.balance < 6000}
           >
             <Swords className="h-5 w-5" aria-hidden="true" /> Buscar Oponente
-          </Button>
+          </DuelCTAButton>
         </CardContent>
       </Card>
 
