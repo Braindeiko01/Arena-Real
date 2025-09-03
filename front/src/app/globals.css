@@ -161,6 +161,7 @@
     padding: 0 16px;
     border-radius: var(--radius-2xl);
     font-weight: 700;
+    text-align: center;
     transform: scale(0.98);
     transition:
       transform 0.2s,
