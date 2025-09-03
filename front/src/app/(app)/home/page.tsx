@@ -900,7 +900,7 @@ export default function HomePage() {
 
   return (
     <AppLayout
-      mainClassName="flex flex-col pt-4 pb-8 md:pt-6 md:pb-10 overflow-hidden"
+      mainClassName="flex flex-col items-center justify-start md:justify-center pt-4 pb-8 md:pt-6 md:pb-10 overflow-hidden"
     >
       <HomePageContent />
     </AppLayout>
