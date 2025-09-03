@@ -83,19 +83,19 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 font-body animate-fade-in-up">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CrownIcon className="mx-auto h-16 w-16 text-accent mb-4" />
+            <CrownIcon className="mx-auto h-20 w-20 text-accent mb-4" />
             <CardTitle className="text-4xl">Iniciar Sesión</CardTitle>
             <CardDescription className="text-muted-foreground text-base">
             Accede a tu cuenta de Arena Real para continuar.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6 text-center space-y-4">
-          <CartoonButton 
-            onClick={handleGoogleLogin} 
-            className="w-full" 
-            variant="default" 
+          <CartoonButton
+            onClick={handleGoogleLogin}
+            className="w-full text-base"
+            variant="default"
             disabled={isLoading}
-            iconLeft={<GoogleIcon className="h-6 w-6"/>}
+            iconLeft={<GoogleIcon className="h-8 w-8"/>}
           >
             {isLoading ? 'Conectando...' : 'Iniciar Sesión con Google'}
           </CartoonButton>
