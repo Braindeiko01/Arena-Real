@@ -97,7 +97,7 @@ export default function LoginPage() {
             disabled={isLoading}
             iconLeft={<GoogleIcon className="h-8 w-8"/>}
           >
-            {isLoading ? 'Conectando...' : 'Iniciar Sesión con Google'}
+            {isLoading ? 'Conectando...' : 'Iniciar sesión'}
           </CartoonButton>
           <p className="text-sm text-muted-foreground">
             El inicio de sesión tradicional con teléfono y contraseña no está disponible. Por favor, usa Google.
