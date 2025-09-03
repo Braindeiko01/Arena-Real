@@ -511,11 +511,15 @@ const HomePageContent = () => {
         </div>
         <Card
           variant="alt"
-          className="flex items-center justify-between p-6 gap-4 card-saldo-animate"
+          className="flex items-center gap-3 p-4 w-fit mx-auto card-saldo-animate"
         >
-          <div className="flex flex-col items-start text-left">
-            <AnimatedBalance value={user.balance} />
-            <span className="text-sm text-[#8A919E] uppercase tracking-[0.02em]">Saldo actual</span>
+          <div className="flex flex-col items-center w-fit">
+            <div className="self-start">
+              <AnimatedBalance value={user.balance} />
+            </div>
+            <span className="text-sm text-[#8A919E] uppercase tracking-[0.02em]">
+              Saldo actual
+            </span>
           </div>
           <div className="flex flex-col gap-3">
             <GoldButton
