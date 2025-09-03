@@ -92,7 +92,7 @@ export default function LoginPage() {
         <CardContent className="p-6 text-center space-y-4">
           <CartoonButton
             onClick={handleGoogleLogin}
-            className="w-full text-base"
+            className="w-full text-base font-headline"
             variant="default"
             disabled={isLoading}
             iconLeft={<GoogleIcon className="h-8 w-8"/>}
