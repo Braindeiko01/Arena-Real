@@ -139,7 +139,7 @@ const ChatListPageContent = () => {
 
 export default function ChatListPage() {
   return (
-    <AppLayout>
+    <AppLayout mainClassName="pt-4 md:pt-6">
       <ChatListPageContent />
     </AppLayout>
   );
