@@ -173,7 +173,7 @@ const HistoryPageContent = () => {
       </CardHeader>
       <CardContent className="p-6">
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6 p-1.5 bg-secondary rounded-lg gap-1.5">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 justify-items-center mb-6 p-1.5 bg-secondary rounded-lg gap-1.5 overflow-x-auto">
             <TabsTrigger value="all" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-soft hover:bg-primary/20">Todos ({bets.length})</TabsTrigger>
             <TabsTrigger value="ganadas" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-green-500 data-[state=active]:text-white data-[state=active]:shadow-soft hover:bg-primary/20">Ganadas ({wonBets.length})</TabsTrigger>
             <TabsTrigger value="perdidas" className="py-2.5 px-3 text-base rounded-md data-[state=active]:bg-destructive data-[state=active]:text-destructive-foreground data-[state=active]:shadow-soft hover:bg-primary/20">Perdidas ({lostBets.length})</TabsTrigger>
