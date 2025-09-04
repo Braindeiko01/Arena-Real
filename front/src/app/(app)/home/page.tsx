@@ -676,10 +676,10 @@ const HomePageContent = () => {
 
 export default function HomePage() {
   return (
-    <AppLayout
-      mainClassName="flex flex-col items-stretch justify-start md:justify-center pt-4 pb-20 md:pt-6 md:pb-10"
-    >
-      <HomePageContent />
-    </AppLayout>
+      <AppLayout
+      mainClassName="flex flex-col items-stretch justify-start md:justify-center pb-20 md:pb-10"
+      >
+        <HomePageContent />
+      </AppLayout>
   );
 }

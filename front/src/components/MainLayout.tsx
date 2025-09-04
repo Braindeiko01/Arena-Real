@@ -10,7 +10,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     <AuthGuard>
       <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
         <TopNavbar />
-        <main className="flex-grow pt-20 pb-24 px-4">{children}</main>
+        <main className="flex-grow px-4 pt-4 pb-24 md:pt-6 md:pb-8">{children}</main>
         <BottomNav />
       </div>
     </AuthGuard>
