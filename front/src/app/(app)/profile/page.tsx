@@ -1,17 +1,33 @@
-
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { useAuth } from '@/hooks/useAuth';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/Card';
 import { StatTile } from '@/components/ui/StatTile';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CartoonButton } from '@/components/ui/CartoonButton';
-import { ShieldIcon as ClashTagIcon, Edit3, Save, Link as LinkIcon, User as UserLucideIcon } from 'lucide-react';
-import { NequiIcon, PhoneIcon, UserIcon as AppUserIcon } from '@/components/icons/ClashRoyaleIcons';
+import {
+  ShieldIcon as ClashTagIcon,
+  Edit3,
+  Save,
+  Link as LinkIcon,
+  User as UserLucideIcon,
+} from 'lucide-react';
+import {
+  NequiIcon,
+  PhoneIcon,
+  UserIcon as AppUserIcon,
+} from '@/components/icons/ClashRoyaleIcons';
 import { useToast } from '@/hooks/use-toast';
 import type { User } from '@/types';
 
@@ -31,22 +47,38 @@ const ProfilePageContent = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleEditToggle = () => {
     if (isEditing) {
-      if (formData.friendLink && !/^https:\/\/link\.clashroyale\.com\/invite\/friend\/es\?tag=[0289PYLQGRJCUV]{3,}&token=[a-z0-9]+&platform=(android|ios)$/.test(formData.friendLink)) {
-        toast({ title: "Error", description: "El formato del link de amigo de Clash Royale es inválido.", variant: "error" });
+      if (
+        formData.friendLink &&
+        !/^https:\/\/link\.clashroyale\.com\/invite\/friend\/es\?tag=[0289PYLQGRJCUV]{3,}&token=[a-z0-9]+&platform=(android|ios)$/.test(
+          formData.friendLink
+        )
+      ) {
+        toast({
+          title: 'Error',
+          description:
+            'El formato del link de amigo de Clash Royale es inválido.',
+          variant: 'error',
+        });
         return;
       }
 
       if (formData.nequiAccount && !/^\d{7,}$/.test(formData.nequiAccount)) {
-        toast({ title: "Error", description: "El número de teléfono Nequi debe tener al menos 7 dígitos y solo contener números.", variant: "error" });
+        toast({
+          title: 'Error',
+          description:
+            'El número de teléfono Nequi debe tener al menos 7 dígitos y solo contener números.',
+          variant: 'error',
+        });
         return;
       }
 
-      if (formData.clashTag && formData.nequiAccount && formData.username) { // Username added to condition
+      if (formData.clashTag && formData.nequiAccount && formData.username) {
+        // Username added to condition
         updateUser({
           username: formData.username, // Username is part of user data but not editable in this form
           clashTag: formData.clashTag,
@@ -54,20 +86,67 @@ const ProfilePageContent = () => {
           avatarUrl: formData.avatarUrl || user.avatarUrl,
           friendLink: formData.friendLink || '',
         });
-        toast({ title: "¡Perfil Actualizado!", description: "Tus cambios han sido guardados.", variant: "success" });
+        toast({
+          title: '¡Perfil Actualizado!',
+          description: 'Tus cambios han sido guardados.',
+          variant: 'success',
+        });
       } else {
-        toast({ title: "Error", description: "Los campos de Tag y Número de teléfono Nequi no pueden estar vacíos.", variant: "error" });
-        setFormData({ username: user.username, clashTag: user.clashTag, nequiAccount: user.nequiAccount, avatarUrl: user.avatarUrl, friendLink: user.friendLink });
+        toast({
+          title: 'Error',
+          description:
+            'Los campos de Tag y Número de teléfono Nequi no pueden estar vacíos.',
+          variant: 'error',
+        });
+        setFormData({
+          username: user.username,
+          clashTag: user.clashTag,
+          nequiAccount: user.nequiAccount,
+          avatarUrl: user.avatarUrl,
+          friendLink: user.friendLink,
+        });
       }
     } else {
-      setFormData({ username: user.username, clashTag: user.clashTag, nequiAccount: user.nequiAccount, avatarUrl: user.avatarUrl, friendLink: user.friendLink || '' });
+      setFormData({
+        username: user.username,
+        clashTag: user.clashTag,
+        nequiAccount: user.nequiAccount,
+        avatarUrl: user.avatarUrl,
+        friendLink: user.friendLink || '',
+      });
     }
     setIsEditing(!isEditing);
   };
 
-  const InfoRow = ({ icon, label, value, name, editingValue, onChange, isEditing, type = "text", placeholder, description, readOnly = false }: { icon: React.ReactNode, label: string, value: string, name?: string, editingValue?: string, onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void, isEditing?: boolean, type?: string, placeholder?: string, description?: string, readOnly?: boolean }) => (
+  const InfoRow = ({
+    icon,
+    label,
+    value,
+    name,
+    editingValue,
+    onChange,
+    isEditing,
+    type = 'text',
+    placeholder,
+    description,
+    readOnly = false,
+  }: {
+    icon: React.ReactNode;
+    label: string;
+    value: string;
+    name?: string;
+    editingValue?: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    isEditing?: boolean;
+    type?: string;
+    placeholder?: string;
+    description?: string;
+    readOnly?: boolean;
+  }) => (
     <div className="flex items-start space-x-4 py-3 border-b border-border last:border-b-0">
-      <div className="flex-shrink-0 w-8 h-8 text-primary flex items-center justify-center pt-1">{icon}</div>
+      <div className="flex-shrink-0 w-8 h-8 text-primary flex items-center justify-center pt-1">
+        {icon}
+      </div>
       <div className="flex-grow">
         <p className="text-sm text-muted-foreground">{label}</p>
         {isEditing && name && onChange && !readOnly ? (
@@ -81,10 +160,16 @@ const ProfilePageContent = () => {
               className="text-lg font-semibold border border-border focus:border-primary py-2 mt-1"
               readOnly={readOnly}
             />
-            {description && <p className="text-xs text-muted-foreground mt-1">{description}</p>}
+            {description && (
+              <p className="text-xs text-muted-foreground mt-1">
+                {description}
+              </p>
+            )}
           </>
         ) : (
-          <p className="text-lg font-semibold text-foreground break-all mt-0.5">{value || "-"}</p>
+          <p className="text-lg font-semibold text-foreground break-all mt-0.5">
+            {value || '-'}
+          </p>
         )}
       </div>
     </div>
@@ -95,8 +180,19 @@ const ProfilePageContent = () => {
       <Card className="overflow-hidden">
         <CardHeader className="bg-primary/10 text-center p-6">
           <Avatar className="h-32 w-32 mx-auto border-4 border-stroke shadow-soft mb-4">
-            <AvatarImage src={isEditing ? formData.avatarUrl : user.avatarUrl || `https://placehold.co/128x128.png?text=${user.username?.[0]?.toUpperCase() || 'U'}`} alt={user.username} data-ai-hint="gaming avatar large" />
-            <AvatarFallback className="text-5xl bg-primary/30 text-primary-foreground">{user.username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
+            <AvatarImage
+              src={
+                isEditing
+                  ? formData.avatarUrl
+                  : user.avatarUrl ||
+                    `https://placehold.co/128x128.png?text=${user.username?.[0]?.toUpperCase() || 'U'}`
+              }
+              alt={user.username}
+              data-ai-hint="gaming avatar large"
+            />
+            <AvatarFallback className="text-5xl bg-primary/30 text-primary-foreground">
+              {user.username?.[0]?.toUpperCase() || 'U'}
+            </AvatarFallback>
           </Avatar>
           {isEditing ? (
             <>
@@ -115,17 +211,38 @@ const ProfilePageContent = () => {
               />
             </>
           ) : (
-            <CardTitle className="text-4xl font-headline text-primary">{user.username}</CardTitle>
+            <CardTitle className="text-4xl font-headline text-primary">
+              {user.username}
+            </CardTitle>
           )}
-          <CardDescription className="text-muted-foreground mt-1 text-lg">Administra tu identidad en Arena Real.</CardDescription>
+          <CardDescription className="text-muted-foreground mt-1 text-lg">
+            Administra tu identidad en Arena Real.
+          </CardDescription>
         </CardHeader>
         <CardContent className="p-6 space-y-2">
-          <InfoRow icon={<AppUserIcon />} label="Nombre de Usuario" value={user.username} name="username" editingValue={formData.username} isEditing={isEditing} readOnly={true} />
-          <InfoRow icon={<PhoneIcon />} label="Teléfono Registrado (Principal)" value={user.phone} readOnly={true} />
+          <InfoRow
+            icon={<AppUserIcon />}
+            label="Nombre de Usuario"
+            value={user.username}
+            name="username"
+            editingValue={formData.username}
+            isEditing={isEditing}
+            readOnly={true}
+          />
+          <InfoRow
+            icon={<PhoneIcon />}
+            label="Teléfono Registrado (Principal)"
+            value={user.phone}
+            readOnly={true}
+          />
           <InfoRow
             icon={<NequiIcon />}
             label="Número de teléfono enlazado con Nequi"
-            value={isEditing && formData.nequiAccount ? formData.nequiAccount : user.nequiAccount}
+            value={
+              isEditing && formData.nequiAccount
+                ? formData.nequiAccount
+                : user.nequiAccount
+            }
             name="nequiAccount"
             editingValue={formData.nequiAccount}
             onChange={handleInputChange}
@@ -136,7 +253,9 @@ const ProfilePageContent = () => {
           <InfoRow
             icon={<ClashTagIcon />}
             label="Tag de Clash Royale"
-            value={isEditing && formData.clashTag ? formData.clashTag : user.clashTag}
+            value={
+              isEditing && formData.clashTag ? formData.clashTag : user.clashTag
+            }
             name="clashTag"
             editingValue={formData.clashTag}
             onChange={handleInputChange}
@@ -146,7 +265,11 @@ const ProfilePageContent = () => {
           <InfoRow
             icon={<LinkIcon />}
             label="Link de Amigo Clash Royale"
-            value={isEditing && formData.friendLink ? formData.friendLink : (user.friendLink || "No establecido")}
+            value={
+              isEditing && formData.friendLink
+                ? formData.friendLink
+                : user.friendLink || 'No establecido'
+            }
             name="friendLink"
             editingValue={formData.friendLink}
             onChange={handleInputChange}
@@ -156,7 +279,11 @@ const ProfilePageContent = () => {
           />
           <StatTile
             icon={<span className="text-2xl">💰</span>}
-            value={new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(user.balance)}
+            value={new Intl.NumberFormat('es-CO', {
+              style: 'currency',
+              currency: 'COP',
+              minimumFractionDigits: 0,
+            }).format(user.balance)}
             label="Saldo"
             className="py-3"
           />
@@ -164,7 +291,7 @@ const ProfilePageContent = () => {
         <CardFooter className="p-6">
           <CartoonButton
             onClick={handleEditToggle}
-            variant={isEditing ? "accent" : "default"}
+            variant={isEditing ? 'accent' : 'default'}
             className="w-full"
             iconLeft={isEditing ? <Save /> : <Edit3 />}
           >
@@ -178,7 +305,7 @@ const ProfilePageContent = () => {
 
 export default function ProfilePage() {
   return (
-    <AppLayout>
+    <AppLayout mainClassName="pt-0">
       <ProfilePageContent />
     </AppLayout>
   );
