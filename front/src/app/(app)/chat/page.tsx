@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -6,14 +6,23 @@ import { Trash2 } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import { useAuth } from '@/hooks/useAuth';
 import useFirestoreChats from '@/hooks/useFirestoreChats';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { BACKEND_URL } from '@/lib/config';
 
-interface OpponentInfo { id: string; name: string; }
+interface OpponentInfo {
+  id: string;
+  name: string;
+}
 
 const ChatListPageContent = () => {
   const { user } = useAuth();
@@ -33,17 +42,21 @@ const ChatListPageContent = () => {
   useEffect(() => {
     const loadOpponents = async () => {
       if (!user) return;
-      const ids = Array.from(new Set(
-        chats.map(c => c.jugadores.find(j => j !== user.id)).filter(Boolean)
-      )) as string[];
+      const ids = Array.from(
+        new Set(
+          chats
+            .map((c) => c.jugadores.find((j) => j !== user.id))
+            .filter(Boolean)
+        )
+      ) as string[];
       await Promise.all(
-        ids.map(async id => {
+        ids.map(async (id) => {
           if (opponents[id]) return;
           try {
             const res = await fetch(`${BACKEND_URL}/api/jugadores/${id}`);
             if (res.ok) {
               const data = await res.json();
-              setOpponents(prev => ({
+              setOpponents((prev) => ({
                 ...prev,
                 [id]: { id: data.id, name: data.nombre },
               }));
@@ -60,39 +73,56 @@ const ChatListPageContent = () => {
   if (!user) return <p>Cargando chats...</p>;
   if (error) return <p>Error al cargar chats.</p>;
 
-  const activeChats = chats.filter(c => c.activo);
-  const pastChats = chats.filter(c => !c.activo);
+  const activeChats = chats.filter((c) => c.activo);
+  const pastChats = chats.filter((c) => !c.activo);
 
   return (
     <Card className="overflow-hidden">
       <CardHeader className="bg-primary/10">
-        <CardTitle className="text-3xl font-headline text-primary">Chats</CardTitle>
+        <CardTitle className="text-3xl font-headline text-primary">
+          Chats
+        </CardTitle>
         <CardDescription className="text-muted-foreground text-lg pt-1">
           Conversaciones de tus partidas
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4 space-y-6">
         {error ? (
-          <p className="text-center text-destructive">Ocurrió un error al cargar los chats.</p>
+          <p className="text-center text-destructive">
+            Ocurrió un error al cargar los chats.
+          </p>
         ) : activeChats.length === 0 && pastChats.length === 0 ? (
-          <p className="text-center text-muted-foreground py-8">No tienes chats todavía.</p>
+          <p className="text-center text-muted-foreground py-8">
+            No tienes chats todavía.
+          </p>
         ) : (
           <>
             {activeChats.length > 0 && (
               <div>
                 <h3 className="text-xl font-semibold mb-2">Chat activo</h3>
                 <ul className="space-y-3">
-                  {activeChats.map(chat => {
-                    const opponentId = chat.jugadores.find(j => j !== user.id) as string | undefined;
-                    const opponent = opponentId ? opponents[opponentId] : undefined;
-                    const name = opponent ? opponent.name : opponentId || 'Oponente';
+                  {activeChats.map((chat) => {
+                    const opponentId = chat.jugadores.find(
+                      (j) => j !== user.id
+                    ) as string | undefined;
+                    const opponent = opponentId
+                      ? opponents[opponentId]
+                      : undefined;
+                    const name = opponent
+                      ? opponent.name
+                      : opponentId || 'Oponente';
                     const href = `/chat/${chat.id}?opponentTag=${encodeURIComponent(name)}&opponentGoogleId=${encodeURIComponent(opponentId ?? '')}`;
                     return (
                       <li key={chat.id}>
-                        <Link href={href} className="block border rounded-lg p-3 hover:bg-primary/10">
+                        <Link
+                          href={href}
+                          className="block border rounded-lg p-3 hover:bg-primary/10"
+                        >
                           <div className="flex justify-between items-center">
                             <span className="font-medium">{name}</span>
-                            {chat.activo && <Badge className="ml-2">En curso</Badge>}
+                            {chat.activo && (
+                              <Badge className="ml-2">En curso</Badge>
+                            )}
                           </div>
                         </Link>
                       </li>
@@ -105,14 +135,26 @@ const ChatListPageContent = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-2">Chats anteriores</h3>
                 <ul className="space-y-3">
-                  {pastChats.map(chat => {
-                    const opponentId = chat.jugadores.find(j => j !== user.id) as string | undefined;
-                    const opponent = opponentId ? opponents[opponentId] : undefined;
-                    const name = opponent ? opponent.name : opponentId || 'Oponente';
+                  {pastChats.map((chat) => {
+                    const opponentId = chat.jugadores.find(
+                      (j) => j !== user.id
+                    ) as string | undefined;
+                    const opponent = opponentId
+                      ? opponents[opponentId]
+                      : undefined;
+                    const name = opponent
+                      ? opponent.name
+                      : opponentId || 'Oponente';
                     const href = `/chat/${chat.id}?opponentTag=${encodeURIComponent(name)}&opponentGoogleId=${encodeURIComponent(opponentId ?? '')}`;
                     return (
-                      <li key={chat.id} className="flex items-center justify-between gap-2">
-                        <Link href={href} className="flex-1 border rounded-lg p-3 hover:bg-primary/10">
+                      <li
+                        key={chat.id}
+                        className="flex items-center justify-between gap-2"
+                      >
+                        <Link
+                          href={href}
+                          className="flex-1 border rounded-lg p-3 hover:bg-primary/10"
+                        >
                           <span className="font-medium">{name}</span>
                         </Link>
                         <Button
@@ -139,7 +181,7 @@ const ChatListPageContent = () => {
 
 export default function ChatListPage() {
   return (
-    <AppLayout mainClassName="pt-4 md:pt-6">
+    <AppLayout mainClassName="pt-0">
       <ChatListPageContent />
     </AppLayout>
   );

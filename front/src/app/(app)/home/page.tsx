@@ -883,7 +883,7 @@ const HomePageContent = () => {
 
 export default function HomePage() {
   return (
-    <AppLayout mainClassName="flex flex-col items-center justify-center p-0">
+    <AppLayout mainClassName="flex flex-col items-center justify-center p-0 overflow-hidden">
       <HomePageContent />
     </AppLayout>
   );

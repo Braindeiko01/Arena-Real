@@ -263,7 +263,7 @@ const HistoryPageContent = () => {
 
 export default function HistoryPage() {
   return (
-    <AppLayout mainClassName="pt-6">
+    <AppLayout mainClassName="pt-0">
       <HistoryPageContent />
     </AppLayout>
   );

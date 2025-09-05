@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import AppLayout from '@/components/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -7,7 +7,10 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { Copy as CopyIcon } from 'lucide-react';
-import { getReferralDetailsAction, getReferralEarningsAction } from '@/lib/actions';
+import {
+  getReferralDetailsAction,
+  getReferralEarningsAction,
+} from '@/lib/actions';
 import type { ReferralDetail } from '@/types';
 
 export default function ReferralsPage() {
@@ -25,7 +28,9 @@ export default function ReferralsPage() {
       const details = await getReferralDetailsAction(user.id);
       if (details.referrals) setReferrals(details.referrals);
       if (typeof window !== 'undefined') {
-        setReferralLink(`${window.location.origin}/register?ref=${user.referralCode}`);
+        setReferralLink(
+          `${window.location.origin}/register?ref=${user.referralCode}`
+        );
       }
     };
     load();
@@ -34,16 +39,24 @@ export default function ReferralsPage() {
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast({ title: 'Copiado', description: 'Texto copiado al portapapeles', variant: 'success' });
+      toast({
+        title: 'Copiado',
+        description: 'Texto copiado al portapapeles',
+        variant: 'success',
+      });
     } catch (e) {
-      toast({ title: 'Error', description: 'No se pudo copiar', variant: 'error' });
+      toast({
+        title: 'Error',
+        description: 'No se pudo copiar',
+        variant: 'error',
+      });
     }
   };
 
   if (!user) return <p>Cargando...</p>;
 
   return (
-    <AppLayout>
+    <AppLayout mainClassName="pt-0">
       <Card>
         <CardHeader>
           <CardTitle>Mis Referidos</CardTitle>
@@ -51,13 +64,20 @@ export default function ReferralsPage() {
         <CardContent className="space-y-2">
           <div className="flex items-center gap-2">
             <p className="break-all flex-1">Tu código: {user.referralCode}</p>
-            <Button size="sm" onClick={() => handleCopy(user.referralCode || '')}>
+            <Button
+              size="sm"
+              onClick={() => handleCopy(user.referralCode || '')}
+            >
               <CopyIcon className="h-4 w-4" />
             </Button>
           </div>
           <div className="flex items-center gap-2">
             <p className="break-all flex-1">Link: {referralLink}</p>
-            <Button size="sm" onClick={() => handleCopy(referralLink)} disabled={!referralLink}>
+            <Button
+              size="sm"
+              onClick={() => handleCopy(referralLink)}
+              disabled={!referralLink}
+            >
               <CopyIcon className="h-4 w-4" />
             </Button>
           </div>
