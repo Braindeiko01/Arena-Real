@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
-import { Bell } from "@/components/icons/lazy";
+import Link from 'next/link';
+import Image from 'next/image';
+import { Bell } from '@/components/icons/lazy';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAuth } from "@/hooks/useAuth";
-import useNotifications from "@/hooks/useNotifications";
+} from '@/components/ui/dropdown-menu';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/hooks/useAuth';
+import useNotifications from '@/hooks/useNotifications';
 
 const TopNavbar = () => {
   const { user, logout } = useAuth();
@@ -26,7 +26,13 @@ const TopNavbar = () => {
   return (
     <header className="navbar fixed top-0 left-0 right-0 z-50 h-20 px-4 py-4 flex justify-between items-center">
       <div className="flex items-center gap-1 font-bold text-lg text-[color:var(--gold)] fantasy-text">
-        <Image src="/logo.png" alt="Arena Real logo" width={32} height={32} className="h-8 w-8" />
+        <Image
+          src="/logo.png"
+          alt="Arena Real logo"
+          width={32}
+          height={32}
+          className="h-8 w-8"
+        />
         Arena Real
       </div>
 
@@ -35,7 +41,7 @@ const TopNavbar = () => {
           <DropdownMenuTrigger asChild>
             <button
               aria-label="Notificaciones"
-              className="relative p-2 rounded-full hover:scale-105 focus:outline-none bg-transparent"
+              className="relative hover:scale-105 focus:outline-none bg-transparent"
             >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
@@ -52,9 +58,11 @@ const TopNavbar = () => {
             </DropdownMenuItem>
             <ScrollArea className="h-40">
               {notifications.length === 0 ? (
-                <div className="p-2 text-sm text-center text-muted-foreground">Sin notificaciones</div>
+                <div className="p-2 text-sm text-center text-muted-foreground">
+                  Sin notificaciones
+                </div>
               ) : (
-                notifications.map(n => (
+                notifications.map((n) => (
                   <DropdownMenuItem
                     key={n.id}
                     onSelect={() => markAsRead(n.id)}
@@ -70,7 +78,7 @@ const TopNavbar = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="p-0 h-auto w-auto rounded-full hover:scale-105 focus:outline-none bg-transparent"
+              className="p-0 h-auto w-auto hover:scale-105 focus:outline-none bg-transparent"
               aria-label="Menú de usuario"
             >
               <Avatar className="h-8 w-8">

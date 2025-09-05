@@ -21,8 +21,8 @@
     --radius-2xl: 1.25rem;
     --shadow-glow: 0 10px 30px -20px var(--glow);
     --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    --shadow-cta: 0 6px 16px rgba(0, 0, 0, 0.35),
-      0 8px 24px rgba(245, 211, 108, 0.12);
+    --shadow-cta:
+      0 6px 16px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(245, 211, 108, 0.12);
     /* Legacy variables for existing styles */
     --bg: var(--bg-0);
     --bg-end: var(--bg-1);
@@ -241,9 +241,7 @@
     gap: 8px;
     color: var(--text-3);
     font-size: 11px;
-    min-width: 44px;
-    min-height: 44px;
-    padding: 8px 0;
+    padding: 4px 0;
     transition:
       transform 0.2s,
       color 0.2s;
