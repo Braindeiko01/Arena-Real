@@ -18,7 +18,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/Button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import ActiveLink from './ActiveLink';
@@ -44,7 +43,7 @@ const Navbar = () => {
   const { notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
 
   return (
-    <header className="navbar sticky top-0 z-50">
+    <header className="navbar sticky top-0 z-50 hidden md:block">
       <div className="container mx-auto flex items-center justify-between py-4">
         {/* Logo */}
         <Link
@@ -74,11 +73,9 @@ const Navbar = () => {
           <div className="hidden items-center gap-4 md:flex">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   aria-label="Notificaciones"
-                  className="relative p-2 h-10 w-10 rounded-full border-0 gap-0 hover:bg-gold/10 hover:scale-105"
+                  className="relative hover:scale-105 focus:outline-none bg-transparent"
                 >
                   <Bell className="h-6 w-6" />
                   {unreadCount > 0 && (
@@ -86,7 +83,7 @@ const Navbar = () => {
                       {unreadCount}
                     </span>
                   )}
-                </Button>
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64">
                 <DropdownMenuItem
@@ -116,16 +113,14 @@ const Navbar = () => {
             </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-0 h-auto w-auto rounded-full gap-0 hover:scale-105"
+                <button
+                  className="p-0 h-auto w-auto hover:scale-105 focus:outline-none bg-transparent"
                 >
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.avatarUrl} alt={user.username} />
                     <AvatarFallback>{user.username?.[0] || 'U'}</AvatarFallback>
                   </Avatar>
-                </Button>
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel>Mi cuenta</DropdownMenuLabel>

@@ -24,7 +24,7 @@ const TopNavbar = () => {
       : undefined;
 
   return (
-    <header className="navbar fixed top-0 left-0 right-0 z-50 h-20 px-4 py-4 flex justify-between items-center">
+    <header className="navbar fixed top-0 left-0 right-0 z-50 h-20 px-4 py-4 flex justify-between items-center md:hidden">
       <div className="flex items-center gap-1 font-bold text-lg text-[color:var(--gold)] fantasy-text">
         <Image
           src="/logo.png"
