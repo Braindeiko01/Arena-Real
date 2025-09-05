@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/Button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,7 +24,7 @@ const TopNavbar = () => {
       : undefined;
 
   return (
-    <header className="md:hidden navbar fixed top-0 left-0 right-0 z-50 h-20 px-4 py-4 flex justify-between items-center">
+    <header className="navbar fixed top-0 left-0 right-0 z-50 h-20 px-4 py-4 flex justify-between items-center">
       <div className="flex items-center gap-1 font-bold text-lg text-[color:var(--gold)] fantasy-text">
         <Image src="/logo.png" alt="Arena Real logo" width={32} height={32} className="h-8 w-8" />
         Arena Real
@@ -34,17 +33,15 @@ const TopNavbar = () => {
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               aria-label="Notificaciones"
-              className="relative p-2 h-10 w-10 rounded-full border-0 gap-0"
+              className="relative p-2 rounded-full hover:scale-105 focus:outline-none bg-transparent"
             >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
               )}
-            </Button>
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
             <DropdownMenuItem
@@ -72,10 +69,9 @@ const TopNavbar = () => {
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-0 h-auto w-auto rounded-full gap-0 hover:scale-105"
+            <button
+              className="p-0 h-auto w-auto rounded-full hover:scale-105 focus:outline-none bg-transparent"
+              aria-label="Menú de usuario"
             >
               <Avatar className="h-8 w-8">
                 {avatarSrc && (
@@ -89,7 +85,7 @@ const TopNavbar = () => {
                   {user?.username?.[0]?.toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
-            </Button>
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem asChild>
