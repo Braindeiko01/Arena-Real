@@ -73,16 +73,13 @@ const HomePageContent = () => {
   const [timeLeft, setTimeLeft] = useState(25);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  const anyModalOpen = isModeModalOpen || isSearching || !!pendingMatch || isDepositModalOpen || isWithdrawModalOpen;
-
-  // Scroll lock SOLO cuando hay modal/overlay
   useEffect(() => {
-    if (anyModalOpen) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = prev; };
-    }
-  }, [anyModalOpen]);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
 
   const handleMatchFound = (data: MatchEventData) => {
     setIsSearching(false);

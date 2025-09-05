@@ -2,7 +2,6 @@
 "use client";
 
 import React from 'react';
-import Navbar from './Navbar';
 import TopNavbar from './TopNavbar';
 import BottomNav from './BottomNav';
 import AuthGuard from './AuthGuard';
@@ -16,15 +15,10 @@ const AppLayout = ({ children, mainClassName }: AppLayoutProps) => {
   return (
     <AuthGuard>
       <div className="flex flex-col min-h-screen bg-bg-0 text-text-1 font-body">
-        <div className="md:hidden">
-          <TopNavbar />
-        </div>
-        <div className="hidden md:block">
-          <Navbar />
-        </div>
+        <TopNavbar />
         <main
           className={cn(
-            'flex-grow container mx-auto px-4 pt-4 pb-24 md:pt-6 md:pb-8 md:px-6 lg:px-8 lg:pt-6 lg:pb-10 animate-fade-in-up',
+            'flex-grow container mx-auto px-4 pt-24 pb-24 md:px-6 md:pb-8 lg:px-8 lg:pb-10 animate-fade-in-up',
             mainClassName
           )}
         >
