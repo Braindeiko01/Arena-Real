@@ -35,7 +35,7 @@ const BottomNav = () => {
             <li key={id}>
               <Link
                 href={href}
-                className={cn('tab', isActive && 'tab--active')}
+                className={cn('tab bg-transparent', isActive && 'tab--active')}
               >
                 <span className="relative">
                   <Icon />
