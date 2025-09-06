@@ -73,8 +73,10 @@ public class ChatService {
         }
         log.info("Cerrando chat {}", chatId);
         chatRepository.findById(chatId).ifPresent(chat -> {
-            chat.setActivo(false);
-            chatRepository.save(chat);
+            if (chat.isActivo()) {
+                chat.setActivo(false);
+                chatRepository.save(chat);
+            }
         });
 
         if (firestore != null) {
@@ -83,16 +85,26 @@ public class ChatService {
                         .document(chatId.toString())
                         .update("activo", false);
 
-                java.util.Map<String, Object> msg = new java.util.HashMap<>();
-                msg.put("senderId", "system");
-                msg.put("text", "Chat finalizado");
-                msg.put("timestamp", com.google.cloud.Timestamp.now());
-                msg.put("isSystemMessage", true);
-
-                firestore.collection("chats")
+                CollectionReference mensajes = firestore
+                        .collection("chats")
                         .document(chatId.toString())
-                        .collection("messages")
-                        .add(msg);
+                        .collection("messages");
+
+                QuerySnapshot snapshot = mensajes
+                        .whereEqualTo("text", "Chat finalizado")
+                        .whereEqualTo("senderId", "system")
+                        .get()
+                        .get();
+
+                if (snapshot.isEmpty()) {
+                    Map<String, Object> msg = new HashMap<>();
+                    msg.put("senderId", "system");
+                    msg.put("text", "Chat finalizado");
+                    msg.put("timestamp", Timestamp.now());
+                    msg.put("isSystemMessage", true);
+
+                    mensajes.add(msg);
+                }
             } catch (Exception e) {
                 log.error("Error al cerrar chat en Firestore", e);
             }
